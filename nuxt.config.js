@@ -12,7 +12,8 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500;1,700&display=swap' }
     ]
   },
 
@@ -36,17 +37,44 @@ export default {
     '@nuxtjs/dotenv'
   ],
 
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.css',
+    exposeConfig: true
+  },
+
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    '@nuxtjs/apollo'
+    '@nuxtjs/apollo',
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
+    '@nuxtjs/strapi'
   ],
+
+  auth: {
+    strategies: {
+      google: {
+        clientId: '...'
+      },
+    }
+  },
 
   apollo: {
     clientConfigs: {
       default: {
         httpEndpoint: process.env.GRAPHQL_ENDPOINT || 'https://hotasset.herokuapp.com/graphql'
+      }
+    },
+    strategies: {
+      google: {
+        clientId: '975935965890-sm5r642l59ma1iilrh84vvfp2rv84saa.apps.googleusercontent.com',
+        codeChallengeMethod: '',
+        responseType: 'code',
+        endpoints: {
+          token: 'http://localhost:3000/user/google',
+          userInfo: 'http://localhost:3000/auth/user'
+        }
       }
     }
   },
