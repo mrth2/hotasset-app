@@ -1,23 +1,27 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-    name: 'Header'
+    name: 'Header',
+    computed: {
+        headerCategories() {
+            return this.$store.state.header.categories
+        }
+    }
 })
 </script>
 
 <template>
     <header>
-        <!-- This example requires Tailwind CSS v2.0+ -->
         <div class="relative bg-white">
             <div class="max-w-screen-xl mx-auto px-4 sm:px-6">
                 <div
                     class="flex justify-between items-center border-b border-gray-100 py-4 md:justify-start md:space-x-10"
                 >
                     <div class="flex justify-start items-center">
-                        <a href="#">
-                            <span class="sr-only">Workflow</span>
+                        <NuxtLink to="/">
+                            <span class="sr-only">HotAsset</span>
                             <img srcset="~/assets/images/logo.png 2x" alt />
-                        </a>
+                        </NuxtLink>
                     </div>
                     <form action class="form-search lg:w-0 lg:flex-1">
                         <div class="ml-12 flex rounded-md shadow-sm">
@@ -80,91 +84,31 @@ export default Vue.extend({
                             href="#"
                             class="whitespace-nowrap text-base font-medium text-gray-900 hover:underline"
                         >About</a>
-                        <a
-                            href="#"
+                        <NuxtLink
+                            :to="{ name: 'login' }"
                             class="ml-8 whitespace-nowrap text-base font-medium text-gray-900 hover:underline"
-                        >Sign in</a>
-                        <a
-                            href="#"
+                        >Sign in</NuxtLink>
+                        <NuxtLink
+                            :to="{ name: 'signup' }"
                             class="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-700"
-                        >Sign up</a>
+                        >Sign up</NuxtLink>
                     </div>
                 </div>
                 <div class="navbar-scroll max-w-full overflow-hidden">
                     <ul
                         class="navbar flex flex-row overflow-x-auto whitespace-nowrap justify-between py-4 -ml-4"
                     >
-                        <li>
+                        <li v-for="category in headerCategories" :key="category.slug">
                             <a
                                 href="#"
                                 class="navbar__link text-gray-500 text-base font-medium px-4"
                             >
-                                Graphics &amp;
-                                Design
+                                <span>{{ category.title }}</span>
+                                <span
+                                    v-if="category.is_new"
+                                    class="rounded-xl ml-1.5 mb-1 border border-red-500 text-xxs text-red-500 uppercase px-1.5 py-0.25"
+                                >New</span>
                             </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >
-                                Digital
-                                Marketing
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >
-                                Writing &amp;
-                                Translation
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >
-                                Video &amp;
-                                Animation
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >
-                                Music &amp;
-                                Audio
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >
-                                Programming &amp;
-                                Tech
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >Data</a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >Business</a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="navbar__link text-gray-500 text-base font-medium px-4"
-                            >Lifestyle</a>
                         </li>
                     </ul>
                 </div>

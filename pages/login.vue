@@ -1,3 +1,34 @@
+<script lang="ts">
+import Vue from "vue"
+
+export default Vue.extend({
+    name: 'Login',
+    middleware: 'authenticated',
+    data() {
+        return {
+            identifier: '',
+            password: '',
+            error: '',
+        }
+    },
+    methods: {
+        async loginUser() {
+            try {
+                const user = await this.$strapi.login({
+                    identifier: this.identifier,
+                    password: this.password,
+                })
+                if (user !== null) {
+                    this.error = ''
+                    this.$nuxt.$router.push('/')
+                }
+            } catch (error) {
+                this.error = 'Error in login credentials'
+            }
+        }
+    }
+})
+</script>
 <template>
     <main class="border-t relative">
         <div class="max-w-screen-xl mx-auto px-5">
@@ -24,6 +55,7 @@
                         <button
                             type="submit"
                             class="block w-full px-3 py-3 mt-6 text-base font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out bg-blue-500 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none active:bg-blue-700"
+                            @click="$googleAuth()"
                         >Sign in with Google</button>
                     </div>
                     <div class="or relative block text-center">
@@ -84,36 +116,5 @@
         />
     </main>
 </template>
-<script lang="ts">
-import Vue from "vue"
-
-export default Vue.extend({
-    name: 'Login',
-    middleware: 'authenticated',
-    data() {
-        return {
-            identifier: '',
-            password: '',
-            error: '',
-        }
-    },
-    methods: {
-        async loginUser() {
-            try {
-                const user = await this.$strapi.login({
-                    identifier: this.identifier,
-                    password: this.password,
-                })
-                if (user !== null) {
-                    this.error = ''
-                    this.$nuxt.$router.push('/articles')
-                }
-            } catch (error) {
-                this.error = 'Error in login credentials'
-            }
-        }
-    }
-})
-</script>
 <style>
 </style>

@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -23,6 +25,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/google.ts'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -47,36 +50,25 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/apollo',
-    '@nuxtjs/axios',
     '@nuxtjs/auth-next',
     '@nuxtjs/strapi'
   ],
 
   auth: {
-    strategies: {
-      google: {
-        clientId: '...'
-      },
-    }
+    
   },
 
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: process.env.GRAPHQL_ENDPOINT || 'https://hotasset.herokuapp.com/graphql'
-      }
-    },
-    strategies: {
-      google: {
-        clientId: '975935965890-sm5r642l59ma1iilrh84vvfp2rv84saa.apps.googleusercontent.com',
-        codeChallengeMethod: '',
-        responseType: 'code',
-        endpoints: {
-          token: 'http://localhost:3000/user/google',
-          userInfo: 'http://localhost:3000/auth/user'
-        }
+        httpEndpoint: `${process.env.API_ENDPOINT}/graphql` || 'https://hotasset.herokuapp.com/graphql'
       }
     }
+  },
+
+  strapi: {
+    entities: ['users'],
+    url: process.env.API_ENDPOINT || 'https://hotasset.herokuapp.com'
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
