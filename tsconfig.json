@@ -26,9 +26,9 @@
     "types": [
       "@nuxt/types",
       "@types/node",
-      "@nuxtjs/auth-next",
       "@nuxtjs/strapi",
-      "vue-apollo/types"
+      "vue-apollo/types",
+      "cookie-universal-nuxt/types"
     ]
   },
   "exclude": [

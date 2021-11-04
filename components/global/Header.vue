@@ -6,6 +6,12 @@ export default Vue.extend({
         headerCategories() {
             return this.$store.state.header.categories
         }
+    },
+    methods: {
+        async logout() {
+            await this.$strapi.logout()
+            this.$nuxt.refresh()
+        }
     }
 })
 </script>
@@ -84,14 +90,22 @@ export default Vue.extend({
                             href="#"
                             class="whitespace-nowrap text-base font-medium text-gray-900 hover:underline"
                         >About</a>
-                        <NuxtLink
-                            :to="{ name: 'login' }"
-                            class="ml-8 whitespace-nowrap text-base font-medium text-gray-900 hover:underline"
-                        >Sign in</NuxtLink>
-                        <NuxtLink
-                            :to="{ name: 'signup' }"
-                            class="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-700"
-                        >Sign up</NuxtLink>
+                        <template v-if="!$strapi.user">
+                            <NuxtLink
+                                :to="{ name: 'login' }"
+                                class="ml-8 whitespace-nowrap text-base font-medium text-gray-900 hover:underline"
+                            >Sign in</NuxtLink>
+                            <NuxtLink
+                                :to="{ name: 'signup' }"
+                                class="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-500 hover:bg-red-700"
+                            >Sign up</NuxtLink>
+                        </template>
+                        <template v-else>
+                            <button
+                                class="ml-8 whitespace-nowrap text-base font-medium text-gray-900 hover:underline"
+                                @click="logout"
+                            >Logout</button>
+                        </template>
                     </div>
                 </div>
                 <div class="navbar-scroll max-w-full overflow-hidden">

@@ -53,7 +53,7 @@ export default Vue.extend({
                             >Register Now</a>
                         </p>
                         <button
-                            type="submit"
+                            type="button"
                             class="block w-full px-3 py-3 mt-6 text-base font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out bg-blue-500 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none active:bg-blue-700"
                             @click="$googleAuth()"
                         >Sign in with Google</button>

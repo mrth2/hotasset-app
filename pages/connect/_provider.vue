@@ -5,26 +5,27 @@ export default Vue.extend({
     data() {
         return {
             provider: this.$route.params.provider,
-            id_token: this.$route.query.id_token,
             access_token: this.$route.query.access_token
         }
     },
     async mounted() {
-        await this.$strapi.$http
-            .get(`/auth/${this.provider}/callback?access_token=${this.access_token}`)
-            .then(res => res.json())
-            .then(res => {
-                const { jwt, user } = res
-                // store jwt and user object in localStorage
-                this.$auth.$storage.setUniversal('jwt', jwt)
-                this.$auth.$storage.setUniversal('user', {
-                    username: user.username,
-                    id: user.id,
-                    email: user.email
-                })
+        if (!this.$strapi.user) {
+            await this.$strapi.$http
+                .get(`/auth/${this.provider}/callback?access_token=${this.access_token}`)
+                .then(res => res.json())
+                .then(res => {
+                    const { jwt, user } = res
+                    this.$strapi.setToken(jwt)
+                    this.$strapi.setUser(user)
 
-                this.$router.push(`/profile/${user.username}`)
-            })
+                    this.$nuxt.refresh()
+
+                    this.$router.push(`/profile/${user.username}`)
+                })
+        }
+        else {
+            this.$router.push(`/profile/${this.$strapi.user.username}`)
+        }
     },
 })
 </script>

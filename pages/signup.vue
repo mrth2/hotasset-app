@@ -22,6 +22,7 @@
             <button
               type="button"
               class="block w-full px-3 py-3 mt-6 text-base font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out bg-blue-500 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none active:bg-blue-700"
+              @click="$googleAuth()"
             >Sign in with Google</button>
           </div>
           <div class="or relative block text-center">
@@ -73,6 +74,7 @@
               <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
               <input
                 id="password"
+                v-model="password"
                 type="password"
                 required
                 class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
@@ -86,23 +88,23 @@
                 <a
                   href="#"
                   class="font-medium underline transition duration-150 ease-in-out text-red-500 hover:text-gray-500"
-                >
-                  Terms of Service
-                </a>
+                >Terms of Service</a>
                 and
                 <a
                   href="#"
                   class="font-medium underline transition duration-150 ease-in-out text-red-500 hover:text-gray-500"
-                >
-                  Privacy Policy terms
-                </a>.
+                >Privacy Policy terms</a>.
               </label>
             </div>
             <div class="mt-8">
+              <p v-if="error" class="text-red-500 underline mb-2">{{ error }}</p>
               <span class="rounded-md shadow-sm">
                 <button
                   type="button"
                   class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
+                  :disabled="loading"
+                  :class="{'opacity-50': loading, 'cursor-not-allowed': loading}"
+                  @click="createUser"
                 >Create an account</button>
               </span>
             </div>
@@ -129,23 +131,32 @@ export default Vue.extend({
       username: '',
       password: '',
       error: '',
+      loading: false
     }
   },
   methods: {
     async createUser() {
+      this.error = ''
+      this.loading = true
       try {
-        const newUser = await this.$strapi.register({
+        const result = await this.$strapi.register({
           email: this.email,
-          username: this.username,
-          password: this.password,
+          username: this.email,
+          password: this.password
         })
-        if (newUser !== null) {
+        if (result !== null) {
           this.error = ''
-          this.$nuxt.$router.push('/articles')
+          await this.$strapi.setUser({
+            ...result.user,
+            first_name: this.firstName,
+            last_name: this.lastName
+          })
+          this.$nuxt.$router.push(`/profile/${result.user.username}`)
         }
       } catch (error) {
         this.error = error instanceof Error ? error.message : 'Something went wrong. Please try again!'
       }
+      this.loading = false
     },
   },
 })

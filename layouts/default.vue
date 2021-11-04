@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
+// eslint-disable-next-line import/no-named-as-default
 import gql from 'graphql-tag'
 
 const HEADER_CATEGORIES_QUERY = gql`
@@ -30,9 +31,6 @@ export default Vue.extend({
             .then(res => {
                 this.$store.commit('header/setCategories', res.data.headerCategories)
             })
-    },
-    mounted() {
-        console.log(this.$auth.$state)
     }
 })
 </script>
