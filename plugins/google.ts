@@ -1,4 +1,5 @@
-import { Plugin } from '@nuxt/types'
+import { Context } from '@nuxt/types'
+import { Inject } from '@nuxt/types/app'
 
 declare module 'vue/types/vue' {
     interface Vue {
@@ -15,10 +16,8 @@ declare module '@nuxt/types' {
     }
 }
 
-const googlePlugin: Plugin = (context, inject) => {
-    const googleAuth = () => {
-        setTimeout(() => context.redirect(`${process.env.API_ENDPOINT}/connect/google`), 0)
-    }
-    inject('googleAuth', googleAuth)
+export default function (context: Context, inject: Inject) {
+    inject('googleAuth', () => {
+        window.location.href = `${context.$strapi.options.url}/connect/google`
+    })
 }
-export default googlePlugin
