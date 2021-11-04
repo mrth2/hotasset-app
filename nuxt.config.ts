@@ -4,6 +4,10 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'server',
 
+  env: {
+    API_ENDPOINT: process.env.API_ENDPOINT
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'HotAsset',

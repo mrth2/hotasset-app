@@ -15,9 +15,10 @@ declare module '@nuxt/types' {
     }
 }
 
-const googlePlugin: Plugin = (_context, inject) => {
-    inject('googleAuth', () => {
-        window.location.href = process.env.API_ENDPOINT + '/connect/google'
-    })
+const googlePlugin: Plugin = (context, inject) => {
+    const googleAuth = () => {
+        setTimeout(() => context.redirect(`${process.env.API_ENDPOINT}/connect/google`), 0)
+    }
+    inject('googleAuth', googleAuth)
 }
 export default googlePlugin
