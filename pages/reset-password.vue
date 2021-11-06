@@ -21,7 +21,7 @@ export default Vue.extend({
     },
     methods: {
         isResetMode() {
-            return this.code !== ''
+            return this.code && this.code !== ''
         },
         isButtonDisabled() {
             if (this.isResetMode()) {
