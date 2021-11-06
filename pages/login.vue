@@ -53,10 +53,10 @@ export default Vue.extend({
                         >Sign in to HotAsset</h2>
                         <p class="mt-4 text-sm leading-5 text-gray-600">
                             Not a member?
-                            <a
-                                href="#"
+                            <NuxtLink
+                                :to="{ name: 'signup' }"
                                 class="font-medium text-red-500 transition duration-150 ease-in-out hover:underline"
-                            >Register Now</a>
+                            >Register Now</NuxtLink>
                         </p>
                         <button
                             type="button"
@@ -97,10 +97,10 @@ export default Vue.extend({
                         <div class="mt-8">
                             <p for="accept-term" class="text-sm text-gray-600">
                                 Forgot a password?
-                                <a
-                                    href="#"
+                                <NuxtLink
+                                    :to="{ name: 'reset-password' }"
                                     class="font-medium underline transition duration-150 ease-in-out text-red-500 hover:text-gray-500"
-                                >Reset Password</a>
+                                >Reset Password</NuxtLink>
                             </p>
                         </div>
                         <div class="mt-8">

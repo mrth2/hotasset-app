@@ -51,6 +51,7 @@ export default {
     '@nuxtjs/pwa',
     '@nuxtjs/apollo',
     '@nuxtjs/strapi',
+    '@nuxtjs/toast'
   ],
 
   apollo: {
@@ -64,6 +65,22 @@ export default {
   strapi: {
     entities: ['users'],
     url: process.env.API_ENDPOINT || 'https://hotasset.herokuapp.com'
+  },
+
+  toast: {
+    position: 'top-center',
+    duration: 5000,
+    keepOnHover: true,
+    singleton: true,
+    register: [
+      {
+        name: 'unknown-error',
+        message: 'Oops...Something went wrong',
+        options: {
+          type: 'error'
+        }
+      }
+    ]
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

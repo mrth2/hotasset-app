@@ -28,7 +28,8 @@
       "@types/node",
       "@nuxtjs/strapi",
       "vue-apollo/types",
-      "cookie-universal-nuxt/types"
+      "cookie-universal-nuxt/types",
+      "@nuxtjs/toast"
     ]
   },
   "exclude": [
