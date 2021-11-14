@@ -3,6 +3,7 @@ import Vue from "vue"
 
 export default Vue.extend({
     name: 'ResetPassword',
+    layout: 'auth',
     middleware: 'authenticated',
     data() {
         return {
@@ -86,100 +87,80 @@ export default Vue.extend({
 })
 </script>
 <template>
-    <main class="border-t relative">
-        <div class="max-w-screen-xl mx-auto px-5">
-            <div class="content py-10 flex justify-between">
-                <aside class="hidden lg:block pt-12">
-                    <h2 class="text-4xl font-bold">
-                        <span class="text-gray-600 lg:block mb-2">Welcome to</span>
-                        <span class="text-gray-900">HotAsset</span>
-                    </h2>
-                </aside>
-
-                <div class="w-full sm:max-w-lg mx-auto lg:mr-40 self-center">
-                    <div class="mb-8">
-                        <h2
-                            class="mt-4 text-4xl font-extrabold leading-9 text-gray-900"
-                        >Reset Password</h2>
-                        <p class="mt-4 text-sm leading-5 text-gray-600">
-                            Remembered a password?
-                            <NuxtLink
-                                :to="{ name: 'login' }"
-                                class="font-medium text-red-500 transition duration-150 ease-in-out hover:underline"
-                            >Sign In</NuxtLink>
-                        </p>
-                    </div>
-                    <form class="mt-12">
-                        <!-- for reset password form -->
-                        <template v-if="isResetMode()">
-                            <div class="mb-8">
-                                <label
-                                    for="password"
-                                    class="block text-sm font-medium text-gray-700"
-                                >New Password</label>
-                                <input
-                                    id="password"
-                                    v-model="password"
-                                    type="password"
-                                    required
-                                    class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
-                                    placeholder="Enter a new password"
-                                    @keyup.enter.native="resetPassword()"
-                                />
-                            </div>
-                            <div class="mb-8">
-                                <label
-                                    for="passwordConfirmation"
-                                    class="block text-sm font-medium text-gray-700"
-                                >Confirm New Password</label>
-                                <input
-                                    id="passwordConfirmation"
-                                    v-model="passwordConfirmation"
-                                    type="password"
-                                    required
-                                    class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
-                                    placeholder="Enter it again"
-                                    @keyup.enter.native="resetPassword()"
-                                />
-                            </div>
-                        </template>
-                        <!-- request for reset password link -->
-                        <div v-else class="mb-8">
-                            <label
-                                for="email"
-                                class="block text-sm font-medium text-gray-700"
-                            >Email associated with your account</label>
-                            <input
-                                id="email"
-                                v-model="email"
-                                type="email"
-                                required
-                                class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
-                                placeholder="example@example.com"
-                                @keyup.enter.native="resetPassword()"
-                            />
-                        </div>
-                        <div class="mt-8">
-                            <span class="rounded-md shadow-sm">
-                                <button
-                                    type="button"
-                                    class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
-                                    :disabled="isButtonDisabled()"
-                                    :class="{ 'opacity-50': isButtonDisabled() }"
-                                    @click="resetPassword"
-                                >Reset Password</button>
-                            </span>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div>
+        <div class="mb-8">
+            <h2 class="mt-4 text-4xl font-extrabold leading-9 text-gray-900">Reset Password</h2>
+            <p class="mt-4 text-sm leading-5 text-gray-600">
+                Remembered a password?
+                <NuxtLink
+                    :to="{ name: 'login' }"
+                    class="font-medium text-red-500 transition duration-150 ease-in-out hover:underline"
+                >Sign In</NuxtLink>
+            </p>
         </div>
-        <img
-            srcset="~/assets/images/social-media-instagram-digital-marketing-concept-3d-rendering.png 2x"
-            alt
-            class="absolute bottom-0 left-0 hidden w-3/12 lg:block xl:w-auto"
-        />
-    </main>
+        <form class="mt-12">
+            <!-- for reset password form -->
+            <template v-if="isResetMode()">
+                <div class="mb-8">
+                    <label
+                        for="password"
+                        class="block text-sm font-medium text-gray-700"
+                    >New Password</label>
+                    <input
+                        id="password"
+                        v-model="password"
+                        type="password"
+                        required
+                        class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                        placeholder="Enter a new password"
+                        @keyup.enter.native="resetPassword()"
+                    />
+                </div>
+                <div class="mb-8">
+                    <label
+                        for="passwordConfirmation"
+                        class="block text-sm font-medium text-gray-700"
+                    >Confirm New Password</label>
+                    <input
+                        id="passwordConfirmation"
+                        v-model="passwordConfirmation"
+                        type="password"
+                        required
+                        class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                        placeholder="Enter it again"
+                        @keyup.enter.native="resetPassword()"
+                    />
+                </div>
+            </template>
+            <!-- request for reset password link -->
+            <div v-else class="mb-8">
+                <label
+                    for="email"
+                    class="block text-sm font-medium text-gray-700"
+                >Email associated with your account</label>
+                <input
+                    id="email"
+                    v-model="email"
+                    type="email"
+                    required
+                    class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                    placeholder="example@example.com"
+                    @keyup.enter.native="resetPassword()"
+                />
+            </div>
+            <div class="mt-8">
+                <span class="rounded-md shadow-sm">
+                    <button
+                        type="button"
+                        class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
+                        :disabled="isButtonDisabled()"
+                        :class="{ 'opacity-50': isButtonDisabled() }"
+                        @click="resetPassword"
+                    >Reset Password</button>
+                </span>
+            </div>
+        </form>
+    </div>
 </template>
 <style>
 </style>

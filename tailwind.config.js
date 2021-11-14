@@ -13,6 +13,9 @@ module.exports = {
         'xxs': ['9px', {
           letterSpacing: '-0.01em'
         }]
+      },
+      colors: {
+        'paragraph': '#6E6D7A',
       }
     },
   },

@@ -24,24 +24,25 @@ const HEADER_CATEGORIES_QUERY = gql`
 `
 
 export default Vue.extend({
-    name: 'DefaultLayout',
-    async fetch() {
-        await this.$apollo
-            .query({ query: HEADER_CATEGORIES_QUERY })
-            .then(res => {
-                this.$store.commit('header/setCategories', res.data.headerCategories)
-            })
-    }
+	name: 'DefaultLayout',
+	async fetch() {
+		await this.$apollo
+			.query({ query: HEADER_CATEGORIES_QUERY })
+			.then(res => {
+				this.$store.commit('header/setCategories', res.data.headerCategories)
+			})
+	}
 })
 </script>
 <template>
-    <div>
-        <Header />
-        <Nuxt />
-    </div>
+	<div>
+		<Header />
+		<Nuxt />
+		<Footer />
+	</div>
 </template>
 <style scoped lang="postcss">
 :global(body) {
-    @apply min-h-screen;
+	@apply min-h-screen;
 }
 </style>

@@ -37,8 +37,15 @@ export default {
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/fontawesome'
   ],
+
+  fontawesome: {
+    icons: {
+      brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram']
+    }
+  },
 
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
