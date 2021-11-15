@@ -7,10 +7,4 @@ export declare interface ICategory {
     sub_categories: ICategory[]
 }
 
-export declare interface IUser {
-    id: number
-    username: string
-    email: string
-    first_name: string
-    last_name: string
-}
+export * from './user'

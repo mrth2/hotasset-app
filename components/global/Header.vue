@@ -91,7 +91,7 @@ export default Vue.extend({
 							<NuxtLink :to="`/profile/${$strapi.user.username}`">
 								<img src="~/assets/images/avatar.png" alt width="36" height="36" />
 							</NuxtLink>
-							<NuxtLink to="/signup" class="btn-primary ml-8">Upload</NuxtLink>
+							<NuxtLink to="#" class="btn-primary ml-8">Upload</NuxtLink>
 						</div>
 					</template>
 					<template v-else>
@@ -377,4 +377,7 @@ export default Vue.extend({
 .menu-item:hover .dropdown-menu {
 	@apply block;
 }
+/* .site-nav-desktop-only {
+	@apply overflow-hidden;
+} */
 </style>

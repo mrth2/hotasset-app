@@ -30,7 +30,8 @@
       "vue-apollo/types",
       "cookie-universal-nuxt/types",
       "@nuxtjs/toast"
-    ]
+    ],
+    "noImplicitAny": true
   },
   "exclude": [
     "node_modules",

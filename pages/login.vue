@@ -28,8 +28,8 @@ export default Vue.extend({
                     this.error = ''
                     this.$nuxt.$router.push('/')
                 }
-            } catch (error) {
-                this.error = 'Error in login credentials'
+            } catch (error: any) {
+                this.error = error.message
             }
             this.loading = false
         }
@@ -90,6 +90,7 @@ export default Vue.extend({
                 </p>
             </div>
             <div class="mt-8">
+                <p v-if="error" class="text-red-500 underline mb-2">{{ error }}</p>
                 <span class="rounded-md shadow-sm">
                     <button
                         type="button"

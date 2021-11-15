@@ -129,8 +129,7 @@ export default Vue.extend({
         })
         if (result !== null) {
           this.error = ''
-          await this.$strapi.setUser({
-            ...result.user,
+          await this.$strapi.update('user', result.user.id, {
             first_name: this.firstName,
             last_name: this.lastName
           })
