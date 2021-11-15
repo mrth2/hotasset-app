@@ -43,7 +43,8 @@ export default {
 
   fontawesome: {
     icons: {
-      brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram']
+      brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram'],
+      regular: ['faUserCircle']
     }
   },
 
@@ -64,7 +65,8 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: `${process.env.API_ENDPOINT}/graphql` || 'https://hotasset.herokuapp.com/graphql'
+        httpEndpoint: `${process.env.API_ENDPOINT}/graphql` || 'https://hotasset.herokuapp.com/graphql',
+        tokenName: 'strapi_jwt'
       }
     }
   },

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 export declare interface ICategory {
-    id: number
+    id: string
     title: string
     slug: string
     is_new: boolean

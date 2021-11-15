@@ -1,3 +1,5 @@
+import { IFile } from "./file";
+
 /* eslint-disable camelcase */
 export declare interface IUserRole {
   id: string
@@ -15,9 +17,10 @@ export declare interface IUser {
   confirmed: boolean
   blocked: boolean
   provider: string
-  avatar: string
+  avatar: IFile
   biography: string
   website: string
+  pronounces: Array<{ id: string, title: string, slug: string }>
   role: IUserRole
   createdAt: Date
   updatedAt: Date
