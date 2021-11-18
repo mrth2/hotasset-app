@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import Multiselect from 'vue-multiselect'
-// eslint-disable-next-line import/no-named-as-default
 import gql from 'graphql-tag'
 import { ICategory, IUser } from '~/@types'
 
@@ -296,4 +295,3 @@ export default Vue.extend({
     </form>
   </div>
 </template>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

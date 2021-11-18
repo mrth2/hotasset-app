@@ -1,36 +1,12 @@
 <script lang="ts">
 import Vue from 'vue'
-// eslint-disable-next-line import/no-named-as-default
-import gql from 'graphql-tag'
-
-const HEADER_CATEGORIES_QUERY = gql`
-    query HEADER_CATEGORIES {
-        headerCategories: categories(where: { parent_category_null: true }) {
-            title
-            slug
-            is_new
-            sub_categories {
-                title
-                slug
-                is_new
-                sub_categories {
-                    title
-                    slug
-                    is_new
-                }  
-            }
-        }
-    } 
-`
+import { useHeaderStore } from '~/stores/header'
 
 export default Vue.extend({
 	name: 'DefaultLayout',
 	async fetch() {
-		await this.$apollo
-			.query({ query: HEADER_CATEGORIES_QUERY })
-			.then(res => {
-				this.$store.commit('header/setCategories', res.data.headerCategories)
-			})
+		const headerStore = useHeaderStore()
+		await headerStore.fetchCategories()
 	}
 })
 </script>

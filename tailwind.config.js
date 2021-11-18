@@ -20,7 +20,12 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      backgroundColor: ['active', 'hover'],
+      ringWidth: ['active', 'hover'],
+      ringColor: ['active', 'hover'],
+      scale: ['active']
+    },
   },
   plugins: [],
 }

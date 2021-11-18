@@ -4,7 +4,7 @@ export declare interface ICategory {
     title: string
     slug: string
     is_new: boolean
-    sub_categories: ICategory[]
+    sub_categories?: ICategory[]
 }
 
 export * from './user'
