@@ -49,7 +49,7 @@ export default Vue.extend({
 					</div>
 					<form action class="form-search">
 						<div class="xl:ml-12 flex rounded-md shadow-sm">
-							<button class="inline-flex items-center px-4 rounded-l-md bg-gray-100 text-gray-500 text-sm">
+							<button class="form-search__btn">
 								<svg
 									width="24"
 									height="24"
@@ -70,7 +70,7 @@ export default Vue.extend({
 								id="company-website"
 								type="text"
 								name="company-website"
-								class="outline-none bg-gray-100 flex-1 block w-1/2 py-3 pr-4 rounded-none rounded-r-md sm:text-sm"
+								class="form-search__input"
 								placeholder="Search HotAsset..."
 							/>
 						</div>

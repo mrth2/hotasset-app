@@ -39,12 +39,12 @@ export default Vue.extend({
 <template>
     <div>
         <div class="mb-8">
-            <h2 class="mt-4 text-4xl font-extrabold leading-9 text-gray-900">Sign in to HotAsset</h2>
-            <p class="mt-4 text-sm leading-5 text-gray-600">
+            <h2 class="auth__title">Sign in to HotAsset</h2>
+            <p class="auth__desc">
                 Not a member?
                 <NuxtLink
                     :to="{ name: 'signup' }"
-                    class="font-medium text-red-500 transition duration-150 ease-in-out hover:underline"
+                    class="auth__note"
                 >Register Now</NuxtLink>
             </p>
             <button
@@ -58,24 +58,24 @@ export default Vue.extend({
         </div>
         <form action="#" class="mt-8">
             <div class="mb-8">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <label for="email" class="form-label">Email</label>
                 <input
                     id="email"
                     v-model="identifier"
                     type="email"
                     required
-                    class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                    class="form-control"
                     placeholder="youremail@gmail.com"
                 />
             </div>
             <div class="mb-8">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <label for="password" class="form-label">Password</label>
                 <input
                     id="password"
                     v-model="password"
                     type="password"
                     required
-                    class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                    class="form-control"
                     placeholder="At least 6 characters"
                 />
             </div>
@@ -85,7 +85,7 @@ export default Vue.extend({
                     Forgot a password?
                     <NuxtLink
                         :to="{ name: 'reset-password' }"
-                        class="font-medium underline transition duration-150 ease-in-out text-red-500 hover:text-gray-500"
+                        class="font-medium underline transition duration-150 ease-in-out text-brand hover:text-gray-500"
                     >Reset Password</NuxtLink>
                 </p>
             </div>
@@ -94,7 +94,7 @@ export default Vue.extend({
                 <span class="rounded-md shadow-sm">
                     <button
                         type="button"
-                        class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
+                        class="btn-primary w-full md:w-auto"
                         :disabled="isButtonDisabled()"
                         :class="{ 'opacity-50': isButtonDisabled() }"
                         @click="loginUser"

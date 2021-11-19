@@ -89,8 +89,8 @@ export default Vue.extend({
 <template>
     <div>
         <div class="mb-8">
-            <h2 class="mt-4 text-4xl font-extrabold leading-9 text-gray-900">Reset Password</h2>
-            <p class="mt-4 text-sm leading-5 text-gray-600">
+            <h2 class="auth__title">Reset Password</h2>
+            <p class="auth__desc">
                 Remembered a password?
                 <NuxtLink
                     :to="{ name: 'login' }"
@@ -104,14 +104,14 @@ export default Vue.extend({
                 <div class="mb-8">
                     <label
                         for="password"
-                        class="block text-sm font-medium text-gray-700"
+                        class="form-label"
                     >New Password</label>
                     <input
                         id="password"
                         v-model="password"
                         type="password"
                         required
-                        class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                        class="form-control"
                         placeholder="Enter a new password"
                         @keyup.enter.native="resetPassword()"
                     />
@@ -119,14 +119,14 @@ export default Vue.extend({
                 <div class="mb-8">
                     <label
                         for="passwordConfirmation"
-                        class="block text-sm font-medium text-gray-700"
+                        class="form-label"
                     >Confirm New Password</label>
                     <input
                         id="passwordConfirmation"
                         v-model="passwordConfirmation"
                         type="password"
                         required
-                        class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                        class="form-control"
                         placeholder="Enter it again"
                         @keyup.enter.native="resetPassword()"
                     />
@@ -136,14 +136,14 @@ export default Vue.extend({
             <div v-else class="mb-8">
                 <label
                     for="email"
-                    class="block text-sm font-medium text-gray-700"
+                    class="form-label"
                 >Email associated with your account</label>
                 <input
                     id="email"
                     v-model="email"
                     type="email"
                     required
-                    class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+                    class="form-control"
                     placeholder="example@example.com"
                     @keyup.enter.native="resetPassword()"
                 />

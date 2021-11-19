@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="mb-8">
-      <h2 class="mt-4 text-4xl font-extrabold leading-9 text-gray-900">Register in HotAsset</h2>
-      <p class="mt-4 text-sm leading-5 text-gray-600">
+      <h2 class="auth__title">Register in HotAsset</h2>
+      <p class="auth__desc">
         Already a member?
         <NuxtLink
           :to="{ name: 'login' }"
-          class="font-medium text-red-500 transition duration-150 ease-in-out hover:underline"
+          class="auth__note"
         >Sign In</NuxtLink>
       </p>
       <button
@@ -21,7 +21,7 @@
     <form action="#" class="mt-8">
       <div class="grid grid-cols-2 gap-4 mb-8">
         <div>
-          <label for="first-name" class="block text-sm font-medium text-gray-700">
+          <label for="first-name" class="form-label">
             First
             Name
           </label>
@@ -30,12 +30,12 @@
             v-model="firstName"
             type=" text"
             required
-            class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+            class="form-control"
             placeholder="Nick"
           />
         </div>
         <div>
-          <label for="last-name" class="block text-sm font-medium text-gray-700">
+          <label for="last-name" class="form-label">
             Last
             Name
           </label>
@@ -44,30 +44,30 @@
             v-model="lastName"
             type="text"
             required
-            class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+            class="form-control"
             placeholder="Snow"
           />
         </div>
       </div>
       <div class="mb-8">
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <label for="email" class="form-label">Email</label>
         <input
           id="email"
           v-model="email"
           type="email"
           required
-          class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+          class="form-control"
           placeholder="example@gmai.com"
         />
       </div>
       <div class="mb-8">
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <label for="password" class="form-label">Password</label>
         <input
           id="password"
           v-model="password"
           type="password"
           required
-          class="block text-sm mt-1 shadow-sm form-input bg-gray-100 rounded w-full py-3 px-4"
+          class="form-control"
           placeholder="At least 6 characters"
         />
       </div>
