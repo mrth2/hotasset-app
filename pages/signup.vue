@@ -93,7 +93,7 @@
             type="button"
             class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
             :disabled="loading"
-            :class="{ 'opacity-50': loading, 'cursor-not-allowed': loading }"
+            :class="{ 'opacity-50 cursor-wait': loading }"
             @click="createUser"
           >Create an account</button>
         </span>

@@ -96,7 +96,7 @@ export default Vue.extend({
                         type="button"
                         class="btn-primary w-full md:w-auto"
                         :disabled="isButtonDisabled()"
-                        :class="{ 'opacity-50': isButtonDisabled() }"
+                        :class="{ 'opacity-50 cursor-wait': isButtonDisabled() }"
                         @click="loginUser"
                     >Sign in</button>
                 </span>

@@ -17,7 +17,7 @@ export default Vue.extend({
         lastName: user.last_name,
         biography: user.biography,
         pronounces: [] as IUser['pronounces'],
-        website: user.website || 'https://hoatrinh.dev',
+        website: user.website
       },
       avatarFile: null,
       error: {

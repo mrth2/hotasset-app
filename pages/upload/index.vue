@@ -3,37 +3,37 @@ import Vue from 'vue'
 import gql from 'graphql-tag'
 import { ICategory, ITag } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
+import { useAssetStore } from '~/stores/asset'
+import { IAsset } from '~/@types/asset'
 
 export default Vue.extend({
 	middleware: 'require-login',
 	data() {
+		const initialForm = {
+			title: '',
+			description: '',
+			categories: [] as ICategory[],
+			tags: [] as ITag[],
+			files: [] as unknown as FileList
+		}
 		return {
-			form: {
-				categories: null,
-				tags: [] as ITag[],
-				images: [] as unknown as FileList
-			},
+			initialForm,
+			form: initialForm,
 			imagesPreview: [] as string[],
 			currentPreviewIndex: 0,
 			listTags: [] as ITag[],
-			isLoading: false
+			isLoading: false,
+			isUploading: false
 		}
 	},
 	async fetch() {
 		await this.findTags('', 10)
+		await useAssetStore().fetchAssetTypeChannels()
 	},
 	computed: {
 		headerStore: () => useHeaderStore(),
 		listCategories(): ICategory[] {
 			return this.headerStore.flattenCategories
-		}
-	},
-	watch: {
-		form: {
-			handler() {
-				console.log(this.form)
-			},
-			deep: true
 		}
 	},
 	methods: {
@@ -97,20 +97,26 @@ export default Vue.extend({
 				(this.$refs.images as HTMLInputElement).click()
 			}
 		},
-		async uploadImages(e: Event) {
+		async uploadFiles(e: Event) {
 			const target = e.target as HTMLInputElement
 			if (target && target.files) {
-				this.form.images = target.files
-				this.imagesPreview = await this.getImagesPreview()
+				await this.processFiles(target.files)
 			}
 		},
-		async dragImages(e: DragEvent) {
+		async dropFiles(e: DragEvent) {
 			if (e.dataTransfer) {
-				this.form.images = e.dataTransfer.files
-				this.imagesPreview = await this.getImagesPreview()
+				await this.processFiles(e.dataTransfer.files)
 			}
 		},
-		async getImagesPreview() {
+		async processFiles(files: FileList) {
+			if (files.length > 6) {
+				this.$toast.error('Sorry, you can only upload maximum 6 files!')
+				return
+			}
+			this.form.files = files
+			this.imagesPreview = await this.getFilePreviews()
+		},
+		async getFilePreviews() {
 			// create function with return resolved promise
 			// with data:base64 string
 			function getBase64(file: File) {
@@ -128,12 +134,44 @@ export default Vue.extend({
 			const promises = []
 
 			// loop through fileList with for loop
-			for (let i = 0; i < this.form.images.length; i++) {
-				promises.push(getBase64(this.form.images[i]))
+			for (let i = 0; i < this.form.files.length; i++) {
+				promises.push(getBase64(this.form.files[i]))
 			}
 
 			// array with base64 strings
 			return await Promise.all(promises)
+		},
+		resetForm() {
+
+		},
+		async createPost() {
+			this.isUploading = true
+			// const request = new XMLHttpRequest()
+			const formData = new FormData()
+			const { title, description, categories, tags, files } = this.form
+
+			const data = {
+				title,
+				description,
+				categories: categories.map(c => c.id),
+				tags: tags.map(t => t.id)
+			}
+			Array.from(files).forEach(file => {
+				formData.append('files.resources', file, file.name)
+			})
+			formData.append('data', JSON.stringify(data))
+
+			await this.$strapi.$http
+				.$post<IAsset>('assets', formData)
+				.then(() => {
+					this.$toast.success('Congrats! Your assets is successfully posted!')
+					this.form = this.initialForm
+				})
+				.catch(err => {
+					this.$toast.error(err.message)
+				})
+
+			this.isUploading = false
 		}
 	}
 })
@@ -148,7 +186,7 @@ export default Vue.extend({
 				</a>
 			</div>
 			<div class="content py-10">
-				<form action="#" class="mx-auto">
+				<form action="#" class="mx-auto" :class="{ 'cursor-wait': isUploading }">
 					<div class="max-w-3xl mx-auto">
 						<div class="mb-8">
 							<h2
@@ -160,6 +198,7 @@ export default Vue.extend({
 						</div>
 
 						<input
+							v-model="form.title"
 							type="text"
 							placeholder="Type a post name here..."
 							class="text-xl md:text-2xl text-center block w-full outline-none mb-4"
@@ -167,11 +206,12 @@ export default Vue.extend({
 
 						<div
 							class="upload-workspace cursor-pointer"
+							:class="{ 'cursor-wait pointer-events-none': isUploading }"
 							@dragover.prevent
-							@drop.prevent="dragImages"
+							@drop.prevent="dropFiles"
 							@click="openSelectImage"
 						>
-							<input ref="images" type="file" multiple class="hidden" @change="uploadImages" />
+							<input ref="images" type="file" multiple class="hidden" @change="uploadFiles" />
 							<div v-if="imagesPreview.length" class="absolute w-full h-full">
 								<img :src="imagesPreview[currentPreviewIndex]" alt class="mx-auto" />
 							</div>
@@ -185,12 +225,12 @@ export default Vue.extend({
 							<p class="text-gray-500">1600x1200 is recommended or higher. Max 10MB for each image</p>
 						</div>
 						<div class="upload-gallery">
-							<template v-if="form.images.length === 0">
+							<template v-if="form.files.length === 0">
 								<div v-for="i in 6" :key="i" class="upload-gallery-item"></div>
 							</template>
 							<template v-else>
 								<div
-									v-for="(image, index) in Array.from(form.images)"
+									v-for="(file, index) in Array.from(form.files)"
 									:key="index"
 									class="upload-gallery-item"
 									@click="currentPreviewIndex = index"
@@ -203,9 +243,10 @@ export default Vue.extend({
 
 					<div class="w-full sm:max-w-lg mx-auto self-center">
 						<div class="mb-8">
-							<label for="bio" class="form-label">Post Description</label>
+							<label for="description" class="form-label">Post Description</label>
 							<textarea
-								id="bio"
+								id="description"
+								v-model="form.description"
 								name
 								cols="30"
 								rows="10"
@@ -259,7 +300,13 @@ export default Vue.extend({
 
 						<div class="mb-8">
 							<span class="rounded-md shadow-sm">
-								<button type="button" class="btn-primary w-full md:w-auto">Upload a Post</button>
+								<button
+									type="button"
+									class="btn-primary w-full md:w-auto"
+									:class="{ 'opacity-50 cursor-wait': isUploading }"
+									:disabled="isUploading"
+									@click="createPost"
+								>Upload a Post</button>
 							</span>
 						</div>
 					</div>

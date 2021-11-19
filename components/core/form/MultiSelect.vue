@@ -22,37 +22,33 @@ export default Vue.extend({
 })
 </script>
 <template>
-  <Multiselect
-    v-model="propModel"
-    class="form-control"
-    v-bind="$attrs"
-  />
+  <Multiselect v-model="propModel" class="form-control" v-bind="$attrs" />
 </template>
 <style scoped lang="postcss">
-::v-deep .multiselect__tags {
-	@apply border-0 border-none bg-transparent pb-0 pl-0 h-auto min-h-0;
-}
-::v-deep .multiselect__tag {
-	@apply bg-tag text-black py-2.5;
-	.multiselect__tag-icon {
-		@apply hover:bg-transparent;
+.multiselect ::v-deep {
+  @apply py-0;
+  min-height: 40px;
+  .multiselect__spinner {
+    @apply bg-transparent;
+  }
+  .multiselect__tags {
+    @apply border-0 border-none bg-transparent pb-0 pl-0 h-auto min-h-0;
+  }
+  .multiselect__tag {
+    @apply bg-tag text-black py-2.5;
+    .multiselect__tag-icon {
+      @apply hover:bg-transparent;
 
-		&:after {
-			@apply text-black;
-		}
-	}
-}
-/* ::v-deep .multiselect__option--highlight {
-	@apply bg-tag;
-} */
-::v-deep .multiselect__tag-icon {
-  @apply pt-1.5;
-}
-::v-deep .multiselect__input {
-	@apply bg-transparent;
-}
-.form-control.multiselect {
-	@apply py-0;
-	min-height: 40px;
+      &:after {
+        @apply text-black;
+      }
+    }
+  }
+  .multiselect__tag-icon {
+    @apply pt-1.5;
+  }
+  .multiselect__input {
+    @apply bg-transparent;
+  }
 }
 </style>

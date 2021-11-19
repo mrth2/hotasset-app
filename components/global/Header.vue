@@ -171,4 +171,11 @@ export default Vue.extend({
 /* .site-nav-desktop-only {
 	@apply overflow-hidden;
 } */
+.site-nav-desktop-nav {
+	scrollbar-width: none;
+	
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
 </style>
