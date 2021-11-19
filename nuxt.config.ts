@@ -1,4 +1,5 @@
 require('dotenv').config()
+const path = require('path')
 
 export default {
   // Target: https://go.nuxtjs.dev/config-target
@@ -14,8 +15,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500;1,700&display=swap' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
 
@@ -62,8 +62,21 @@ export default {
     '@nuxtjs/pwa',
     '@nuxtjs/apollo',
     '@nuxtjs/strapi',
-    '@nuxtjs/toast'
+    '@nuxtjs/toast',
+    'nuxt-purgecss',
+    'nuxt-webfontloader'
   ],
+
+  webfontloader: {
+    google: {
+      families: ['Roboto:400,500,700']
+    }
+  },
+
+  purgeCss: {
+    mode: 'postcss',
+    enabled: (process.env.NODE_ENV === 'production')
+  },
 
   apollo: {
     clientConfigs: {
@@ -104,5 +117,27 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    postcss: {
+      plugins: {
+        'postcss-import': {},
+        tailwindcss: path.resolve(__dirname, './tailwind.config.js'),
+        'postcss-nested': {}
+      }
+    },
+    preset: {
+      stage: 1
+    },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          tailwindConfig: {
+            test: /tailwind\.config/,
+            chunks: 'all',
+            priority: 10,
+            name: true
+          }
+        }
+      }
+    }
   }
 }

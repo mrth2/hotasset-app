@@ -3,7 +3,8 @@ const colors = {
   'brand': '#FF5864',
   'title': '#0D0C22',
   'grey': '#BFBFC2',
-  'form-control': '#F8F9FD'
+  'form-control': '#F8F9FD',
+  'tag': '#E7E7E9'
 }
 module.exports = {
   mode: 'jit',
