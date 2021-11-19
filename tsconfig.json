@@ -21,6 +21,9 @@
       ],
       "@/*": [
         "./*"
+      ],
+      "~tailwind.config": [
+        "./.nuxt/tailwind.config.json"
       ]
     },
     "types": [

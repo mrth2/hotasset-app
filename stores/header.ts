@@ -50,7 +50,7 @@ export const useHeaderStore = defineStore('header', {
   },
   actions: {
     async fetchCategories() {
-      await this.$nuxt.app.apolloProvider.defaultClient.query({ query: HEADER_CATEGORIES_QUERY })
+      await this.$nuxt.app.apolloProvider?.defaultClient.query({ query: HEADER_CATEGORIES_QUERY })
         .then((res) => {
           this.categories = res.data.headerCategories
         })

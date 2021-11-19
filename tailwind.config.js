@@ -1,4 +1,12 @@
+const colors = {
+  'paragraph': '#6E6D7A',
+  'brand': '#FF5864',
+  'title': '#0D0C22',
+  'grey': '#BFBFC2',
+  'form-control': '#F8F9FD'
+}
 module.exports = {
+  mode: 'jit',
   purge: [
     './components/**/*.{vue,js}',
     './layouts/**/*.vue',
@@ -14,17 +22,15 @@ module.exports = {
           letterSpacing: '-0.01em'
         }]
       },
-      colors: {
-        'paragraph': '#6E6D7A',
-      }
-    },
+      colors
+    }
   },
   variants: {
     extend: {
       backgroundColor: ['active', 'hover'],
       ringWidth: ['active', 'hover'],
       ringColor: ['active', 'hover'],
-      scale: ['active']
+      scale: ['active'],
     },
   },
   plugins: [],
