@@ -8,3 +8,5 @@ export declare interface ICategory {
 }
 
 export * from './user'
+export * from './file'
+export * from './tag'

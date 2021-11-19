@@ -5,19 +5,22 @@ import { ICategory } from '~/@types'
 export const HEADER_CATEGORIES_QUERY = gql`
   query HEADER_CATEGORIES {
     headerCategories: categories(where: { parent_category_null: true }) {
+      id
+      title
+      slug
+      is_new
+      sub_categories {
+        id
         title
         slug
         is_new
         sub_categories {
-            title
-            slug
-            is_new
-            sub_categories {
-                title
-                slug
-                is_new
-            }  
-        }
+          id
+          title
+          slug
+          is_new
+        }  
+      }
     }
   } 
 `

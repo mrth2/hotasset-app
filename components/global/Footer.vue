@@ -286,6 +286,6 @@ export default Vue.extend({
 	@apply gap-4;
 }
 .social__link {
-	@apply text-paragraph;
+	@apply text-paragraph border-0;
 }
 </style>

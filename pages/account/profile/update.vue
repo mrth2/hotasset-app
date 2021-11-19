@@ -3,6 +3,7 @@ import Vue from 'vue'
 import Multiselect from 'vue-multiselect'
 import gql from 'graphql-tag'
 import { ICategory, IUser } from '~/@types'
+import { useHeaderStore } from '~/stores/header'
 
 export default Vue.extend({
   name: 'AccountProfileUpdate',
@@ -29,23 +30,14 @@ export default Vue.extend({
           valid: false
         }
       },
-      categories: [] as ICategory[],
       loading: false
     }
   },
-  async fetch() {
-    const { data } = await this.$apollo.query<{ categories: ICategory[] }>({
-      query: gql`
-      query CATEGORIES {
-        categories {
-          id
-          title
-          slug
-        }
-      }`})
-    this.categories = data.categories
-  },
   computed: {
+    headerStore: () => useHeaderStore(),
+    categories(): ICategory[] {
+      return this.headerStore.flattenCategories
+    },
     user(): IUser {
       return this.$strapi.user as IUser
     },
