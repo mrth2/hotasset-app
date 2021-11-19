@@ -1,14 +1,10 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import Multiselect from 'vue-multiselect'
 import { ICategory, ITag } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
 
 export default Vue.extend({
-	components: {
-		Multiselect
-	},
 	middleware: 'require-login',
 	data() {
 		return {
@@ -219,9 +215,9 @@ export default Vue.extend({
 						</div>
 						<div class="mb-8">
 							<label for="categories" class="form-label">Category</label>
-							<Multiselect
+							<CoreFormMultiSelect
 								id="categories"
-								v-model="form.categories"
+								:model="form.categories"
 								class="form-control"
 								:options="listCategories"
 								:preserve-search="true"
@@ -231,12 +227,13 @@ export default Vue.extend({
 								placeholder="Select category"
 								label="title"
 								track-by="slug"
+								@update:model="form.categories = $event"
 							/>
 						</div>
 						<div class="mb-8">
 							<label for="tags" class="form-label">Tags</label>
-							<Multiselect
-								v-model="form.tags"
+							<CoreFormMultiSelect
+								:model="form.tags"
 								class="form-control"
 								:options="listTags"
 								:preserve-search="true"
@@ -254,6 +251,7 @@ export default Vue.extend({
 								:taggable="true"
 								:tag-placeholder="'Add tags (separate by comma)'"
 								:max="10"
+								@update:model="form.tags = $event"
 								@tag="addTag"
 								@search-change="findTags"
 							/>
@@ -272,29 +270,6 @@ export default Vue.extend({
 </template>
 
 <style lang="postcss" scoped>
-::v-deep .multiselect__tags {
-	@apply border-0 border-none bg-transparent pb-0 h-auto min-h-0;
-}
-::v-deep .multiselect__tag {
-	@apply bg-tag text-black py-2.5;
-	.multiselect__tag-icon {
-		@apply hover:bg-transparent;
-
-		&:after {
-			@apply text-black;
-		}
-	}
-}
-/* ::v-deep .multiselect__option--highlight {
-	@apply bg-tag;
-} */
-::v-deep .multiselect__input {
-	@apply bg-transparent;
-}
-.form-control.multiselect {
-	@apply py-0;
-	min-height: 40px;
-}
 .upload-gallery-item {
 	@apply overflow-hidden cursor-pointer;
 

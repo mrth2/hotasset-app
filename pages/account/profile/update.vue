@@ -1,15 +1,11 @@
 <script lang="ts">
 import Vue from 'vue'
-import Multiselect from 'vue-multiselect'
 import gql from 'graphql-tag'
 import { ICategory, IUser } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
 
 export default Vue.extend({
   name: 'AccountProfileUpdate',
-  components: {
-    Multiselect
-  },
   layout: 'auth',
   middleware: 'require-login',
   data() {
@@ -20,7 +16,7 @@ export default Vue.extend({
         firstName: user.first_name,
         lastName: user.last_name,
         biography: user.biography,
-        pronounces: user.pronounces,
+        pronounces: [] as IUser['pronounces'],
         website: user.website || 'https://hoatrinh.dev',
       },
       avatarFile: null,
@@ -60,6 +56,11 @@ export default Vue.extend({
   },
   watch: {
     pronounceList() {
+      this.form.pronounces = this.pronounceList
+    }
+  },
+  mounted() {
+    if (this.pronounceList.length) {
       this.form.pronounces = this.pronounceList
     }
   },
@@ -252,8 +253,8 @@ export default Vue.extend({
       </div>
       <div class="mb-8">
         <label for="pronounce" class="form-label">Pronounce</label>
-        <Multiselect
-          v-model="form.pronounces"
+        <CoreFormMultiSelect
+          :model="form.pronounces"
           :preserve-search="true"
           :options="categories"
           :multiple="true"
@@ -261,7 +262,8 @@ export default Vue.extend({
           :clear-on-select="false"
           placeholder="Select your pronouces"
           label="title"
-          track-by="slug"
+          track-by="id"
+          @update:model="form.pronounces = $event"
         />
       </div>
       <div class="mb-8">
