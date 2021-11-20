@@ -8,7 +8,7 @@ export const useAssetStore = defineStore('asset', {
     channels: [] as IAssetChannel[],
   }),
   actions: {
-    async fetchAssetTypeChannels() {
+    async fetchAssetMetaData() {
       await this.$nuxt.app.apolloProvider?.defaultClient.query({
         query: gql`
           query ASSET_CHANNEL {
@@ -19,6 +19,10 @@ export const useAssetStore = defineStore('asset', {
             assetTypes (sort: "order:asc") {
               name
               value
+              mimes {
+                mimeType
+                fileExtension
+              }
             }
           }
         `

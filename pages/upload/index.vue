@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
+import cloneDeep from 'lodash/cloneDeep'
 import { ICategory, ITag } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
 import { useAssetStore } from '~/stores/asset'
@@ -14,11 +15,11 @@ export default Vue.extend({
 			description: '',
 			categories: [] as ICategory[],
 			tags: [] as ITag[],
-			files: [] as unknown as FileList
+			files: [] as File[]
 		}
 		return {
 			initialForm,
-			form: initialForm,
+			form: cloneDeep(initialForm),
 			imagesPreview: [] as string[],
 			currentPreviewIndex: 0,
 			listTags: [] as ITag[],
@@ -28,7 +29,7 @@ export default Vue.extend({
 	},
 	async fetch() {
 		await this.findTags('', 10)
-		await useAssetStore().fetchAssetTypeChannels()
+		await useAssetStore().fetchAssetMetaData()
 	},
 	computed: {
 		headerStore: () => useHeaderStore(),
@@ -108,18 +109,39 @@ export default Vue.extend({
 				await this.processFiles(e.dataTransfer.files)
 			}
 		},
+		getAssetType(file: File) {
+			const { types } = useAssetStore()
+			return types.find(type => {
+				return !!type.mimes.find(mime => mime.mimeType === file.type)
+			})
+		},
+		isAllowedFile(file: File) {
+			return !!this.getAssetType(file)
+		},
 		async processFiles(files: FileList) {
 			if (files.length > 6) {
 				this.$toast.error('Sorry, you can only upload maximum 6 files!')
 				return
 			}
-			this.form.files = files
+			// check if uploaded files is allowed
+			const allowedFiles = [] as File[]
+			Array.from(files).forEach((file) => {
+				if (!this.isAllowedFile(file)) {
+					this.$toast.error(`Sorry, you can not upload this file "${file.name}"!`, {
+						singleton: false
+					})
+				}
+				else {
+					allowedFiles.push(file)
+				}
+			})
+			this.form.files = allowedFiles
 			this.imagesPreview = await this.getFilePreviews()
 		},
 		async getFilePreviews() {
 			// create function with return resolved promise
 			// with data:base64 string
-			function getBase64(file: File) {
+			const getBase64 = (file: File) => {
 				const reader = new FileReader()
 				return new Promise<string>(resolve => {
 					reader.onload = ev => {
@@ -135,7 +157,20 @@ export default Vue.extend({
 
 			// loop through fileList with for loop
 			for (let i = 0; i < this.form.files.length; i++) {
-				promises.push(getBase64(this.form.files[i]))
+				const file = this.form.files[i]
+				const assetType = this.getAssetType(file)
+				if (assetType?.value === 'pdf') {
+					promises.push(require('~/assets/images/icons/pdf.svg'))
+				}
+				else if (assetType?.value === 'csv') {
+					promises.push(require('~/assets/images/icons/csv.svg'))
+				}
+				else if (assetType?.value === 'ppt') {
+					promises.push(require('~/assets/images/icons/ppt.svg'))
+				}
+				else {
+					promises.push(getBase64(file))
+				}
 			}
 
 			// array with base64 strings
@@ -144,7 +179,25 @@ export default Vue.extend({
 		resetForm() {
 
 		},
+		validateForm() {
+			if (this.form.title === '') {
+				this.$toast.error('Please enter a post name!')
+				return false
+			}
+			else if (this.form.title.length > 100) {
+				this.$toast.error('Post name must be less than 100 characters!')
+				return false
+			}
+			else if (this.form.title.length < 5) {
+				this.$toast.error('Post name must be more than 5 characters!')
+				return false
+			}
+			return true
+		},
 		async createPost() {
+			if (!this.validateForm()) {
+				return
+			}
 			this.isUploading = true
 			// const request = new XMLHttpRequest()
 			const formData = new FormData()
@@ -156,7 +209,7 @@ export default Vue.extend({
 				categories: categories.map(c => c.id),
 				tags: tags.map(t => t.id)
 			}
-			Array.from(files).forEach(file => {
+			files.forEach(file => {
 				formData.append('files.resources', file, file.name)
 			})
 			formData.append('data', JSON.stringify(data))
@@ -165,6 +218,7 @@ export default Vue.extend({
 				.$post<IAsset>('assets', formData)
 				.then(() => {
 					this.$toast.success('Congrats! Your assets is successfully posted!')
+					this.imagesPreview = []
 					this.form = this.initialForm
 				})
 				.catch(err => {
@@ -212,17 +266,24 @@ export default Vue.extend({
 							@click="openSelectImage"
 						>
 							<input ref="images" type="file" multiple class="hidden" @change="uploadFiles" />
-							<div v-if="imagesPreview.length" class="absolute w-full h-full">
+							<div
+								v-if="imagesPreview.length"
+								class="upload-big-preview"
+								:class="{ icon: imagesPreview[currentPreviewIndex].includes('_nuxt') }"
+							>
 								<img :src="imagesPreview[currentPreviewIndex]" alt class="mx-auto" />
+								<p class="text-gray-500 mt-4">{{ form.files[currentPreviewIndex].name }}</p>
 							</div>
-							<div v-else class="mb-4">
-								<img src="~/assets/images/icons/upload-img.svg" alt class="mx-auto" />
-							</div>
-							<p class="font-medium text-gray-500 mb-3">
-								Drag & Drop an Image or
-								<a href="javascript:" class="text-red-500 underline">Browse</a>
-							</p>
-							<p class="text-gray-500">1600x1200 is recommended or higher. Max 10MB for each image</p>
+							<template v-else>
+								<div class="mb-4">
+									<img src="~/assets/images/icons/upload-img.svg" alt class="mx-auto" />
+								</div>
+								<p class="font-medium text-gray-500 mb-3">
+									Drag & Drop an Image or
+									<a href="javascript:" class="text-red-500 underline">Browse</a>
+								</p>
+								<p class="text-gray-500">1600x1200 is recommended or higher. Max 10MB for each image</p>
+							</template>
 						</div>
 						<div class="upload-gallery">
 							<template v-if="form.files.length === 0">
@@ -230,12 +291,22 @@ export default Vue.extend({
 							</template>
 							<template v-else>
 								<div
-									v-for="(file, index) in Array.from(form.files)"
+									v-for="(file, index) in form.files"
 									:key="index"
-									class="upload-gallery-item"
+									class="upload-gallery-item relative"
 									@click="currentPreviewIndex = index"
 								>
-									<img v-if="imagesPreview[index]" :src="imagesPreview[index]" alt />
+									<template v-if="imagesPreview[index]">
+										<img
+											:src="imagesPreview[index]"
+											alt
+											:class="{ icon: imagesPreview[index].includes('_nuxt') }"
+										/>
+										<p
+											v-if="imagesPreview[index].includes('_nuxt')"
+											class="text-gray-500 text-xs absolute px-4 text-center w-full truncate bottom-0"
+										>{{ file.name }}</p>
+									</template>
 								</div>
 							</template>
 						</div>
@@ -317,11 +388,25 @@ export default Vue.extend({
 </template>
 
 <style lang="postcss" scoped>
+.upload-big-preview {
+	@apply absolute w-full h-full;
+	&.icon {
+		@apply p-52;
+
+		img {
+			@apply object-contain;
+		}
+	}
+}
 .upload-gallery-item {
 	@apply overflow-hidden cursor-pointer;
 
 	img {
 		@apply object-center object-cover w-full h-full;
+
+		&.icon {
+			@apply object-contain py-5;
+		}
 	}
 }
 .upload-workspace {

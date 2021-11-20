@@ -4,10 +4,16 @@ import { IFile } from "../file";
 import { ITag } from "../tag";
 import { IUser } from "../user";
 
+interface IAssetMime {
+  application: string
+  mimeType: string
+  fileExtension: string
+}
 export interface IAssetType {
   name: string
   value: string
   order: number
+  mimes: IAssetMime[]
 }
 
 export interface IAssetChannel extends IAssetType { }

@@ -100,7 +100,7 @@ export default {
     position: 'top-center',
     duration: 5000,
     keepOnHover: true,
-    singleton: true,
+    // singleton: true,
     register: [
       {
         name: 'unknown-error',
