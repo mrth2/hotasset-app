@@ -98,14 +98,11 @@ export default Vue.extend({
                 >Sign In</NuxtLink>
             </p>
         </div>
-        <form class="mt-12">
+        <form class="mt-12" @submit.prevent="resetPassword">
             <!-- for reset password form -->
             <template v-if="isResetMode()">
                 <div class="mb-8">
-                    <label
-                        for="password"
-                        class="form-label"
-                    >New Password</label>
+                    <label for="password" class="form-label">New Password</label>
                     <input
                         id="password"
                         v-model="password"
@@ -117,10 +114,7 @@ export default Vue.extend({
                     />
                 </div>
                 <div class="mb-8">
-                    <label
-                        for="passwordConfirmation"
-                        class="form-label"
-                    >Confirm New Password</label>
+                    <label for="passwordConfirmation" class="form-label">Confirm New Password</label>
                     <input
                         id="passwordConfirmation"
                         v-model="passwordConfirmation"
@@ -134,10 +128,7 @@ export default Vue.extend({
             </template>
             <!-- request for reset password link -->
             <div v-else class="mb-8">
-                <label
-                    for="email"
-                    class="form-label"
-                >Email associated with your account</label>
+                <label for="email" class="form-label">Email associated with your account</label>
                 <input
                     id="email"
                     v-model="email"
@@ -145,13 +136,15 @@ export default Vue.extend({
                     required
                     class="form-control"
                     placeholder="example@example.com"
+                    oninvalid="setCustomValidity('Please enter your email addres')"
+                    oninput="setCustomValidity('')"
                     @keyup.enter.native="resetPassword()"
                 />
             </div>
             <div class="mt-8">
                 <span class="rounded-md shadow-sm">
                     <button
-                        type="button"
+                        type="submit"
                         class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
                         :disabled="isButtonDisabled()"
                         :class="{ 'opacity-50': isButtonDisabled() }"

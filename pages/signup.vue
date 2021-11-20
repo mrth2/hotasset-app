@@ -4,10 +4,7 @@
       <h2 class="auth__title">Register in HotAsset</h2>
       <p class="auth__desc">
         Already a member?
-        <NuxtLink
-          :to="{ name: 'login' }"
-          class="auth__note"
-        >Sign In</NuxtLink>
+        <NuxtLink :to="{ name: 'login' }" class="auth__note">Sign In</NuxtLink>
       </p>
       <button
         type="button"
@@ -18,7 +15,7 @@
     <div class="or relative block text-center">
       <span class="bg-white inline-block p-3 relative text-gray-400">or</span>
     </div>
-    <form action="#" class="mt-8">
+    <form class="mt-8" @submit.prevent="createUser">
       <div class="grid grid-cols-2 gap-4 mb-8">
         <div>
           <label for="first-name" class="form-label">
@@ -32,6 +29,8 @@
             required
             class="form-control"
             placeholder="Nick"
+            oninvalid="setCustomValidity('Please enter a first name')"
+            oninput="setCustomValidity('')"
           />
         </div>
         <div>
@@ -46,6 +45,8 @@
             required
             class="form-control"
             placeholder="Snow"
+            oninvalid="setCustomValidity('Please enter a last name')"
+            oninput="setCustomValidity('')"
           />
         </div>
       </div>
@@ -58,6 +59,8 @@
           required
           class="form-control"
           placeholder="example@gmai.com"
+          oninvalid="setCustomValidity('Please enter an email address')"
+          oninput="setCustomValidity('')"
         />
       </div>
       <div class="mb-8">
@@ -69,6 +72,8 @@
           required
           class="form-control"
           placeholder="At least 6 characters"
+          oninvalid="setCustomValidity('Please enter a password')"
+          oninput="setCustomValidity('')"
         />
       </div>
       <div class="mt-8">
@@ -87,14 +92,13 @@
         </label>
       </div>
       <div class="mt-8">
-        <p v-if="error" class="text-red-500 underline mb-2">{{ error }}</p>
+        <p v-if="error" class="text-red-500 mb-2">{{ error }}</p>
         <span class="rounded-md shadow-sm">
           <button
-            type="button"
+            type="submit"
             class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
             :disabled="loading"
             :class="{ 'opacity-50 cursor-wait': loading }"
-            @click="createUser"
           >Create an account</button>
         </span>
       </div>
@@ -118,7 +122,29 @@ export default Vue.extend({
     }
   },
   methods: {
+    validateForm() {
+      if (this.firstName === '') {
+        this.error = 'Please enter your first name'
+      }
+      else if (this.lastName === '') {
+        this.error = 'Please enter your last name'
+      }
+      else if (this.email === '') {
+        this.error = 'Please enter an email address'
+      }
+      else if (this.password === '') {
+        this.error = 'Please enter a password'
+      }
+      if (this.error) {
+        this.$toast.error(this.error)
+        return false
+      }
+      return true
+    },
     async createUser() {
+      if (!this.validateForm()) {
+        return
+      }
       this.error = ''
       this.loading = true
       try {

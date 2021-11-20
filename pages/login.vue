@@ -18,6 +18,7 @@ export default Vue.extend({
             return this.identifier === '' || this.password === '' || this.loading
         },
         async loginUser() {
+            this.error = ''
             this.loading = true
             try {
                 const user = await this.$strapi.login({
@@ -29,7 +30,13 @@ export default Vue.extend({
                     this.$nuxt.$router.push('/')
                 }
             } catch (error: any) {
-                this.error = error.message
+                if (error.response.data.message?.[0].messages?.[0].id === 'Auth.form.error.invalid') {
+                    this.error = 'Account information is invalid. Try again or reset your password&nbsp;<a class="underline" href="/reset-password">here</a>'
+                }
+                else {
+                    this.error = error.message
+                }
+                this.$toast.error(this.error)
             }
             this.loading = false
         }
@@ -42,10 +49,7 @@ export default Vue.extend({
             <h2 class="auth__title">Sign in to HotAsset</h2>
             <p class="auth__desc">
                 Not a member?
-                <NuxtLink
-                    :to="{ name: 'signup' }"
-                    class="auth__note"
-                >Register Now</NuxtLink>
+                <NuxtLink :to="{ name: 'signup' }" class="auth__note">Register Now</NuxtLink>
             </p>
             <button
                 type="button"
@@ -90,7 +94,7 @@ export default Vue.extend({
                 </p>
             </div>
             <div class="mt-8">
-                <p v-if="error" class="text-red-500 underline mb-2">{{ error }}</p>
+                <p v-if="error" class="text-red-500 mb-2" v-html="error" />
                 <span class="rounded-md shadow-sm">
                     <button
                         type="button"

@@ -14,6 +14,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     "import/no-named-as-default": "off",
-    "import/no-mutable-exports": "off"
+    "import/no-mutable-exports": "off",
+    "vue/no-v-html": "off"
   }
 }
