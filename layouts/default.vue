@@ -1,12 +1,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import { useHeaderStore } from '~/stores/header'
+import { useTagStore } from '~/stores/tag'
 
 export default Vue.extend({
 	name: 'DefaultLayout',
 	async fetch() {
-		const headerStore = useHeaderStore()
-		await headerStore.fetchCategories()
+		await useHeaderStore().fetchCategories()
+		await useTagStore().fetchPopularTags()
 	}
 })
 </script>

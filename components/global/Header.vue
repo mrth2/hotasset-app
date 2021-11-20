@@ -42,10 +42,10 @@ export default Vue.extend({
 			<div class="container mx-auto px-4 sm:px-6">
 				<div class="site-nav">
 					<div class="site-nav__logo">
-						<a href="./index.html">
-							<span class="sr-only">Workflow</span>
+						<NuxtLink to="/">
+							<span class="sr-only">HotAsset</span>
 							<img srcset="~/assets/images/logo.png 2x" alt />
-						</a>
+						</NuxtLink>
 					</div>
 					<form action class="form-search">
 						<div class="xl:ml-12 flex rounded-md shadow-sm">
