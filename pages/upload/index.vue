@@ -219,7 +219,7 @@ export default Vue.extend({
 				.then(() => {
 					this.$toast.success('Congrats! Your assets is successfully posted!')
 					this.imagesPreview = []
-					this.form = this.initialForm
+					this.form = cloneDeep(this.initialForm)
 				})
 				.catch(err => {
 					this.$toast.error(err.message)
