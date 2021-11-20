@@ -99,7 +99,8 @@ export default Vue.extend({
 					<template v-if="$strapi.user">
 						<div class="site-nav-login">
 							<NuxtLink :to="`/profile/${$strapi.user.username}`">
-								<img src="~/assets/images/avatar.png" alt width="36" height="36" />
+								<img v-if="$strapi.user.avatar" :src="$strapi.user.avatar" alt width="36" height="36" />
+								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">
@@ -109,7 +110,8 @@ export default Vue.extend({
 								<span class="notify-count">7</span>
 							</a>
 							<NuxtLink :to="`/profile/${$strapi.user.username}`">
-								<img src="~/assets/images/avatar.png" alt width="36" height="36" />
+								<img v-if="!$strapi.user.avatar" :src="$strapi.user.avatar" alt width="36" height="36" />
+								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
 							</NuxtLink>
 							<NuxtLink to="/upload" class="btn-primary ml-8">Upload</NuxtLink>
 						</div>
