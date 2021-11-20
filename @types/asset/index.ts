@@ -31,4 +31,5 @@ export interface IAsset {
   upvoters: IUser[]
   createdAt: Date
   updatedAt: Date
+  author: IUser
 }

@@ -88,7 +88,13 @@ export default {
         httpEndpoint: `${process.env.API_ENDPOINT}/graphql` || 'https://hotasset.herokuapp.com/graphql',
         tokenName: 'strapi_jwt'
       }
-    }
+    },
+    defaultOptions: {
+      $query: {
+        loadingKey: 'loading',
+        fetchPolicy: 'no-cache',
+      },
+    },
   },
 
   strapi: {

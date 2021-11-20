@@ -1,3 +1,4 @@
+import { IAsset } from "./asset";
 import { IFile } from "./file";
 
 /* eslint-disable camelcase */
@@ -24,4 +25,5 @@ export declare interface IUser {
   role: IUserRole
   createdAt: Date
   updatedAt: Date
+  upvoted_assets: IAsset[]
 }

@@ -1,10 +1,99 @@
 <script lang="ts">
 import Vue from 'vue'
+import MasonryWall from '@yeger/vue2-masonry-wall'
+import 'swiper/css/swiper.min.css'
+import 'swiper/js/swiper'
+// import { Swiper, SwiperSlide } from "vue-awesome-swiper";
+import { IAsset } from '~/@types/asset'
+import { useAssetStore } from '~/stores/asset'
+import { IFile, IUser } from '~/@types'
+
+Vue.use(MasonryWall)
 
 export default Vue.extend({
+  /* components: {
+    Swiper,
+    SwiperSlide,
+  }, */
+  data() {
+    return {
+      filters: {
+        type: undefined,
+        channel: undefined,
+        sort: useAssetStore().sortTypes[0].value,
+        limit: 24,
+        start: 0
+      },
+      assets: [] as IAsset[],
+      swiperOption: {
+        slidersPerView: 1,
+        loop: true,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        }
+      }
+    }
+  },
+  async fetch() {
+    await useAssetStore().fetchAssetMetaData()
+    await this.fetchAssets()
+  },
   computed: {
     user() {
-      return this.$strapi.user
+      return this.$strapi.user as IUser
+    },
+    sortTypes() {
+      return useAssetStore().sortTypes
+    },
+    assetTypes() {
+      return useAssetStore().types
+    },
+    assetChannels() {
+      return useAssetStore().channels
+    },
+  },
+  methods: {
+    async fetchAssets() {
+      this.assets = await (await useAssetStore().fetchAssets(this.filters))
+    },
+    getAssetType(resource: IFile) {
+      const { types } = useAssetStore()
+      return types.find(type => {
+        return !!type.mimes.find(mime => mime.mimeType === resource.mime)
+      })
+    },
+    getAssetImages(asset: IAsset) {
+      return asset.resources
+        .map(resource => {
+          const type = this.getAssetType(resource)
+          if (type?.value === 'pdf') {
+            return require('~/assets/images/icons/pdf.svg')
+          }
+          else if (type?.value === 'csv') {
+            return require('~/assets/images/icons/csv.svg')
+          }
+          else if (type?.value === 'ppt') {
+            return require('~/assets/images/icons/ppt.svg')
+          }
+          else if (type?.value === 'image') {
+            return resource.url
+          }
+          return null
+        })
+        .filter(resource => resource)
+    },
+    getThumbnail(asset: IAsset) {
+      return asset.resources.find(resource => {
+        return this.getAssetType(resource)?.value === 'image'
+      })?.url
+    },
+    getTypedAsset(asset: unknown): IAsset {
+      return asset as IAsset
     }
   }
 })
@@ -36,37 +125,30 @@ export default Vue.extend({
         <div class="filter-subnav">
           <div class="filter-subnav-inner flex flex-row items-center justify-between">
             <div class="filter-views mr-10">
-              <span
-                class="btn-dropdown active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-red-500"
-              >
-                <span>Popular</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  role="img"
-                  class="icon btn-dropdown-caret"
-                >
-                  <path
-                    d="M21.5265 8.77171C22.1578 8.13764 22.1578 7.10962 21.5265 6.47555C20.8951 5.84148 19.8714 5.84148 19.24 6.47555L11.9999 13.7465L4.75996 6.47573C4.12858 5.84166 3.10492 5.84166 2.47354 6.47573C1.84215 7.10979 1.84215 8.13782 2.47354 8.77188L10.8332 17.1671C10.8408 17.1751 10.8486 17.183 10.8565 17.1909C11.0636 17.399 11.313 17.5388 11.577 17.6103C11.5834 17.6121 11.5899 17.6138 11.5964 17.6154C12.132 17.7536 12.7242 17.6122 13.1435 17.1911C13.1539 17.1807 13.1641 17.1702 13.1742 17.1596L21.5265 8.77171Z"
-                  />
-                </svg>
-              </span>
-              <div class="btn-dropdown-options">
-                <ul>
-                  <li>
-                    <a href="#" class="btn-dropdown-option__link active">Popular</a>
-                  </li>
-                  <li class>
-                    <a href="#" class="btn-dropdown-option__link">Trending</a>
-                  </li>
-                  <li class>
-                    <a href="#" class="btn-dropdown-option__link">Latest</a>
-                  </li>
-                </ul>
-              </div>
+              <CoreFormSlideToggle>
+                <template #toggle="{ toggle }">
+                  <span
+                    class="btn-dropdown active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
+                    @click="toggle"
+                  >
+                    <span>{{ sortTypes[0].name }}</span>
+                    <CoreIconCaretDown />
+                  </span>
+                </template>
+                <template #content="{ hide }">
+                  <div class="btn-dropdown-options">
+                    <ul @click="hide">
+                      <li v-for="item in sortTypes" :key="item.value">
+                        <a
+                          class="btn-dropdown-option__link"
+                          :class="{ active: item.value === filters.sort }"
+                          @click="filters.sort === item.value"
+                        >{{ item.name }}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </template>
+              </CoreFormSlideToggle>
             </div>
             <div class="filter-categories relative text-center overflow-x-auto overflow-y-hidden">
               <ul
@@ -93,7 +175,7 @@ export default Vue.extend({
               </ul>
             </div>
             <div
-              class="filter-settings active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-red-500"
+              class="filter-settings active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -114,424 +196,120 @@ export default Vue.extend({
             </div>
           </div>
         </div>
-        <div class="shot-filters">
+        <div class="shot-filters hidden">
           <form action class="shot-filters-form">
             <fieldset class="find-shots-assets-type">
               <label for class="shot-filter-form-label">Asset Type</label>
-              <select id name class="shot-filter-form-control">
-                <option value>Image</option>
+              <select v-model="filters.type" class="shot-filter-form-control form-control-select">
+                <option
+                  v-for="item in assetTypes"
+                  :key="item.value"
+                  :value="item.value"
+                >{{ item.name }}</option>
               </select>
             </fieldset>
             <fieldset class="find-shots-channel">
               <label for class="shot-filter-form-label">Channel</label>
-              <select id name class="shot-filter-form-control">
-                <option value>Social</option>
+              <select
+                v-model="filters.channel"
+                class="shot-filter-form-control form-control-select"
+              >
+                <option
+                  v-for="item in assetChannels"
+                  :key="item.value"
+                  :value="item.value"
+                >{{ item.name }}</option>
               </select>
             </fieldset>
             <fieldset class="find-shots-downloads">
               <label for class="shot-filter-form-label">Downloads</label>
-              <select id name class="shot-filter-form-control">
-                <option value>Yes</option>
+              <select id name class="shot-filter-form-control form-control-select">
+                <option value="yes">Yes</option>
+                <option value="no">Yes</option>
               </select>
             </fieldset>
             <fieldset class="find-shots-something">
               <label for class="shot-filter-form-label">Something</label>
-              <select id name class="shot-filter-form-control">
+              <select id name class="shot-filter-form-control form-control-select">
                 <option value>All</option>
               </select>
             </fieldset>
           </form>
         </div>
         <div class="shots-grid">
-          <div class="shots-grid-row grid md:grid-cols-2 xl:grid-cols-4 gap-8">
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure>
-                  <img src="~/assets/images/upload/1.png" alt />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-                <div class="shot-thumbnail-overlay">
-                  <div class="shot-thumbnail-overlay-content">
-                    <div class="shot-title">Asset Type Name Asset Type Name Asset Type Name</div>
-                    <div class="shot-action">
-                      <a class="like-shot" itle="Like this shot">
-                        <svg
-                          width="18"
-                          height="18"
-                          xmlns="http://www.w3.org/2000/svg"
-                          enable-background="new 0 0 24 24"
-                          viewBox="0 0 24 24"
-                          role="img"
-                          class="icon"
+          <MasonryWall
+            class="grid-masonry"
+            :items="assets"
+            :ssr-column="1"
+            :column-width="300"
+            :gap="16"
+          >
+            <template #default="{ item }">
+              <div class="shot-item">
+                <div class="inner">
+                  <div class="shot-thumbnail group">
+                    <figure>
+                      <img :src="getThumbnail(item)" alt />
+                    </figure>
+                    <!-- <div v-else class="swiper-container">
+                      <div class="swiper-wrapper">
+                        <div
+                          v-for="(image,index) in getAssetImages(item)"
+                          :key="index"
+                          class="swiper-slide"
                         >
-                          <path
-                            d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
+                          <img :src="image" alt />
+                        </div>
+                      </div>
+                    </div>-->
+                    <!-- <Swiper v-else :options="swiperOption" class="swiper">
+                      <SwiperSlide
+                        v-for="(image,index) in getAssetImages(item)"
+                        :key="index"
+                        class="swiper-slide"
+                      >
+                        <img :src="image" alt />
+                      </SwiperSlide>
+                      <div slot="pagination" class="swiper-pagination" />
+                    </Swiper>-->
+                    <a class="shot-thumbnail__link" href="#"></a>
+                    <div class="shot-thumbnail-overlay">
+                      <div class="shot-thumbnail-overlay-content">
+                        <div class="shot-title">{{ getTypedAsset(item).title }}</div>
+                        <div class="shot-action">
+                          <a class="like-shot" itle="Like this shot">
+                            <CoreIconFavorite />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="shot-details-container">
+                    <p class="shots-item__desc">{{ getTypedAsset(item).description }}</p>
+                    <div class="flex items-center justify-between">
+                      <div class="user-information">
+                        <a href class="user-infor__avatar">
+                          <img
+                            :src="getTypedAsset(item).author.avatar.url"
+                            alt
+                            width="24"
+                            height="24"
                           />
-                        </svg>
-                      </a>
+                        </a>
+                        <a href class="user-info__name">{{ getTypedAsset(item).author.last_name }}</a>
+                      </div>
+                      <div class="shot-statistics">
+                        <a>
+                          <CoreIconFavorite />
+                        </a>
+                        <span>{{ getTypedAsset(item).likes || 0 }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure>
-                  <img src="~/assets/images/upload/1.png" alt />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-                <div class="shot-thumbnail-overlay">
-                  <div class="shot-thumbnail-overlay-content">
-                    <div class="shot-title">Asset Type Name Asset Type Name Asset Type Name</div>
-                    <div class="shot-action">
-                      <a class="like-shot liked" itle="Like this shot">
-                        <svg
-                          width="18"
-                          height="18"
-                          xmlns="http://www.w3.org/2000/svg"
-                          enable-background="new 0 0 24 24"
-                          viewBox="0 0 24 24"
-                          role="img"
-                          class="icon"
-                        >
-                          <path
-                            d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                          />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure>
-                  <img src="~/assets/images/upload/1.png" alt />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-                <div class="shot-thumbnail-overlay">
-                  <div class="shot-thumbnail-overlay-content">
-                    <div class="shot-title">Asset Type Name Asset Type Name Asset Type Name</div>
-                    <div class="shot-action">
-                      <a class="like-shot" itle="Like this shot">
-                        <svg
-                          width="18"
-                          height="18"
-                          xmlns="http://www.w3.org/2000/svg"
-                          enable-background="new 0 0 24 24"
-                          viewBox="0 0 24 24"
-                          role="img"
-                          class="icon"
-                        >
-                          <path
-                            d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                          />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure>
-                  <img src="~/assets/images/upload/1.png" alt />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-                <div class="shot-thumbnail-overlay">
-                  <div class="shot-thumbnail-overlay-content">
-                    <div class="shot-title">Asset Type Name Asset Type Name Asset Type Name</div>
-                    <div class="shot-action">
-                      <a class="like-shot" itle="Like this shot">
-                        <svg
-                          width="18"
-                          height="18"
-                          xmlns="http://www.w3.org/2000/svg"
-                          enable-background="new 0 0 24 24"
-                          viewBox="0 0 24 24"
-                          role="img"
-                          class="icon"
-                        >
-                          <path
-                            d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                          />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure class="shot-thumnail-without-container pdf">
-                  <div class="shot-thumnail-without-img">
-                    <img src="~/assets/images/icons/pdf.svg" alt />
-                    <span>Some_Document.pdf</span>
-                  </div>
-                  <img src="~/assets/images/icons/pdf.svg" alt class="shot-thumbnail-icon" />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-              </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure class="shot-thumnail-without-container csv">
-                  <div class="shot-thumnail-without-img">
-                    <img src="~/assets/images/icons/csv.svg" alt />
-                    <span>Some_Document.csv</span>
-                  </div>
-                  <img src="~/assets/images/icons/csv.svg" alt class="shot-thumbnail-icon" />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-              </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-            <div class="shot-item">
-              <div class="shot-thumbnail group">
-                <figure class="shot-thumnail-without-container ppt">
-                  <div class="shot-thumnail-without-img">
-                    <img src="~/assets/images/icons/ppt.svg" alt />
-                    <span>Some_Document.ppt</span>
-                  </div>
-                  <img src="~/assets/images/icons/ppt.svg" alt class="shot-thumbnail-icon" />
-                </figure>
-                <a class="shot-thumbnail__link" href="#"></a>
-              </div>
-
-              <div class="shot-details-container">
-                <p
-                  class="shots-item__desc"
-                >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor di...</p>
-                <div class="flex items-center justify-between">
-                  <div class="user-information">
-                    <a href class="user-infor__avatar">
-                      <img src="~/assets/images/upload/1.png" alt width="24" height="24" />
-                    </a>
-                    <a href class="user-info__name">masump</a>
-                  </div>
-                  <div class="shot-statistics">
-                    <a href>
-                      <svg
-                        width="16"
-                        height="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
-                        viewBox="0 0 24 24"
-                        role="img"
-                        class="icon fill-current shot-tools-icon"
-                      >
-                        <path
-                          d="m18.199 2.04c-2.606-.284-4.262.961-6.199 3.008-2.045-2.047-3.593-3.292-6.199-3.008-3.544.388-6.321 4.43-5.718 7.96.966 5.659 5.944 9 11.917 12 5.973-3 10.951-6.341 11.917-12 .603-3.53-2.174-7.572-5.718-7.96z"
-                        />
-                      </svg>
-                    </a>
-                    <span>223</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--End .shot-item-->
-          </div>
+            </template>
+          </MasonryWall>
         </div>
         <div class="infinite-login-actions">
           <a class="btn-primary" href="/signup/new">Sign up to continue</a>

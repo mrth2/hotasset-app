@@ -14,11 +14,6 @@ export default Vue.extend({
       default: 'ease-out'
     }
   },
-  data() {
-    return {
-      open: false
-    }
-  },
   computed: {
     slideOptions(): { miliseconds: number, transitionFunction: string } {
       return {
@@ -27,20 +22,15 @@ export default Vue.extend({
       }
     }
   },
-  watch: {
-    open() {
-      this.toggle()
-    }
-  },
   methods: {
     hide() {
-      hide((this.$refs.dropdown as HTMLElement), this.slideOptions)
+      hide((this.$refs.toggleContent as HTMLElement), this.slideOptions)
     },
     show() {
-      show((this.$refs.dropdown as HTMLElement), this.slideOptions)
+      show((this.$refs.toggleContent as HTMLElement), this.slideOptions)
     },
     toggle() {
-      toggle((this.$refs.dropdown as HTMLElement), this.slideOptions)
+      toggle((this.$refs.toggleContent as HTMLElement), this.slideOptions)
     }
   }
 })
@@ -48,17 +38,9 @@ export default Vue.extend({
 
 <template>
   <div class="user-select-none">
-    <span
-      class="btn-dropdown active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
-      @click="open = !open"
-    >
-      <slot name="header">
-        <span>Select option</span>
-      </slot>
-      <CoreIconCaretDown />
-    </span>
-    <div ref="dropdown" class="btn-dropdown-options hidden">
-      <slot name="default" :hide="hide" :show="show" :toggle="toggle" />
+    <slot name="toggle" :toggle="toggle" />
+    <div ref="toggleContent" class="hidden">
+      <slot name="content" :hide="hide" :show="show" :toggle="toggle" />
     </div>
   </div>
 </template>
