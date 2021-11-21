@@ -40,6 +40,10 @@ export default Vue.extend({
       }
     }
   },
+  async fetch() {
+    await useAssetStore().fetchAssetMetaData()
+    await this.fetchAssets()
+  },
   computed: {
     user() {
       return this.$strapi.user as IUser
@@ -56,10 +60,6 @@ export default Vue.extend({
     popularTags() {
       return useTagStore().popularTags
     }
-  },
-  async mounted() {
-    await useAssetStore().fetchAssetMetaData()
-    await this.fetchAssets()
   },
   methods: {
     async fetchAssets() {

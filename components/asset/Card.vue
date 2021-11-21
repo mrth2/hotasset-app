@@ -16,7 +16,10 @@ export default Vue.extend({
   },
   computed: {
     isLiked(): boolean {
-      return !!this.asset.upvoters.find(upvoter => upvoter.id === this.$strapi.user.id)
+      if (this.$strapi.user) {
+        return !!this.asset.upvoters.find(upvoter => upvoter.id === this.$strapi.user.id)
+      }
+      return false
     }
   },
   methods: {
@@ -36,7 +39,7 @@ export default Vue.extend({
 <template>
   <div class="shot-item">
     <div class="inner">
-      <div class="shot-thumbnail group">
+      <NuxtLink class="shot-thumbnail group block" :to="`/asset/${asset.id}`">
         <template v-if="asset.thumbnail.provider === 'cloudinary'">
           <figure>
             <NuxtPicture
@@ -106,7 +109,7 @@ export default Vue.extend({
             </SwiperSlide>
             <div slot="pagination" class="swiper-pagination" />
         </Swiper>-->
-      </div>
+      </NuxtLink>
       <div class="shot-details-container">
         <p class="shots-item__desc">{{ asset.description }}</p>
         <div class="flex items-center justify-between">
