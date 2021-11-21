@@ -147,23 +147,17 @@ export default Vue.extend({
       }
       this.error = ''
       this.loading = true
-      try {
-        const result = await this.$strapi.register({
-          email: this.email,
-          username: this.email,
-          password: this.password
-        })
-        if (result !== null) {
-          this.error = ''
-          await this.$strapi.update('user', result.user.id, {
-            first_name: this.firstName,
-            last_name: this.lastName
-          })
-          this.$nuxt.$router.push(`/profile/${result.user.username}`)
-        }
-      } catch (error) {
+      await this.$strapi.$http.$post('/auth/local/register', {
+        email: this.email,
+        username: this.email,
+        password: this.password,
+        first_name: this.firstName,
+        last_name: this.lastName
+      }).then(() => {
+        this.$nuxt.$router.push('/login')
+      }).catch((error) => {
         this.error = error instanceof Error ? error.message : 'Something went wrong. Please try again!'
-      }
+      })
       this.loading = false
     },
   },
