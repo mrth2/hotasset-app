@@ -33,7 +33,8 @@
       "vue-apollo/types",
       "cookie-universal-nuxt/types",
       "@nuxtjs/toast",
-      "@pinia/nuxt"
+      "@pinia/nuxt",
+      "@nuxt/image"
     ],
     "noImplicitAny": true
   },

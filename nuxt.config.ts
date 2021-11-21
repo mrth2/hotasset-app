@@ -7,6 +7,7 @@ export default {
 
   env: {
     API_ENDPOINT: process.env.API_ENDPOINT,
+    CLOUDINARY_URL: 'https://res.cloudinary.com/hotasset-com/image/upload'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -68,8 +69,17 @@ export default {
     '@nuxtjs/strapi',
     '@nuxtjs/toast',
     'nuxt-purgecss',
-    'nuxt-webfontloader'
+    'nuxt-webfontloader',
+    '@nuxt/image'
   ],
+
+  image: {
+    provider: 'ipx',
+    dir: 'assets/images',
+    cloudinary: {
+      baseURL: 'https://res.cloudinary.com/hotasset-com/image/upload/'
+    }
+  },
 
   webfontloader: {
     google: {

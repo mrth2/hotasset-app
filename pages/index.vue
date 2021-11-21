@@ -1,12 +1,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import MasonryWall from '@yeger/vue2-masonry-wall'
-import 'swiper/css/swiper.min.css'
-import 'swiper/js/swiper'
+// import 'swiper/css/swiper.min.css'
+// import 'swiper/js/swiper'
 // import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import { IAsset } from '~/@types/asset'
+import { IUser } from '~/@types/user'
 import { useAssetStore } from '~/stores/asset'
-import { IFile, IUser } from '~/@types'
+import { useTagStore } from '~/stores/tag'
 
 Vue.use(MasonryWall)
 
@@ -39,10 +40,6 @@ export default Vue.extend({
       }
     }
   },
-  async fetch() {
-    await useAssetStore().fetchAssetMetaData()
-    await this.fetchAssets()
-  },
   computed: {
     user() {
       return this.$strapi.user as IUser
@@ -56,44 +53,20 @@ export default Vue.extend({
     assetChannels() {
       return useAssetStore().channels
     },
+    popularTags() {
+      return useTagStore().popularTags
+    }
+  },
+  async mounted() {
+    await useAssetStore().fetchAssetMetaData()
+    await this.fetchAssets()
   },
   methods: {
     async fetchAssets() {
       this.assets = await (await useAssetStore().fetchAssets(this.filters))
     },
-    getAssetType(resource: IFile) {
-      const { types } = useAssetStore()
-      return types.find(type => {
-        return !!type.mimes.find(mime => mime.mimeType === resource.mime)
-      })
-    },
-    getAssetImages(asset: IAsset) {
-      return asset.resources
-        .map(resource => {
-          const type = this.getAssetType(resource)
-          if (type?.value === 'pdf') {
-            return require('~/assets/images/icons/pdf.svg')
-          }
-          else if (type?.value === 'csv') {
-            return require('~/assets/images/icons/csv.svg')
-          }
-          else if (type?.value === 'ppt') {
-            return require('~/assets/images/icons/ppt.svg')
-          }
-          else if (type?.value === 'image') {
-            return resource.url
-          }
-          return null
-        })
-        .filter(resource => resource)
-    },
-    getThumbnail(asset: IAsset) {
-      return asset.resources.find(resource => {
-        return this.getAssetType(resource)?.value === 'image'
-      })?.url
-    },
-    getTypedAsset(asset: unknown): IAsset {
-      return asset as IAsset
+    selectSort(item: { name: string, value: string }) {
+      this.filters.sort = item.value;
     }
   }
 })
@@ -112,10 +85,15 @@ export default Vue.extend({
               best
               design professionals.
             </p>
-            <a class="banner__btn btn-primary" href="/signup/new">Sign up</a>
+            <NuxtLink v-if="$strapi.user" class="banner__btn btn-primary" to="/upload">Upload now</NuxtLink>
+            <NuxtLink v-else class="banner__btn btn-primary" to="/signup">Sign up</NuxtLink>
           </div>
           <div class="banner-image">
-            <img srcset="~/assets/images/homepage/hero-illustration.png 2x" alt class="mx-auto" />
+            <NuxtPicture
+              :src="`/homepage/${!$strapi.user ? 'hero-' : ''}illustration.png`"
+              alt
+              class="mx-auto"
+            />
           </div>
         </div>
       </div>
@@ -129,7 +107,7 @@ export default Vue.extend({
                 <template #toggle="{ toggle }">
                   <span
                     class="btn-dropdown active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
-                    @click="toggle"
+                    @click="toggle()"
                   >
                     <span>{{ sortTypes[0].name }}</span>
                     <CoreIconCaretDown />
@@ -137,12 +115,12 @@ export default Vue.extend({
                 </template>
                 <template #content="{ hide }">
                   <div class="btn-dropdown-options">
-                    <ul @click="hide">
+                    <ul>
                       <li v-for="item in sortTypes" :key="item.value">
                         <a
-                          class="btn-dropdown-option__link"
+                          class="btn-dropdown-option__link cursor-pointer"
                           :class="{ active: item.value === filters.sort }"
-                          @click="filters.sort === item.value"
+                          @click="selectSort(item); hide()"
                         >{{ item.name }}</a>
                       </li>
                     </ul>
@@ -157,20 +135,8 @@ export default Vue.extend({
                 <li class="inline-block">
                   <a class="filter-categories__link active">All</a>
                 </li>
-                <li class="inline-block">
-                  <a class="filter-categories__link">Display</a>
-                </li>
-                <li class="inline-block">
-                  <a class="filter-categories__link">Native</a>
-                </li>
-                <li class="inline-block">
-                  <a class="filter-categories__link">Social</a>
-                </li>
-                <li class="inline-block">
-                  <a class="filter-categories__link">Whitepaper</a>
-                </li>
-                <li class="inline-block">
-                  <a class="filter-categories__link">Landing Page</a>
+                <li v-for="tag in popularTags" :key="tag.id" class="inline-block">
+                  <a class="filter-categories__link">{{ tag.name }}</a>
                 </li>
               </ul>
             </div>
@@ -236,7 +202,7 @@ export default Vue.extend({
             </fieldset>
           </form>
         </div>
-        <div class="shots-grid">
+        <div v-if="assets.length" class="shots-grid">
           <MasonryWall
             class="grid-masonry"
             :items="assets"
@@ -245,69 +211,7 @@ export default Vue.extend({
             :gap="16"
           >
             <template #default="{ item }">
-              <div class="shot-item">
-                <div class="inner">
-                  <div class="shot-thumbnail group">
-                    <figure>
-                      <img :src="getThumbnail(item)" alt />
-                    </figure>
-                    <!-- <div v-else class="swiper-container">
-                      <div class="swiper-wrapper">
-                        <div
-                          v-for="(image,index) in getAssetImages(item)"
-                          :key="index"
-                          class="swiper-slide"
-                        >
-                          <img :src="image" alt />
-                        </div>
-                      </div>
-                    </div>-->
-                    <!-- <Swiper v-else :options="swiperOption" class="swiper">
-                      <SwiperSlide
-                        v-for="(image,index) in getAssetImages(item)"
-                        :key="index"
-                        class="swiper-slide"
-                      >
-                        <img :src="image" alt />
-                      </SwiperSlide>
-                      <div slot="pagination" class="swiper-pagination" />
-                    </Swiper>-->
-                    <a class="shot-thumbnail__link" href="#"></a>
-                    <div class="shot-thumbnail-overlay">
-                      <div class="shot-thumbnail-overlay-content">
-                        <div class="shot-title">{{ getTypedAsset(item).title }}</div>
-                        <div class="shot-action">
-                          <a class="like-shot" itle="Like this shot">
-                            <CoreIconFavorite />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="shot-details-container">
-                    <p class="shots-item__desc">{{ getTypedAsset(item).description }}</p>
-                    <div class="flex items-center justify-between">
-                      <div class="user-information">
-                        <a href class="user-infor__avatar">
-                          <img
-                            :src="getTypedAsset(item).author.avatar.url"
-                            alt
-                            width="24"
-                            height="24"
-                          />
-                        </a>
-                        <a href class="user-info__name">{{ getTypedAsset(item).author.last_name }}</a>
-                      </div>
-                      <div class="shot-statistics">
-                        <a>
-                          <CoreIconFavorite />
-                        </a>
-                        <span>{{ getTypedAsset(item).likes || 0 }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <AssetCard :asset="item" />
             </template>
           </MasonryWall>
         </div>

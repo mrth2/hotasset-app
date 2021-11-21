@@ -14,11 +14,30 @@ export interface IAssetType {
   value: string
   order: number
   mimes: IAssetMime[]
+  icon: IFile
 }
 
-export interface IAssetChannel extends IAssetType { }
+export interface IAssetChannel {
+  name: string
+  value: string
+  order: number
+}
+
+export enum IAssetProvider {
+  LOCAL = "ipx",
+  CLOUDINARY = 'cloudinary'
+}
+
+export enum IAssetTypeValue {
+  IMAGE = "image",
+  PDF = 'pdf',
+  CSV = 'csv',
+  VIDEO = 'video',
+  PPT = 'ppt'
+}
 
 export interface IAsset {
+  id: string
   title: string
   description: string
   resources: IFile[]
@@ -32,4 +51,10 @@ export interface IAsset {
   createdAt: Date
   updatedAt: Date
   author: IUser
+  // custom
+  thumbnail: {
+    provider: IAssetProvider
+    url: string
+    format: string
+  }
 }

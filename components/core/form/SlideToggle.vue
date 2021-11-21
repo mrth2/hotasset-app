@@ -24,12 +24,16 @@ export default Vue.extend({
   },
   methods: {
     hide() {
+      console.log(234)
+      console.log(this.$refs.toggleContent)
       hide((this.$refs.toggleContent as HTMLElement), this.slideOptions)
     },
     show() {
       show((this.$refs.toggleContent as HTMLElement), this.slideOptions)
     },
     toggle() {
+      console.log(123)
+      console.log(this.$refs.toggleContent)
       toggle((this.$refs.toggleContent as HTMLElement), this.slideOptions)
     }
   }

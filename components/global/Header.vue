@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { ICategory } from '~/@types'
+import { ICategory, IUser } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
 
 type menuColCategories = ICategory & {
@@ -25,6 +25,9 @@ export default Vue.extend({
 					subCategories,
 				}
 			})
+		},
+		user() {
+			return this.$strapi.user as IUser
 		}
 	},
 	methods: {
@@ -96,10 +99,10 @@ export default Vue.extend({
 							</svg>
 						</button>
 					</div>
-					<template v-if="$strapi.user">
+					<template v-if="user">
 						<div class="site-nav-login">
-							<NuxtLink :to="`/profile/${$strapi.user.username}`">
-								<img v-if="$strapi.user.avatar" :src="$strapi.user.avatar" alt width="36" height="36" />
+							<NuxtLink :to="`/profile/${user.username}`">
+								<img v-if="user.avatar" class="rounded-full" :src="user.avatar.url" alt width="36" height="36" />
 								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
 							</NuxtLink>
 						</div>
@@ -109,8 +112,8 @@ export default Vue.extend({
 								<img src="~/assets/images/icons/bell.svg" alt />
 								<span class="notify-count">7</span>
 							</a>
-							<NuxtLink :to="`/profile/${$strapi.user.username}`">
-								<img v-if="!$strapi.user.avatar" :src="$strapi.user.avatar" alt width="36" height="36" />
+							<NuxtLink :to="`/profile/${user.username}`">
+								<img v-if="user.avatar" class="rounded-full" :src="user.avatar.url" alt width="36" height="36" />
 								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
 							</NuxtLink>
 							<NuxtLink to="/upload" class="btn-primary ml-8">Upload</NuxtLink>
@@ -175,7 +178,7 @@ export default Vue.extend({
 } */
 .site-nav-desktop-nav {
 	scrollbar-width: none;
-	
+
 	&::-webkit-scrollbar {
 		display: none;
 	}
