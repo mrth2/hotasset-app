@@ -46,6 +46,7 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/fontawesome',
     '@nuxtjs/composition-api/module',
+    'nuxt-purgecss',
     ['@pinia/nuxt', { disableVuex: true }]
   ],
 
