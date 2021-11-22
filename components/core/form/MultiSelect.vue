@@ -22,7 +22,7 @@ export default Vue.extend({
 })
 </script>
 <template>
-  <Multiselect v-model="propModel" class="form-control" v-bind="$attrs" />
+  <Multiselect v-model="propModel" class="form-control" v-bind="$attrs" v-on="$listeners" />
 </template>
 <style scoped lang="postcss">
 .multiselect ::v-deep {
