@@ -10,6 +10,7 @@ interface IAssetMime {
   fileExtension: string
 }
 export interface IAssetType {
+  id: string
   name: string
   value: string
   order: number
@@ -18,6 +19,7 @@ export interface IAssetType {
 }
 
 export interface IAssetChannel {
+  id: string
   name: string
   value: string
   order: number

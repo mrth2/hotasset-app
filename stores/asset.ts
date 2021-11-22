@@ -16,6 +16,12 @@ export const useAssetStore = defineStore('asset', {
   getters: {
     getAssetType: (state) => {
       return (resource: IFile) => state.types.find(type => type.mimes.find(mime => mime.mimeType === resource.mime))
+    },
+    getAssetTypes: (state) => {
+      return (files: File[]) => {
+        const types = files.map(file => state.types.find(type => type.mimes.find(mime => mime.mimeType === file.type)))
+        return types.filter(type => type)
+      }
     }
   },
   actions: {
@@ -24,10 +30,12 @@ export const useAssetStore = defineStore('asset', {
         query: gql`
           query ASSET_CHANNEL {
             assetChannels (sort: "order:asc") {
+              id
               name
               value
             }
             assetTypes (sort: "order:asc") {
+              id
               name
               value
               mimes {

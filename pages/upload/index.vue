@@ -38,36 +38,12 @@ export default Vue.extend({
 		}
 	},
 	methods: {
-		async addTag(name: string) {
-			this.isLoading = true
-			const newTagIndex = this.form.tags.push({
+		addTag(name: string) {
+			this.form.tags.push({
 				id: name,
 				name,
 				slug: name
 			})
-			// create tag
-			const { data, errors } = await this.$apollo.mutate({
-				mutation: gql`
-						mutation CREATE_TAG ($name: String!) {
-							newTag: createTag (input: { data: { name: $name }}) {
-								tag {
-									id
-									name
-									slug
-								}
-							}
-						}
-					`,
-				variables: { name }
-			})
-			if (errors) {
-				this.$toast.error(errors[0].message)
-			}
-			else {
-				this.listTags.push(data.newTag.tag)
-			}
-			this.form.tags[newTagIndex - 1] = data.newTag.tag
-			this.isLoading = false
 			return true
 		},
 		async findTags(query: string, limit = 20) {
@@ -119,7 +95,7 @@ export default Vue.extend({
 			return !!this.getAssetType(file)
 		},
 		async processFiles(files: FileList) {
-			if (files.length > 6) {
+			if ((files.length + this.form.files.length) > 6) {
 				this.$toast.error('Sorry, you can only upload maximum 6 files!')
 				return
 			}
@@ -135,7 +111,7 @@ export default Vue.extend({
 					allowedFiles.push(file)
 				}
 			})
-			this.form.files = allowedFiles
+			this.form.files = [...this.form.files, ...allowedFiles]
 			this.imagesPreview = await this.getFilePreviews()
 		},
 		async getFilePreviews() {
@@ -153,7 +129,7 @@ export default Vue.extend({
 				})
 			}
 			// here will be array of promisified functions
-			const promises = []
+			const promises: string[] | Promise<string> = []
 
 			// loop through fileList with for loop
 			for (let i = 0; i < this.form.files.length; i++) {
@@ -169,15 +145,27 @@ export default Vue.extend({
 					promises.push(require('~/assets/images/icons/ppt.svg'))
 				}
 				else {
-					promises.push(getBase64(file))
+					promises.push(await getBase64(file))
 				}
 			}
 
 			// array with base64 strings
 			return await Promise.all(promises)
 		},
-		resetForm() {
-
+		removeFile(index: number) {
+			if (this.currentPreviewIndex === index) {
+				if (index > 0) {
+					this.currentPreviewIndex = index - 1
+				}
+				else {
+					this.currentPreviewIndex = 0
+				}
+			}
+			else if (this.currentPreviewIndex > index) {
+				this.currentPreviewIndex--
+			}
+			this.form.files.splice(index, 1)
+			this.imagesPreview.splice(index, 1)
 		},
 		validateForm() {
 			if (this.form.title === '') {
@@ -207,7 +195,14 @@ export default Vue.extend({
 				title,
 				description,
 				categories: categories.map(c => c.id),
-				tags: tags.map(t => t.id)
+				tags: tags.map(t => {
+					// when tag is new ( id === name )
+					if (t.id === t.name) {
+						return { name: t.name }
+					}
+					return t.id
+				}),
+				types: useAssetStore().getAssetTypes(files).map(t => t?.id)
 			}
 			files.forEach(file => {
 				formData.append('files.resources', file, file.name)
@@ -230,6 +225,7 @@ export default Vue.extend({
 	}
 })
 </script>
+
 <template>
 	<main class="border-t relative">
 		<div class="container mx-auto px-5 relative">
@@ -267,7 +263,7 @@ export default Vue.extend({
 						>
 							<input ref="images" type="file" multiple class="hidden" @change="uploadFiles" />
 							<div
-								v-if="imagesPreview.length"
+								v-if="imagesPreview.length && imagesPreview[currentPreviewIndex]"
 								class="upload-big-preview"
 								:class="{ icon: imagesPreview[currentPreviewIndex].includes('_nuxt') }"
 							>
@@ -290,22 +286,25 @@ export default Vue.extend({
 								<div v-for="i in 6" :key="i" class="upload-gallery-item"></div>
 							</template>
 							<template v-else>
-								<div
-									v-for="(file, index) in form.files"
-									:key="index"
-									class="upload-gallery-item relative"
-									@click="currentPreviewIndex = index"
-								>
+								<div v-for="(file, index) in form.files" :key="index" class="upload-gallery-item relative">
 									<template v-if="imagesPreview[index]">
-										<img
-											:src="imagesPreview[index]"
-											alt
-											:class="{ icon: imagesPreview[index].includes('_nuxt') }"
+										<div class="h-full" @click="currentPreviewIndex = index">
+											<img
+												:src="imagesPreview[index]"
+												alt
+												:class="{ icon: imagesPreview[index].includes('_nuxt') }"
+											/>
+											<p
+												v-if="imagesPreview[index].includes('_nuxt')"
+												class="text-gray-500 text-xs absolute px-4 text-center w-full truncate bottom-0"
+											>{{ file.name }}</p>
+										</div>
+										<FontAwesomeIcon
+											class="absolute top-1 right-1 opacity-0"
+											:icon="['far', 'times-circle']"
+											size="lg"
+											@click="removeFile(index)"
 										/>
-										<p
-											v-if="imagesPreview[index].includes('_nuxt')"
-											class="text-gray-500 text-xs absolute px-4 text-center w-full truncate bottom-0"
-										>{{ file.name }}</p>
 									</template>
 								</div>
 							</template>
@@ -348,10 +347,10 @@ export default Vue.extend({
 								:model="form.tags"
 								class="form-control"
 								:options="listTags"
-								:preserve-search="true"
 								:multiple="true"
 								:close-on-select="false"
 								:clear-on-select="false"
+								:hide-selected="true"
 								placeholder="Add tags (separate by comma)"
 								label="name"
 								track-by="id"
@@ -400,6 +399,16 @@ export default Vue.extend({
 }
 .upload-gallery-item {
 	@apply overflow-hidden cursor-pointer;
+
+	svg {
+		@apply transition-all text-paragraph;
+	}
+
+	&:hover {
+		svg {
+			@apply opacity-100;
+		}
+	}
 
 	img {
 		@apply object-center object-cover w-full h-full;

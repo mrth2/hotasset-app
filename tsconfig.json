@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "ES2018",
     "module": "ESNext",
     "moduleResolution": "Node",
     "lib": [
@@ -36,7 +36,7 @@
       "@pinia/nuxt",
       "@nuxt/image"
     ],
-    "noImplicitAny": true
+    "noImplicitAny": false
   },
   "exclude": [
     "node_modules",
