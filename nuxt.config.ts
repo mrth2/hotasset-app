@@ -47,6 +47,7 @@ export default {
     '@nuxtjs/fontawesome',
     '@nuxtjs/composition-api/module',
     'nuxt-purgecss',
+    'nuxt-webfontloader',
     ['@pinia/nuxt', { disableVuex: true }]
   ],
 
@@ -69,7 +70,6 @@ export default {
     '@nuxtjs/apollo',
     '@nuxtjs/strapi',
     '@nuxtjs/toast',
-    'nuxt-webfontloader',
     '@nuxt/image'
   ],
 
