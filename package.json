@@ -57,5 +57,8 @@
     "postcss-nested": "^5.0.6",
     "prettier": "^2.3.2",
     "tailwindcss": "^2.2.19"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
