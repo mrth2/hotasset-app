@@ -44,7 +44,6 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
     '@nuxtjs/dotenv',
-    '@nuxtjs/fontawesome',
     '@nuxtjs/composition-api/module',
     ['@pinia/nuxt', { disableVuex: true }],
   ],
@@ -70,7 +69,8 @@ export default {
     '@nuxtjs/toast',
     'nuxt-purgecss',
     'nuxt-webfontloader',
-    '@nuxt/image'
+    '@nuxt/image',
+    '@nuxtjs/fontawesome'
   ],
 
   image: {
