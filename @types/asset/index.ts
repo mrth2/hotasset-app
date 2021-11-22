@@ -60,3 +60,12 @@ export interface IAsset {
     format: string
   }
 }
+
+export interface IAssetFilter {
+  channel?: string,
+  type?: string,
+  tag?: string,
+  sort?: string,
+  start?: number,
+  limit?: number
+}

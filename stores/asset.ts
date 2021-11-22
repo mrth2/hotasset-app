@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
-import { IAsset, IAssetChannel, IAssetProvider, IAssetType, IAssetTypeValue } from '~/@types/asset'
+import { IAssetFilter, IAsset, IAssetChannel, IAssetProvider, IAssetType, IAssetTypeValue } from '~/@types/asset'
 import { IFile } from '~/@types'
 
 export const useAssetStore = defineStore('asset', {
@@ -53,13 +53,7 @@ export const useAssetStore = defineStore('asset', {
         this.channels = data.assetChannels
       })
     },
-    async fetchAssets(options: {
-      channel?: string,
-      type?: string,
-      sort?: string,
-      start?: number,
-      limit?: number
-    }) {
+    async fetchAssets(options: IAssetFilter) {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[] }>({
         query: gql`
           query ASSETS ($type: ID, $channel: ID, $tag: ID, $sort: String, $start: Int, $limit: Int) {
@@ -100,7 +94,7 @@ export const useAssetStore = defineStore('asset', {
             }
           }
         `,
-        variables: { options }
+        variables: options
       })
       if (response) {
         return response.data.assets.map(asset => {

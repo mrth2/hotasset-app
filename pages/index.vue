@@ -4,7 +4,7 @@ import MasonryWall from '@yeger/vue2-masonry-wall'
 // import 'swiper/css/swiper.min.css'
 // import 'swiper/js/swiper'
 // import { Swiper, SwiperSlide } from "vue-awesome-swiper";
-import { IAsset } from '~/@types/asset'
+import { IAssetFilter, IAsset } from '~/@types/asset'
 import { IUser } from '~/@types/user'
 import { useAssetStore } from '~/stores/asset'
 import { useTagStore } from '~/stores/tag'
@@ -18,14 +18,19 @@ export default Vue.extend({
   }, */
   data() {
     return {
+      // filters
+      showFilters: false,
       filters: {
         type: undefined,
         channel: undefined,
         sort: useAssetStore().sortTypes[0].value,
         limit: 24,
+        tag: undefined,
         start: 0
-      },
+      } as IAssetFilter,
+      // asset
       assets: [] as IAsset[],
+      fetchingAsset: true,
       swiperOption: {
         slidersPerView: 1,
         loop: true,
@@ -42,7 +47,6 @@ export default Vue.extend({
   },
   async fetch() {
     await useAssetStore().fetchAssetMetaData()
-    await this.fetchAssets()
   },
   computed: {
     user() {
@@ -50,6 +54,9 @@ export default Vue.extend({
     },
     sortTypes() {
       return useAssetStore().sortTypes
+    },
+    currentSortType(): { name: string, value: string } {
+      return this.sortTypes.find(sort => sort.value === this.filters.sort) || this.sortTypes[0]
     },
     assetTypes() {
       return useAssetStore().types
@@ -61,9 +68,23 @@ export default Vue.extend({
       return useTagStore().popularTags
     }
   },
+  watch: {
+    filters: {
+      handler() {
+        this.fetchAssets()
+      },
+      immediate: true,
+      deep: true
+    }
+  },
+  async mounted() {
+    await this.fetchAssets()
+  },
   methods: {
     async fetchAssets() {
-      this.assets = await (await useAssetStore().fetchAssets(this.filters))
+      this.fetchingAsset = true
+      this.assets = await useAssetStore().fetchAssets(this.filters)
+      this.fetchingAsset = false
     },
     selectSort(item: { name: string, value: string }) {
       this.filters.sort = item.value;
@@ -104,12 +125,12 @@ export default Vue.extend({
           <div class="filter-subnav-inner flex flex-row items-center justify-between">
             <div class="filter-views mr-10">
               <CoreFormSlideToggle>
-                <template #toggle="{ toggle }">
+                <template #trigger="{ toggle }">
                   <span
                     class="btn-dropdown active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
                     @click="toggle()"
                   >
-                    <span>{{ sortTypes[0].name }}</span>
+                    <span>{{ currentSortType.name }}</span>
                     <CoreIconCaretDown />
                   </span>
                 </template>
@@ -132,78 +153,31 @@ export default Vue.extend({
               <ul
                 class="overflow-x-auto overflow-y-hidden whitespace-nowrap px-1 flex justify-between"
               >
-                <li class="inline-block">
-                  <a class="filter-categories__link active">All</a>
-                </li>
                 <li v-for="tag in popularTags" :key="tag.id" class="inline-block">
-                  <a class="filter-categories__link">{{ tag.name }}</a>
+                  <a
+                    class="filter-categories__link"
+                    :class="{ active: tag.id === filters.tag }"
+                    @click="filters.tag = tag.id"
+                  >{{ tag.name }}</a>
                 </li>
               </ul>
             </div>
             <div
               class="filter-settings active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
+              @click="showFilters = !showFilters"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                role="img"
-                class="icon filter-icon icon-14"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M0 6C0 5.17157 0.671573 4.5 1.5 4.5H22.5C23.3284 4.5 24 5.17157 24 6C24 6.82843 23.3284 7.5 22.5 7.5H1.5C0.671573 7.5 0 6.82843 0 6ZM3 12C3 11.1716 3.67157 10.5 4.5 10.5H19.5C20.3284 10.5 21 11.1716 21 12C21 12.8284 20.3284 13.5 19.5 13.5H4.5C3.67157 13.5 3 12.8284 3 12ZM7.5 16.5C6.67157 16.5 6 17.1716 6 18C6 18.8284 6.67157 19.5 7.5 19.5H16.5C17.3284 19.5 18 18.8284 18 18C18 17.1716 17.3284 16.5 16.5 16.5H7.5Z"
-                />
-              </svg>
+              <CoreIconFilter />
               <span class="label" title="Filters">Filters</span>
             </div>
           </div>
         </div>
-        <div class="shot-filters hidden">
-          <form action class="shot-filters-form">
-            <fieldset class="find-shots-assets-type">
-              <label for class="shot-filter-form-label">Asset Type</label>
-              <select v-model="filters.type" class="shot-filter-form-control form-control-select">
-                <option
-                  v-for="item in assetTypes"
-                  :key="item.value"
-                  :value="item.value"
-                >{{ item.name }}</option>
-              </select>
-            </fieldset>
-            <fieldset class="find-shots-channel">
-              <label for class="shot-filter-form-label">Channel</label>
-              <select
-                v-model="filters.channel"
-                class="shot-filter-form-control form-control-select"
-              >
-                <option
-                  v-for="item in assetChannels"
-                  :key="item.value"
-                  :value="item.value"
-                >{{ item.name }}</option>
-              </select>
-            </fieldset>
-            <fieldset class="find-shots-downloads">
-              <label for class="shot-filter-form-label">Downloads</label>
-              <select id name class="shot-filter-form-control form-control-select">
-                <option value="yes">Yes</option>
-                <option value="no">Yes</option>
-              </select>
-            </fieldset>
-            <fieldset class="find-shots-something">
-              <label for class="shot-filter-form-label">Something</label>
-              <select id name class="shot-filter-form-control form-control-select">
-                <option value>All</option>
-              </select>
-            </fieldset>
-          </form>
-        </div>
+        <AssetFilter :filters="filters" :show="showFilters" @update:filters="filters = $event" />
         <div v-if="assets.length" class="shots-grid">
+          <div v-if="fetchingAsset" class="flex justify-center items-center h-96">
+            <FontAwesomeIcon icon="fire" size="6x" class="text-brand animate-bounce" />
+          </div>
           <MasonryWall
+            v-else
             class="grid-masonry"
             :items="assets"
             :ssr-column="1"
@@ -216,8 +190,13 @@ export default Vue.extend({
           </MasonryWall>
         </div>
         <div class="infinite-login-actions">
-          <a class="btn-primary" href="/signup/new">Sign up to continue</a>
-          <a href="/session/new">or sign in</a>
+          <template v-if="$strapi.user">
+            <NuxtLink class="btn-primary" to="/upload">Upload new asset</NuxtLink>
+          </template>
+          <template v-else>
+            <NuxtLink class="btn-primary" to="/signup">Sign up to continue</NuxtLink>
+            <NuxtLink to="/login">or sign in</NuxtLink>
+          </template>
         </div>
       </div>
     </main>

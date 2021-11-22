@@ -51,7 +51,8 @@ export default {
   fontawesome: {
     icons: {
       brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram'],
-      regular: ['faUserCircle', 'faTimesCircle']
+      regular: ['faUserCircle', 'faTimesCircle'],
+      solid: ['faFire']
     }
   },
 
