@@ -1,50 +1,58 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import { hide, show, toggle } from 'slidetoggle'
-
 export default Vue.extend({
-  props: {
-    miliseconds: {
-      type: Number,
-      default: 300
-    },
-    transition: {
-      type: String,
-      default: 'ease-out'
-    }
-  },
-  computed: {
-    slideOptions(): { miliseconds: number, transitionFunction: string } {
-      return {
-        miliseconds: this.miliseconds,
-        transitionFunction: this.transition
-      }
+  data() {
+    return {
+      isShow: false
     }
   },
   methods: {
     hide() {
-      console.log(234)
-      console.log(this.$refs.toggleContent)
-      hide((this.$refs.toggleContent as HTMLElement), this.slideOptions)
+      this.isShow = false
     },
     show() {
-      show((this.$refs.toggleContent as HTMLElement), this.slideOptions)
+      this.isShow = true
     },
     toggle() {
-      console.log(123)
-      console.log(this.$refs.toggleContent)
-      toggle((this.$refs.toggleContent as HTMLElement), this.slideOptions)
+      this.isShow = !this.isShow
     }
   }
 })
 </script>
 
 <template>
-  <div class="user-select-none">
-    <slot name="toggle" :toggle="toggle" />
-    <div ref="toggleContent" class="hidden">
-      <slot name="content" :hide="hide" :show="show" :toggle="toggle" />
-    </div>
+  <div class="select-none">
+    <slot name="trigger" :toggle="toggle" />
+    <transition name="slide">
+      <div v-show="isShow" class="slide-content">
+        <slot name="content" :hide="hide" :show="show" :toggle="toggle" />
+      </div>
+    </transition>
   </div>
 </template>
+
+<style scoped lang="postcss">
+.slide-content {
+  @apply absolute z-10;
+
+  ::v-deep .btn-dropdown-options {
+    @apply static;
+  }
+}
+.slide-enter-active {
+  @apply transition-transform duration-300 ease-linear;
+}
+
+.slide-leave-active {
+  @apply transition-transform duration-300 ease-linear;
+}
+
+.slide-enter-to, .slide-leave {
+  transform: translateY(0);
+}
+
+.slide-enter, .slide-leave-to {
+  transform: translateY(-10%);
+}
+</style>
