@@ -2,6 +2,16 @@
 import Vue from 'vue'
 
 export default Vue.extend({
+  props: {
+    manualShow: {
+      type: Boolean,
+      default: false
+    },
+    isAbsolute: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       isShow: false
@@ -25,7 +35,7 @@ export default Vue.extend({
   <div class="select-none">
     <slot name="trigger" :toggle="toggle" />
     <transition name="slide">
-      <div v-show="isShow" class="slide-content">
+      <div v-show="isShow || manualShow" class="slide-content" :class="{absolute: isAbsolute}">
         <slot name="content" :hide="hide" :show="show" :toggle="toggle" />
       </div>
     </transition>
@@ -34,25 +44,27 @@ export default Vue.extend({
 
 <style scoped lang="postcss">
 .slide-content {
-  @apply absolute z-10;
+  @apply z-10;
 
   ::v-deep .btn-dropdown-options {
     @apply static;
   }
 }
 .slide-enter-active {
-  @apply transition-transform duration-300 ease-linear;
+  @apply transition-transform duration-300 ease-in-out;
 }
 
 .slide-leave-active {
-  @apply transition-transform duration-300 ease-linear;
+  @apply transition-transform ease-in;
 }
 
-.slide-enter-to, .slide-leave {
+.slide-enter-to,
+.slide-leave {
   transform: translateY(0);
 }
 
-.slide-enter, .slide-leave-to {
-  transform: translateY(-10%);
+.slide-enter,
+.slide-leave-to {
+  transform: translateY(-20%);
 }
 </style>

@@ -50,5 +50,11 @@ export default Vue.extend({
   .multiselect__input {
     @apply bg-transparent;
   }
+  .multiselect__single {
+    @apply leading-6;
+  }
+  .multiselect__placeholder {
+    @apply pt-0 mb-2;
+  }
 }
 </style>
