@@ -130,6 +130,28 @@ export const useAssetStore = defineStore('asset', {
         })
       }
       return [] as IAsset[]
+    },
+    async likeOrUnlikeAsset(assetId: string, upvoter?: string) {
+      const response = await this.$nuxt.app.apolloProvider?.defaultClient.mutate({
+        mutation: gql`
+          mutation LIKE_ASSET ($assetId: ID!, $upvoter: ID) {
+            updateAsset(input: { where: { id: $assetId }, data: { upvoters: [$upvoter] } }) {
+              asset {
+                author {
+                  id
+                }
+                likes
+                upvoters {
+                  first_name
+                  last_name
+                }
+              }
+            }
+          }
+        `,
+        variables: { assetId, upvoter }
+      })
+      console.log(response)
     }
   }
 })

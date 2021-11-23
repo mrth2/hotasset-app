@@ -33,6 +33,7 @@
     "pinia": "^2.0.3",
     "slidetoggle": "^3.2.2",
     "swiper": "5.x",
+    "v-tooltip": "^3.0.0-beta.1",
     "vue-awesome-swiper": "^4.1.1",
     "vue-multiselect": "^2.1.6"
   },

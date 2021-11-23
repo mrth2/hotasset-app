@@ -26,12 +26,14 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'vue-multiselect/dist/vue-multiselect.min.css'
+    'vue-multiselect/dist/vue-multiselect.min.css',
+    'v-tooltip/dist/v-tooltip.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/google.ts', mode: 'client' }
+    { src: '~/plugins/google.ts', mode: 'client' },
+    { src: '~/plugins/v-tooltip.ts', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
