@@ -28,6 +28,12 @@ export default Vue.extend({
 		},
 		user() {
 			return this.$strapi.user as IUser
+		},
+		currentCategorySlug() {
+			if (this.$route.name === 'category-slug') {
+				return this.$route.params.slug
+			}
+			return null
 		}
 	},
 	methods: {
@@ -102,18 +108,32 @@ export default Vue.extend({
 					<template v-if="user">
 						<div class="site-nav-login">
 							<NuxtLink :to="`/profile/${user.username}`">
-								<img v-if="user.avatar" class="rounded-full" :src="user.avatar.url" alt width="36" height="36" />
+								<img
+									v-if="user.avatar"
+									class="rounded-full"
+									:src="user.avatar.url"
+									alt
+									width="36"
+									height="36"
+								/>
 								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">
-							<a href="#" class="site-nav-actions__link">About</a>
+							<NuxtLink to="/about" class="site-nav-actions__link">About</NuxtLink>
 							<a class="site-nav-actions__link relative">
 								<img src="~/assets/images/icons/bell.svg" alt />
 								<span class="notify-count">7</span>
 							</a>
 							<NuxtLink :to="`/profile/${user.username}`">
-								<img v-if="user.avatar" class="rounded-full" :src="user.avatar.url" alt width="36" height="36" />
+								<img
+									v-if="user.avatar"
+									class="rounded-full"
+									:src="user.avatar.url"
+									alt
+									width="36"
+									height="36"
+								/>
 								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
 							</NuxtLink>
 							<NuxtLink to="/upload" class="btn-primary ml-8">Upload</NuxtLink>
@@ -126,7 +146,7 @@ export default Vue.extend({
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">
-							<a href="#" class="site-nav-actions__link">About</a>
+							<NuxtLink to="/about" class="site-nav-actions__link">About</NuxtLink>
 							<NuxtLink to="/login" class="site-nav-actions__link">Sign in</NuxtLink>
 							<NuxtLink to="/signup" class="btn-primary ml-8">Sign up</NuxtLink>
 						</div>
@@ -135,7 +155,11 @@ export default Vue.extend({
 				<div class="site-nav-desktop-only relative">
 					<ul class="site-nav-desktop-nav">
 						<li v-for="parent in headerCategories" :key="parent.id" class="menu-item static group">
-							<NuxtLink :to="`/category/${parent.slug}`" class="navbar__link">{{ parent.title }}</NuxtLink>
+							<NuxtLink
+								:to="`/category/${parent.slug}`"
+								class="navbar__link"
+								:class="{ current: parent.slug === currentCategorySlug }"
+							>{{ parent.title }}</NuxtLink>
 							<small v-if="parent.is_new" class="badge">New</small>
 							<div
 								v-if="parent.sub_categories && parent.sub_categories.length"
@@ -145,14 +169,18 @@ export default Vue.extend({
 									<div v-for="(col, index) in parent.subCategories" :key="index" class="menu-col">
 										<div v-for="child in col" :key="child.id" class="mb-8">
 											<h4 class="megamenu__title">
-												<NuxtLink :to="`/category/${parent.slug}/${child.slug}`">{{ child.title }}</NuxtLink>
+												<NuxtLink
+													:to="`/category/${child.slug}`"
+													:class="{ current: child.slug === currentCategorySlug }"
+												>{{ child.title }}</NuxtLink>
 												<small v-if="child.is_new" class="badge">New</small>
 											</h4>
 											<ul v-if="child.sub_categories && child.sub_categories.length">
 												<li v-for="subChild in child.sub_categories" :key="subChild.id">
 													<NuxtLink
-														:to="`/category/${parent.slug}/${child.slug}/${subChild.slug}`"
+														:to="`/category/${subChild.slug}`"
 														class="megamenu__link"
+														:class="{ current: subChild.slug === currentCategorySlug }"
 													>{{ subChild.title }}</NuxtLink>
 													<small v-if="subChild.is_new" class="badge">New</small>
 												</li>
@@ -182,5 +210,13 @@ export default Vue.extend({
 	&::-webkit-scrollbar {
 		display: none;
 	}
+}
+.megamenu__title > a.current,
+.navbar__link.current:after {
+	content: "";
+	@apply absolute bottom-2 inset-x-0 bg-brand h-1;
+}
+.megamenu__link.current {
+	@apply text-brand underline;
 }
 </style>

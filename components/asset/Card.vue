@@ -14,6 +14,11 @@ export default Vue.extend({
       }
     }
   },
+  data() {
+    return {
+      mounted: false
+    }
+  },
   computed: {
     isLiked(): boolean {
       if (this.$strapi.user) {
@@ -22,22 +27,27 @@ export default Vue.extend({
       return false
     }
   },
+  created() {
+    setTimeout(() => {
+      this.mounted = true
+    }, 10)
+  },
   methods: {
     likeAsset(): void {
-      if (this.isLiked) {
+      /* if (this.isLiked) {
         this.asset.upvoters = this.asset.upvoters.filter(upvoter => upvoter.id !== this.$strapi.user.id)
         this.asset.likes--;
       } else {
         this.asset.upvoters.push((this.$strapi.user as IUser))
         this.asset.likes++
-      }
+      } */
     }
   }
 })
 </script>
 
 <template>
-  <div class="shot-item">
+  <div class="shot-item" :class="{ mounted }">
     <div class="inner">
       <NuxtLink class="shot-thumbnail group block" :to="`/asset/${asset.id}`">
         <template v-if="asset.thumbnail.provider === 'cloudinary'">
@@ -132,5 +142,9 @@ export default Vue.extend({
 <style scoped lang="postcss">
 .shot-item {
   @apply rounded-lg;
+
+  &.mounted {
+    @apply translate-y-0;
+  }
 }
 </style>

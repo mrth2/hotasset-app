@@ -62,10 +62,11 @@ export interface IAsset {
 }
 
 export interface IAssetFilter {
-  channel?: string,
-  type?: string,
-  tag?: string,
-  sort?: string,
-  start?: number,
-  limit?: number
+  category?: string
+  channel?: string
+  type?: string
+  tag?: string
+  sort?: string
+  start: number
+  limit: number
 }
