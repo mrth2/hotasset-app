@@ -67,8 +67,7 @@ export default Vue.extend({
     }
   },
   created() {
-    this.$watch(() => this.filters, async (newFilters) => {
-      console.log(newFilters)
+    this.$watch(() => this.filters, async () => {
       await this.fetchAssets()
     }, { deep: true })
   },
@@ -95,6 +94,10 @@ export default Vue.extend({
     },
     loadMoreAssets() {
       this.updateFilters({ start: this.filters.start + this.filters.limit })
+    },
+    updateAsset(asset: IAsset) {
+      const assetIndex = this.assets.findIndex(item => asset.id === item.id)
+      this.assets[assetIndex] = asset
     }
   },
 })
@@ -170,9 +173,11 @@ export default Vue.extend({
         :gap="16"
       >
         <template #default="{ item, index }">
+          <!-- asset card with multiple type -->
           <AssetCard
             :asset="item"
             :class="{ 'asset-transition': filters.start <= index && index < filters.start + filters.limit }"
+            @update:asset="updateAsset"
           />
         </template>
       </MasonryWall>

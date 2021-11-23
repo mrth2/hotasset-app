@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import type { PropType } from 'vue'
 import { IAsset } from '~/@types/asset/index'
-import { IUser } from '~/@types'
+import { useAssetStore } from '~/stores/asset'
 
 export default Vue.extend({
   name: 'AssetCard',
@@ -16,7 +16,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      mounted: false
+      mounted: false,
+      localLiked: false
     }
   },
   computed: {
@@ -27,20 +28,35 @@ export default Vue.extend({
       return false
     }
   },
+  watch: {
+    isLiked() {
+      this.localLiked = this.isLiked
+    }
+  },
   created() {
     setTimeout(() => {
       this.mounted = true
     }, 10)
   },
+  mounted() {
+    this.localLiked = this.isLiked
+  },
   methods: {
-    likeAsset(): void {
-      /* if (this.isLiked) {
-        this.asset.upvoters = this.asset.upvoters.filter(upvoter => upvoter.id !== this.$strapi.user.id)
-        this.asset.likes--;
-      } else {
-        this.asset.upvoters.push((this.$strapi.user as IUser))
-        this.asset.likes++
-      } */
+    async likeAsset() {
+      // direct user to login to be able to like asset
+      if (!this.$strapi.user) {
+        this.$router.push('/login')
+      }
+      const currentLiked = this.localLiked
+      this.localLiked = !this.localLiked
+      // else start liking
+      const updatedAsset = await useAssetStore().likeOrUnlikeAsset(this.asset.id, currentLiked ? null : this.$strapi.user.id)
+      if (updatedAsset) {
+        this.$emit('update:asset', {
+          ...this.asset,
+          ...updatedAsset
+        })
+      }
     }
   }
 })
@@ -49,7 +65,7 @@ export default Vue.extend({
 <template>
   <div class="shot-item" :class="{ mounted }">
     <div class="inner">
-      <NuxtLink class="shot-thumbnail group block" :to="`/asset/${asset.id}`">
+      <div class="shot-thumbnail group">
         <template v-if="asset.thumbnail.provider === 'cloudinary'">
           <figure>
             <NuxtPicture
@@ -58,22 +74,6 @@ export default Vue.extend({
               :alt="`${asset.title}-${asset.resources[0].name}`"
             />
           </figure>
-          <a class="shot-thumbnail__link" href="#"></a>
-          <div class="shot-thumbnail-overlay">
-            <div class="shot-thumbnail-overlay-content">
-              <div class="shot-title">{{ asset.title }}</div>
-              <div class="shot-action">
-                <a
-                  class="like-shot"
-                  :class="{ liked: isLiked }"
-                  :title="`${isLiked ? 'Unlike' : 'Like'} this shot`"
-                  @click="likeAsset"
-                >
-                  <CoreIconFavorite />
-                </a>
-              </div>
-            </div>
-          </div>
         </template>
         <template v-else>
           <figure
@@ -96,8 +96,26 @@ export default Vue.extend({
               :alt="`${asset.title} - ${asset.resources[0].name}`"
             />
           </figure>
-          <NuxtLink :to="`/asset/${asset.id}`" class="shot-thumbnail__link" />
         </template>
+        <NuxtLink :to="`/asset/${asset.id}`" class="shot-thumbnail__link" />
+        <div class="shot-thumbnail-overlay">
+          <div class="shot-thumbnail-overlay-content">
+            <div
+              v-if="asset.thumbnail.provider === 'cloudinary'"
+              class="shot-title"
+            >{{ asset.title }}</div>
+            <div class="shot-action ml-auto">
+              <button
+                v-tooltip.left-start="`I ${localLiked ? 'unlike' : 'like'} this`"
+                class="like-shot"
+                :class="{ liked: localLiked }"
+                @click="likeAsset"
+              >
+                <CoreIconFavorite />
+              </button>
+            </div>
+          </div>
+        </div>
         <!-- <div v-else class="swiper-container">
             <div class="swiper-wrapper">
               <div
@@ -119,7 +137,7 @@ export default Vue.extend({
             </SwiperSlide>
             <div slot="pagination" class="swiper-pagination" />
         </Swiper>-->
-      </NuxtLink>
+      </div>
       <div class="shot-details-container">
         <p class="shots-item__desc">{{ asset.description }}</p>
         <div class="flex items-center justify-between">

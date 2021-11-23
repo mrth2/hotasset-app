@@ -94,7 +94,8 @@ export const useAssetStore = defineStore('asset', {
             }
           }
         `,
-        variables: options
+        variables: options,
+        fetchPolicy: 'network-only'
       })
       if (response) {
         return response.data.assets.map(asset => {
@@ -132,26 +133,31 @@ export const useAssetStore = defineStore('asset', {
       return [] as IAsset[]
     },
     async likeOrUnlikeAsset(assetId: string, upvoter?: string) {
-      const response = await this.$nuxt.app.apolloProvider?.defaultClient.mutate({
+      const response = await this.$nuxt.app.apolloProvider?.defaultClient.mutate<{
+        updateAsset: {
+          asset: Partial<IAsset>
+        }
+      }>({
         mutation: gql`
-          mutation LIKE_ASSET ($assetId: ID!, $upvoter: ID) {
-            updateAsset(input: { where: { id: $assetId }, data: { upvoters: [$upvoter] } }) {
+          mutation LIKE_ASSET ($assetId: ID!, $upvoter: [ID]) {
+            updateAsset(input: { where: { id: $assetId }, data: { upvoters: $upvoter } }) {
               asset {
-                author {
-                  id
-                }
                 likes
                 upvoters {
-                  first_name
-                  last_name
+                  id
                 }
               }
             }
           }
         `,
-        variables: { assetId, upvoter }
+        variables: {
+          assetId,
+          upvoter: upvoter ? [upvoter] : []
+        }
+      }).catch((err) => {
+        this.$nuxt.app.$toast.error(err.message)
       })
-      console.log(response)
+      return response?.data?.updateAsset.asset
     }
   }
 })
