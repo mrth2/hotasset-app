@@ -29,7 +29,6 @@
     "ipx": "^0.9.1",
     "lodash-es": "^4.17.21",
     "nuxt": "^2.15.7",
-    "nuxt-purgecss": "^1.0.0",
     "nuxt-webfontloader": "^1.1.0",
     "pinia": "^2.0.3",
     "slidetoggle": "^3.2.2",

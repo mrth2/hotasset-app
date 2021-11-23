@@ -68,7 +68,6 @@ export default {
     '@nuxtjs/apollo',
     '@nuxtjs/strapi',
     '@nuxtjs/toast',
-    'nuxt-purgecss',
     'nuxt-webfontloader',
     '@nuxt/image',
     '@nuxtjs/fontawesome'
@@ -86,11 +85,6 @@ export default {
     google: {
       families: ['Roboto:400,500,700']
     }
-  },
-
-  purgeCss: {
-    mode: 'postcss',
-    enabled: (process.env.NODE_ENV === 'production')
   },
 
   apollo: {
