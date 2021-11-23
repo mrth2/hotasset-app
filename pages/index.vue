@@ -30,7 +30,7 @@ export default Vue.extend({
       } as IAssetFilter,
       // asset
       assets: [] as IAsset[],
-      fetchingAsset: true,
+      fetchingAsset: false,
       swiperOption: {
         slidersPerView: 1,
         loop: true,
@@ -46,7 +46,10 @@ export default Vue.extend({
     }
   },
   async fetch() {
-    await useAssetStore().fetchAssetMetaData()
+    await Promise.all([
+      useAssetStore().fetchAssetMetaData(),
+      this.fetchAssets()
+    ])
   },
   computed: {
     user() {
@@ -68,23 +71,16 @@ export default Vue.extend({
       return useTagStore().popularTags
     }
   },
-  watch: {
-    filters: {
-      handler() {
-        this.fetchAssets()
-      },
-      immediate: true,
-      deep: true
-    }
-  },
-  async mounted() {
-    await this.fetchAssets()
+  mounted() {
+    this.$watch(() => this.filters, async () => {
+      this.fetchingAsset = true
+      await this.fetchAssets()
+      this.fetchingAsset = false
+    }, { deep: true })
   },
   methods: {
     async fetchAssets() {
-      this.fetchingAsset = true
       this.assets = await useAssetStore().fetchAssets(this.filters)
-      this.fetchingAsset = false
     },
     selectSort(item: { name: string, value: string }) {
       this.filters.sort = item.value;
@@ -124,7 +120,7 @@ export default Vue.extend({
         <div class="filter-subnav">
           <div class="filter-subnav-inner flex flex-row items-center justify-between">
             <div class="filter-views mr-10">
-              <CoreFormSlideToggle>
+              <CoreFormSlideToggle :is-absolute="true">
                 <template #trigger="{ toggle }">
                   <span
                     class="btn-dropdown active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
@@ -163,7 +159,7 @@ export default Vue.extend({
               </ul>
             </div>
             <div
-              class="filter-settings active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand"
+              class="filter-settings active:scale-95 active:ring-0 active:ring-transparent hover:ring-2 hover:ring-brand select-none"
               @click="showFilters = !showFilters"
             >
               <CoreIconFilter />
@@ -171,7 +167,9 @@ export default Vue.extend({
             </div>
           </div>
         </div>
+        <!-- asset filter ( types, channel, etc ) -->
         <AssetFilter :filters="filters" :show="showFilters" @update:filters="filters = $event" />
+        <!-- asset listing -->
         <div v-if="assets.length" class="shots-grid">
           <div v-if="fetchingAsset" class="flex justify-center items-center h-96">
             <FontAwesomeIcon icon="fire" size="6x" class="text-brand animate-bounce" />
@@ -180,7 +178,7 @@ export default Vue.extend({
             v-else
             class="grid-masonry"
             :items="assets"
-            :ssr-column="1"
+            :ssr-column="3"
             :column-width="300"
             :gap="16"
           >

@@ -5,8 +5,10 @@ import { useTagStore } from '~/stores/tag'
 
 export default Vue.extend({
 	name: 'DefaultLayout',
-	fetch() {
-		useHeaderStore().fetchCategories()
+	async fetch() {
+		await useHeaderStore().fetchCategories()
+	},
+	mounted() {
 		useTagStore().fetchPopularTags()
 	}
 })

@@ -56,8 +56,8 @@ export const useAssetStore = defineStore('asset', {
     async fetchAssets(options: IAssetFilter) {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[] }>({
         query: gql`
-          query ASSETS ($type: ID, $channel: ID, $tag: ID, $sort: String, $start: Int, $limit: Int) {
-            assets (where: { types: $type, channels: $channel, tags: $tag, resources: {size_gte: 0}}, sort: $sort, start: $start, limit: $limit) {
+          query ASSETS ($type: ID, $channel: ID, $tag: ID, $sort: String, $start: Int, $limit: Int, $download: Boolean) {
+            assets (where: { types: $type, channels: $channel, tags: $tag, resources: {size_gte: 0}, can_download: $download}, sort: $sort, start: $start, limit: $limit) {
               id
               title
               description
