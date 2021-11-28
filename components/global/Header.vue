@@ -53,7 +53,7 @@ export default Vue.extend({
 					<div class="site-nav__logo">
 						<NuxtLink to="/">
 							<span class="sr-only">HotAsset</span>
-							<img srcset="~/assets/images/logo.png 2x" alt />
+							<CoreIconLogo />
 						</NuxtLink>
 					</div>
 					<form action class="form-search">

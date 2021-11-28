@@ -11,7 +11,7 @@ export default Vue.extend({
 			<div class="footer-main-content">
 				<div class="footer-info">
 					<a href="#">
-						<img srcset="~/assets/images/logo.png 2x" alt class="footer-info__logo" />
+						<CoreIconLogo class="footer-info__logo" />
 					</a>
 					<p class="footer__desc">
 						HotAsset is the world’s leading community for creatives to share, grow, and
