@@ -1,7 +1,7 @@
 <script lang="ts">
 import gql from 'graphql-tag'
 import Vue from 'vue'
-import { IUser } from '~/@types'
+import { IUser, IUserFollower } from '~/@types'
 import { IAssetFilter } from '~/@types/asset'
 import { useAssetStore } from '~/stores/asset'
 
@@ -34,60 +34,131 @@ export default Vue.extend({
 			} as IAssetFilter,
 			user: {} as IUser,
 			followers: 0,
-			followings: 0
+			followings: 0,
+			requestingFollow: false
 		}
 	},
 	async fetch() {
-		await this.$apollo
-			.query<UserResponse>({
-				query: gql`
-					query User($username: String!) {
-						users(where: { username: $username }, limit: 1) {
-							id
-							username
-							avatar {
-								provider
-								url
-							}
-							first_name
-							last_name
-							biography
-							website
-						}
-						followings: userFollowersConnection(
-							where: { user: { username: $username } }
-						) {
-							aggregate {
-								count
-								totalCount
-							}
-						}
-						followers: userFollowersConnection(
-							where: { follower: { username: $username } }
-						) {
-							aggregate {
-								count
-								totalCount
-							}
-						}
-					}
-				`,
-				variables: {
-					username: this.$route.params.username
-				}
-			})
-			.then(({ data }) => {
-				this.user = data.users[0]
-				this.followers = data.followers.aggregate.totalCount
-				this.followings = data.followings.aggregate.totalCount
-			})
-			.catch(() => {
-				throw new Error('Failed to fetch user profile')
-			})
+		await this.fetchUser()
 	},
 	computed: {
 		isOwner(): boolean {
-			return this.$strapi.user.username === this.$route.params.username
+			return this.$strapi.user?.username === this.$route.params.username
+		}
+	},
+	methods: {
+		async fetchUser() {
+			await this.$apollo
+				.query<UserResponse>({
+					query: gql`
+						query User($username: String!) {
+							users(where: { username: $username }, limit: 1) {
+								id
+								username
+								avatar {
+									provider
+									url
+								}
+								first_name
+								last_name
+								biography
+								website
+							}
+							followings: userFollowersConnection(
+								where: { user: { username: $username } }
+							) {
+								aggregate {
+									count
+									totalCount
+								}
+							}
+							followers: userFollowersConnection(
+								where: { follower: { username: $username } }
+							) {
+								aggregate {
+									count
+									totalCount
+								}
+							}
+						}
+					`,
+					variables: {
+						username: this.$route.params.username
+					}
+				})
+				.then(({ data }) => {
+					this.user = data.users[0]
+					this.followers = data.followers.aggregate.count
+					this.followings = data.followings.aggregate.count
+				})
+				.catch(() => {
+					throw new Error('Failed to fetch user profile')
+				})
+		},
+		async follow() {
+			if (this.requestingFollow) {
+				return
+			}
+			if (!this.$strapi.user) {
+				this.$router.push('/login')
+				return
+			}
+			this.requestingFollow = true
+			await this.$apollo
+				.mutate<{
+					createUserFollower: {
+						userFollower: IUserFollower
+					}
+				}>({
+					mutation: gql`
+						mutation FOLLOW($user: ID!) {
+							createUserFollower(input: { data: { user: $user } }) {
+								userFollower {
+									id
+									user {
+										first_name
+										last_name
+										username
+									}
+									follower {
+										first_name
+										last_name
+										username
+									}
+								}
+							}
+						}
+					`,
+					variables: {
+						user: this.user.id
+					}
+				})
+				.then(async ({ data }) => {
+					await this.fetchUser()
+					if (data) {
+						this.$toast.success(
+							`You're now following ${this.getUserName(
+								data.createUserFollower.userFollower.user
+							)}.`
+						)
+					}
+				})
+				.catch((err) => {
+					this.$toast.error(err.message)
+				})
+				.finally(() => {
+					this.requestingFollow = false
+				})
+		},
+		getUserName(user: IUser): string {
+			if (user.first_name && user.last_name) {
+				return `${user.first_name} ${user.last_name}`
+			} else if (user.first_name) {
+				return user.first_name
+			} else if (user.last_name) {
+				return user.last_name
+			}
+			return user.username
 		}
 	}
 })
@@ -139,11 +210,16 @@ export default Vue.extend({
 					</div>
 				</div>
 				<div v-if="isOwner" class="flex space-x-4 justify-center">
-					<button class="btn-secondary w-full md:w-auto mb-4">Follow</button>
+					<NuxtLink to="/upload" class="btn-secondary w-full md:w-auto mb-4"
+						>Upload</NuxtLink
+					>
 					<button class="btn-secondary w-full md:w-auto mb-4">Likes</button>
 				</div>
 				<div v-else>
-					<button class="btn btn-primary w-full md:w-auto mb-4">Follow</button>
+					<button class="btn btn-primary w-full md:w-auto mb-4" @click="follow">
+						<template v-if="!requestingFollow">Follow</template>
+						<FontAwesomeIcon v-else icon="fire" class="fa-spin mx-5" />
+					</button>
 				</div>
 			</div>
 		</div>

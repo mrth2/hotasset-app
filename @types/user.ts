@@ -27,3 +27,11 @@ export declare interface IUser {
   updatedAt: Date
   upvoted_assets: IAsset[]
 }
+
+export interface IUserFollower {
+  id: string
+  user: IUser
+  follower: IUser
+  createdAt: Date
+  updatedAt: Date
+}

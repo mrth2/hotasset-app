@@ -11,7 +11,7 @@ export default Vue.extend({
 	name: 'Header',
 	computed: {
 		headerCategories(): menuColCategories[] {
-			return useHeaderStore().categories.map(parent => {
+			return useHeaderStore().categories.map((parent) => {
 				const subCategories: ICategory[][] = []
 				if (parent.sub_categories?.length) {
 					parent.sub_categories.forEach((subCategory, index) => {
@@ -22,7 +22,7 @@ export default Vue.extend({
 				}
 				return {
 					...parent,
-					subCategories,
+					subCategories
 				}
 			})
 		},
@@ -65,7 +65,12 @@ export default Vue.extend({
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke="currentColor"
-									class="text-gray-400 group-focus-within:text-gray-500 transition-colors duration-150"
+									class="
+										text-gray-400
+										group-focus-within:text-gray-500
+										transition-colors
+										duration-150
+									"
 								>
 									<path
 										stroke-linecap="round"
@@ -110,17 +115,24 @@ export default Vue.extend({
 							<NuxtLink :to="`/profile/${user.username}`">
 								<CoreImage
 									v-if="user.avatar"
+									:component="'NuxtImg'"
 									class="rounded-full"
 									:src="user.avatar.url"
+									:modifiers="{ roundCorner: 'max', gravity: 'face' }"
+									fit="fill"
 									alt
-									width="36"
-									height="36"
 								/>
-								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
+								<FontAwesomeIcon
+									v-else
+									:icon="['far', 'user-circle']"
+									size="lg"
+								/>
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">
-							<NuxtLink to="/about" class="site-nav-actions__link">About</NuxtLink>
+							<NuxtLink to="/about" class="site-nav-actions__link"
+								>About</NuxtLink
+							>
 							<a class="site-nav-actions__link relative">
 								<CoreImage src="~/assets/images/icons/bell.svg" alt />
 								<span class="notify-count">7</span>
@@ -134,7 +146,11 @@ export default Vue.extend({
 									width="36"
 									height="36"
 								/>
-								<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="lg" />
+								<FontAwesomeIcon
+									v-else
+									:icon="['far', 'user-circle']"
+									size="lg"
+								/>
 							</NuxtLink>
 							<NuxtLink to="/upload" class="btn-primary ml-8">Upload</NuxtLink>
 						</div>
@@ -142,47 +158,80 @@ export default Vue.extend({
 					<template v-else>
 						<div class="site-nav-login">
 							<NuxtLink to="/signup">
-								<CoreImage src="~/assets/images/icons/user.svg" alt width="24" height="24" />
+								<CoreImage
+									src="~/assets/images/icons/user.svg"
+									alt
+									width="24"
+									height="24"
+								/>
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">
-							<NuxtLink to="/about" class="site-nav-actions__link">About</NuxtLink>
-							<NuxtLink to="/login" class="site-nav-actions__link">Sign in</NuxtLink>
+							<NuxtLink to="/about" class="site-nav-actions__link"
+								>About</NuxtLink
+							>
+							<NuxtLink to="/login" class="site-nav-actions__link"
+								>Sign in</NuxtLink
+							>
 							<NuxtLink to="/signup" class="btn-primary ml-8">Sign up</NuxtLink>
 						</div>
 					</template>
 				</div>
 				<div class="site-nav-desktop-only relative">
 					<ul class="site-nav-desktop-nav">
-						<li v-for="parent in headerCategories" :key="parent.id" class="menu-item static group">
+						<li
+							v-for="parent in headerCategories"
+							:key="parent.id"
+							class="menu-item static group"
+						>
 							<NuxtLink
 								:to="`/category/${parent.slug}`"
 								class="navbar__link"
 								:class="{ current: parent.slug === currentCategorySlug }"
-							>{{ parent.title }}</NuxtLink>
+								>{{ parent.title }}</NuxtLink
+							>
 							<small v-if="parent.is_new" class="badge">New</small>
 							<div
 								v-if="parent.sub_categories && parent.sub_categories.length"
 								class="dropdown-menu megamenu group-hover:block"
 							>
 								<div class="dropdown-menu-container">
-									<div v-for="(col, index) in parent.subCategories" :key="index" class="menu-col">
+									<div
+										v-for="(col, index) in parent.subCategories"
+										:key="index"
+										class="menu-col"
+									>
 										<div v-for="child in col" :key="child.id" class="mb-8">
 											<h4 class="megamenu__title">
 												<NuxtLink
 													:to="`/category/${child.slug}`"
-													:class="{ current: child.slug === currentCategorySlug }"
-												>{{ child.title }}</NuxtLink>
+													:class="{
+														current: child.slug === currentCategorySlug
+													}"
+													>{{ child.title }}</NuxtLink
+												>
 												<small v-if="child.is_new" class="badge">New</small>
 											</h4>
-											<ul v-if="child.sub_categories && child.sub_categories.length">
-												<li v-for="subChild in child.sub_categories" :key="subChild.id">
+											<ul
+												v-if="
+													child.sub_categories && child.sub_categories.length
+												"
+											>
+												<li
+													v-for="subChild in child.sub_categories"
+													:key="subChild.id"
+												>
 													<NuxtLink
 														:to="`/category/${subChild.slug}`"
 														class="megamenu__link"
-														:class="{ current: subChild.slug === currentCategorySlug }"
-													>{{ subChild.title }}</NuxtLink>
-													<small v-if="subChild.is_new" class="badge">New</small>
+														:class="{
+															current: subChild.slug === currentCategorySlug
+														}"
+														>{{ subChild.title }}</NuxtLink
+													>
+													<small v-if="subChild.is_new" class="badge"
+														>New</small
+													>
 												</li>
 											</ul>
 										</div>
@@ -213,7 +262,7 @@ export default Vue.extend({
 }
 .megamenu__title > a.current,
 .navbar__link.current:after {
-	content: "";
+	content: '';
 	@apply absolute bottom-2 inset-x-0 bg-brand h-1;
 }
 .megamenu__link.current {

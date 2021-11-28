@@ -25,17 +25,21 @@ export default Vue.extend({
 		},
 		modifiedAttrs() {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { src, provider, ...attrs } = this.$attrs
+			const { src, provider, component, ...attrs } = this.$attrs
 			return attrs
 		},
 		isSvg(): boolean {
 			return this.$attrs.src.includes('.svg')
 		},
 		component() {
-			if (this.isSvg) {
+			if (this.$attrs.component) {
+				return this.$attrs.component
+			}
+			else if (this.isSvg) {
 				return 'NuxtImg'
 			}
-			return 'NuxtPicture'
+			return 'NuxtImg'
+			// return 'NuxtPicture'
 		}
 	}
 })
