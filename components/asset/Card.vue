@@ -68,8 +68,7 @@ export default Vue.extend({
       <div class="shot-thumbnail group">
         <template v-if="asset.thumbnail.provider === 'cloudinary'">
           <figure>
-            <NuxtPicture
-              :provider="asset.thumbnail.provider"
+            <CoreImage
               :src="asset.thumbnail.url"
               :alt="`${asset.title}-${asset.resources[0].name}`"
             />
@@ -80,7 +79,7 @@ export default Vue.extend({
             :class="`shot-thumnail-without-container ${asset.resources[0].url.split('.').pop()}`"
           >
             <div class="shot-thumnail-without-img">
-              <NuxtImg
+              <CoreImage
                 :src="asset.thumbnail.url"
                 :format="asset.thumbnail.format"
                 :alt="`${asset.title} - ${asset.resources[0].name}`"
@@ -89,7 +88,7 @@ export default Vue.extend({
                 class="text-center"
               >{{ asset.title }}.{{ asset.resources[0].url.split('.').pop() }}</span>
             </div>
-            <NuxtImg
+            <CoreImage
               class="shot-thumbnail-icon"
               :src="asset.thumbnail.url"
               :format="asset.thumbnail.format"
@@ -143,7 +142,7 @@ export default Vue.extend({
         <div class="flex items-center justify-between">
           <div class="user-information">
             <a href class="user-infor__avatar">
-              <img :src="asset.author.avatar.url" alt width="24" height="24" />
+              <CoreImage :src="asset.author.avatar.url" alt width="24" height="24" />
             </a>
             <a href class="user-info__name">{{ asset.author.username }}</a>
           </div>
