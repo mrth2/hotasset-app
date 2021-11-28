@@ -18,10 +18,9 @@ export default Vue.extend({
 		src(): string {
 			if (this.provider === 'cloudinary') {
 				return this.$attrs.src.replace(String(process.env.CLOUDINARY_URL), '')
+			} else if (this.$attrs.src.includes('~/assets/images/')) {
+				return this.$attrs.src.replace('~/assets/images/', '/')
 			}
-      else if (this.$attrs.src.includes('~/assets/images/')) {
-        return this.$attrs.src.replace('~/assets/images/', '/')
-      }
 			return this.$attrs.src
 		},
 		modifiedAttrs() {
@@ -51,3 +50,9 @@ export default Vue.extend({
 		v-on="$listeners"
 	/>
 </template>
+
+<style lang="postcss">
+picture img {
+	margin: auto;
+}
+</style>

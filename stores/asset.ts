@@ -56,8 +56,8 @@ export const useAssetStore = defineStore('asset', {
     async fetchAssets(options: IAssetFilter) {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[] }>({
         query: gql`
-          query ASSETS ($category: String, $type: ID, $channel: ID, $tag: ID, $sort: String, $start: Int, $limit: Int, $download: Boolean) {
-            assets (where: { categories: {slug: $category}, types: $type, channels: $channel, tags: $tag, resources: {size_gte: 0}, can_download: $download}, sort: $sort, start: $start, limit: $limit) {
+          query ASSETS ($author: ID, $category: String, $type: ID, $channel: ID, $tag: ID, $sort: String, $start: Int, $limit: Int, $download: Boolean) {
+            assets (where: { author: { username: $author }, categories: {slug: $category}, types: $type, channels: $channel, tags: $tag, resources: {size_gte: 0}, can_download: $download}, sort: $sort, start: $start, limit: $limit) {
               id
               title
               description
@@ -105,7 +105,7 @@ export const useAssetStore = defineStore('asset', {
           let url = ''
           if (type?.value === IAssetTypeValue.IMAGE) {
             provider = IAssetProvider.CLOUDINARY
-            url = asset.resources[0].url.replace('https://res.cloudinary.com/hotasset-com/image/upload', '')
+            url = asset.resources[0].url
           }
           else if (type?.value === IAssetTypeValue.PDF) {
             url = '/icons/pdf.svg'

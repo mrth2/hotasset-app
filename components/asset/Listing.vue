@@ -18,6 +18,10 @@ export default Vue.extend({
 		loadMore: {
 			type: Boolean,
 			default: true
+		},
+		noPhotoMessage: {
+			type: String,
+			default: 'Sorry, we can not found any assets :('
 		}
 	},
 	// emits: ['update:filters', 'reload'],
@@ -213,7 +217,7 @@ export default Vue.extend({
 				class="py-10 flex flex-col items-center justify-center"
 			>
 				<CoreImage src="~/assets/images/no-photo.png" width="300" />
-				<h3 class="mt-6">Sorry, we can not found any assets :(</h3>
+				<h3 class="mt-6">{{ noPhotoMessage }}</h3>
 			</div>
 		</div>
 		<!-- load more -->

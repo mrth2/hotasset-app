@@ -62,6 +62,7 @@ export interface IAsset {
 }
 
 export interface IAssetFilter {
+  author?: string
   category?: string
   channel?: string
   type?: string
