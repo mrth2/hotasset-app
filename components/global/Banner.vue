@@ -21,7 +21,7 @@ export default Vue.extend({
           <NuxtLink v-else class="banner__btn btn-primary" to="/signup">Sign up</NuxtLink>
         </div>
         <div class="banner-image">
-          <NuxtPicture
+          <CoreImage
             :src="`/homepage/${!$strapi.user ? 'hero-' : ''}illustration.png`"
             alt
             class="mx-auto"

@@ -108,7 +108,7 @@ export default Vue.extend({
 					<template v-if="user">
 						<div class="site-nav-login">
 							<NuxtLink :to="`/profile/${user.username}`">
-								<img
+								<CoreImage
 									v-if="user.avatar"
 									class="rounded-full"
 									:src="user.avatar.url"
@@ -122,11 +122,11 @@ export default Vue.extend({
 						<div class="site-nav-actions">
 							<NuxtLink to="/about" class="site-nav-actions__link">About</NuxtLink>
 							<a class="site-nav-actions__link relative">
-								<img src="~/assets/images/icons/bell.svg" alt />
+								<CoreImage src="~/assets/images/icons/bell.svg" alt />
 								<span class="notify-count">7</span>
 							</a>
 							<NuxtLink :to="`/profile/${user.username}`">
-								<img
+								<CoreImage
 									v-if="user.avatar"
 									class="rounded-full"
 									:src="user.avatar.url"
@@ -142,7 +142,7 @@ export default Vue.extend({
 					<template v-else>
 						<div class="site-nav-login">
 							<NuxtLink to="/signup">
-								<img src="~/assets/images/icons/user.svg" alt width="24" height="24" />
+								<CoreImage src="~/assets/images/icons/user.svg" alt width="24" height="24" />
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">

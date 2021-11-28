@@ -231,7 +231,7 @@ export default Vue.extend({
 		<div class="container mx-auto px-5 relative">
 			<div class="back xl:absolute mt-8 left-6">
 				<a href class="text-gray-500 inline-flex items-center">
-					<img src="~/assets/images/icons/arrow-left.svg" class="inline-block mr-2" alt />
+					<CoreImage src="~/assets/images/icons/arrow-left.svg" class="inline-block mr-2" alt />
 					Back
 				</a>
 			</div>
@@ -267,12 +267,12 @@ export default Vue.extend({
 								class="upload-big-preview"
 								:class="{ icon: imagesPreview[currentPreviewIndex].includes('_nuxt') }"
 							>
-								<img :src="imagesPreview[currentPreviewIndex]" alt class="mx-auto" />
+								<CoreImage :src="imagesPreview[currentPreviewIndex]" alt class="mx-auto" />
 								<p class="text-gray-500 mt-4">{{ form.files[currentPreviewIndex].name }}</p>
 							</div>
 							<template v-else>
 								<div class="mb-4">
-									<img src="~/assets/images/icons/upload-img.svg" alt class="mx-auto" />
+									<CoreImage src="~/assets/images/icons/upload-img.svg" alt class="mx-auto" />
 								</div>
 								<p class="font-medium text-gray-500 mb-3">
 									Drag & Drop an Image or
@@ -289,7 +289,7 @@ export default Vue.extend({
 								<div v-for="(file, index) in form.files" :key="index" class="upload-gallery-item relative">
 									<template v-if="imagesPreview[index]">
 										<div class="h-full" @click="currentPreviewIndex = index">
-											<img
+											<CoreImage
 												:src="imagesPreview[index]"
 												alt
 												:class="{ icon: imagesPreview[index].includes('_nuxt') }"

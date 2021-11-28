@@ -185,7 +185,7 @@ export default Vue.extend({
     </div>
     <div class="user-upload-avatar flex items-center space-x-5">
       <div v-if="user.avatar.url" class="rounded-full overflow-hidden">
-        <img class="object-cover" :srcset="`${user.avatar.url} 2x`" alt />
+        <CoreImage class="object-cover" :srcset="`${user.avatar.url} 2x`" alt />
       </div>
       <FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="4x" />
       <input ref="avatarInput" type="file" class="hidden" @change="selectAvatar" />

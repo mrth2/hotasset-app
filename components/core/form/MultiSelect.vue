@@ -26,7 +26,7 @@ export default Vue.extend({
 </template>
 <style scoped lang="postcss">
 .multiselect ::v-deep {
-  @apply py-0;
+  @apply py-0 w-auto;
   min-height: 40px;
   .multiselect__spinner {
     @apply bg-transparent;

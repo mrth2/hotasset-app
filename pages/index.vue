@@ -27,7 +27,7 @@ export default Vue.extend({
     <main class="border-t relative">
       <div class="container mx-auto px-4 sm:px-6">
         <!-- asset main listing with all filters -->
-        <AssetListing :filters="filters" :load-more="true" @update:filters="filters = $event" />
+        <AssetListing :filters="filters" :load-more="false" @update:filters="filters = $event" />
         <!-- home CTA -->
         <div class="infinite-login-actions">
           <template v-if="$strapi.user">

@@ -26,7 +26,7 @@ export default Vue.extend({
           <Nuxt class="w-full sm:max-w-lg mx-auto lg:mr-40 self-center" />
         </div>
       </div>
-      <img
+      <CoreImage
         srcset="~/assets/images/social-media-instagram-digital-marketing-concept-3d-rendering.png 2x"
         alt
         class="absolute bottom-0 left-0 hidden w-3/12 lg:block xl:w-auto"
