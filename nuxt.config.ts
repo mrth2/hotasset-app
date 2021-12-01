@@ -44,6 +44,10 @@ export default {
     { src: '~/plugins/v-tooltip.ts', mode: 'client' }
   ],
 
+  router: {
+    middleware: ['nuxt-server-init']
+  },
+
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 

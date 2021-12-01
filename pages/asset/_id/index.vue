@@ -68,7 +68,7 @@ export default Vue.extend({
 	data() {
 		return {
 			loading: true,
-			asset: null as IAsset | null,
+			asset: null as unknown as IAsset,
 			sameAuthorAssets: [] as IAsset[],
 			similarAssets: [] as IAsset[],
 			swiper: {
@@ -122,7 +122,7 @@ export default Vue.extend({
 		async fetchSameAuthorAssets() {
 			try {
 				this.sameAuthorAssets = await useAssetStore().fetchAssets({
-					author: this.asset?.author?.username,
+					author: this.asset.author.username,
 					not_id: this.assetId,
 					limit: 4
 				})
@@ -152,163 +152,159 @@ export default Vue.extend({
 
 <template>
 	<main class="border-t relative">
-		<template v-if="!loading && asset">
-			<!-- author, like and follow -->
-			<div class="container mx-auto px-4 sm:px-6 relative">
-				<div class="back xl:absolute mt-8 left-6">
-					<a href="" class="text-gray-500 inline-flex items-center">
-						<img
-							src="~/assets/images/icons/arrow-left.svg"
-							class="inline-block mr-2"
-							alt=""
-						/>
-						Back
-					</a>
-				</div>
-				<div class="indivisual-card">
-					<div class="flex justify-between items-center py-7">
-						<div class="flex space-x-3">
-							<Avatar :size="44" />
-							<div>
-								<span class="block">{{ asset.author.username }}</span>
-								<a href="#" class="text-brand">Follow</a>
-							</div>
-						</div>
+		<!-- author, like and follow -->
+		<div class="container mx-auto px-4 sm:px-6 relative">
+			<div class="back xl:absolute mt-8 left-6">
+				<a href="" class="text-gray-500 inline-flex items-center">
+					<img
+						src="~/assets/images/icons/arrow-left.svg"
+						class="inline-block mr-2"
+						alt=""
+					/>
+					Back
+				</a>
+			</div>
+			<div class="indivisual-card">
+				<div class="flex justify-between items-center py-7">
+					<div class="flex space-x-3">
+						<Avatar :size="44" />
 						<div>
-							<button class="btn__like">
-								<CoreIconFavorite
-									class="icon fill-current shot-tools-icon mr-2"
-								/>
-								Like
-							</button>
+							<span class="block">{{ asset.author.username }}</span>
+							<a href="#" class="text-brand">Follow</a>
 						</div>
+					</div>
+					<div>
+						<button class="btn__like">
+							<CoreIconFavorite
+								class="icon fill-current shot-tools-icon mr-2"
+							/>
+							Like
+						</button>
 					</div>
 				</div>
 			</div>
-			<!-- gallery -->
-			<div class="container mx-auto sm:px-6 relative">
-				<div class="indivisual-card">
-					<div class="indivisual-card-container">
-						<div class="indivisual-card-img relative" :class="{'lg:!mr-0': asset.resources.length === 1}">
+		</div>
+		<!-- gallery -->
+		<div class="container mx-auto sm:px-6 relative">
+			<div class="indivisual-card">
+				<div class="indivisual-card-container">
+					<div
+						class="indivisual-card-img relative"
+						:class="{ 'lg:!mr-0': asset.resources.length === 1 }"
+					>
+						<Swiper
+							v-if="Object.keys(swiper.main).length && asset.resources.length"
+							ref="mainSwiper"
+							class="card-img-large"
+							:options="swiper.main"
+						>
+							<SwiperSlide
+								v-for="resource in asset.resources"
+								:key="resource.id"
+							>
+								<CoreImage
+									:src="resource.url"
+									:alt="resource.name"
+									class="sm:rounded-lg"
+								/>
+							</SwiperSlide>
+						</Swiper>
+						<div
+							v-if="asset.resources.length > 1"
+							class="card-img-gallery z-10"
+						>
 							<Swiper
-								v-if="Object.keys(swiper.main).length && asset.resources.length"
-								ref="mainSwiper"
-								class="card-img-large"
-								:options="swiper.main"
+								ref="thumbnailSwiper"
+								class="thumbnail-gallery"
+								:options="swiper.thumbnail"
 							>
 								<SwiperSlide
 									v-for="resource in asset.resources"
 									:key="resource.id"
+									class="rounded-lg"
 								>
 									<CoreImage
 										:src="resource.url"
 										:alt="resource.name"
-										class="sm:rounded-lg"
+										class="rounded-md"
+										:width="92"
+										:height="65"
+										fit="minInside"
 									/>
 								</SwiperSlide>
 							</Swiper>
-							<div
-								v-if="asset.resources.length > 1"
-								class="card-img-gallery z-10"
-							>
-								<Swiper
-									ref="thumbnailSwiper"
-									class="thumbnail-gallery"
-									:options="swiper.thumbnail"
-								>
-									<SwiperSlide
-										v-for="resource in asset.resources"
-										:key="resource.id"
-										class="rounded-lg"
-									>
-										<CoreImage
-											:src="resource.url"
-											:alt="resource.name"
-											class="rounded-md"
-											:width="92"
-											:height="65"
-											fit="minInside"
-										/>
-									</SwiperSlide>
-								</Swiper>
-							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- tags & info -->
-			<div class="container mx-auto px-4 sm:px-6 relative">
-				<div class="indivisual-card">
-					<div class="indivisual-card-container">
-						<div class="indivisual-tag">
-							<a
-								v-for="(tag, index) in asset.tags"
-								:key="tag.id"
-								class="indivisual-tag__item capitalize"
-								:class="{ active: index === 0 }"
-							>
-								{{ tag.name }}
-							</a>
-						</div>
-						<h1 class="indivisual__name">{{ asset.title }}</h1>
-						<p class="indivisual__desc">
-							{{ asset.description }}
-						</p>
-						<!-- <p class="indivisual__desc mt-10">
+		</div>
+		<!-- tags & info -->
+		<div class="container mx-auto px-4 sm:px-6 relative">
+			<div class="indivisual-card">
+				<div class="indivisual-card-container">
+					<div class="indivisual-tag">
+						<a
+							v-for="(tag, index) in asset.tags"
+							:key="tag.id"
+							class="indivisual-tag__item capitalize"
+							:class="{ active: index === 0 }"
+						>
+							{{ tag.name }}
+						</a>
+					</div>
+					<h1 class="indivisual__name">{{ asset.title }}</h1>
+					<p class="indivisual__desc">
+						{{ asset.description }}
+					</p>
+					<!-- <p class="indivisual__desc mt-10">
 						Something something
 						<a href="#" class="text-brand">www.weburl.com</a>
 					</p> -->
-					</div>
 				</div>
 			</div>
-			<!-- related assets -->
-			<div class="container mx-auto px-4 sm:px-6 relative">
-				<!-- same author assets -->
-				<section v-if="sameAuthorAssets.length" class="mb-8 mt-20">
-					<div class="flex justify-between items-center mb-4">
-						<h4 class="font-bold text-xl">
-							More from {{ asset.author.username }}
-						</h4>
-						<NuxtLink
-							:to="`/profile/${asset.author.username}`"
-							class="text-brand"
-							>View Profile</NuxtLink
-						>
+		</div>
+		<!-- related assets -->
+		<div v-if="!loading" class="container mx-auto px-4 sm:px-6 relative">
+			<!-- same author assets -->
+			<section v-if="sameAuthorAssets.length" class="mb-8 mt-20">
+				<div class="flex justify-between items-center mb-4">
+					<h4 class="font-bold text-xl">
+						More from {{ asset.author.username }}
+					</h4>
+					<NuxtLink :to="`/profile/${asset.author.username}`" class="text-brand"
+						>View Profile</NuxtLink
+					>
+				</div>
+				<div class="shots-grid">
+					<div class="shots-grid-row grid md:grid-cols-2 xl:grid-cols-4 gap-8">
+						<AssetCard
+							v-for="item in sameAuthorAssets"
+							:key="item.id"
+							:asset="item"
+							:height="250"
+						/>
 					</div>
-					<div class="shots-grid">
-						<div
-							class="shots-grid-row grid md:grid-cols-2 xl:grid-cols-4 gap-8"
-						>
-							<AssetCard
-								v-for="item in sameAuthorAssets"
-								:key="item.id"
-								:asset="item"
-								:height="250"
-							/>
-						</div>
+				</div>
+			</section>
+			<!-- similar assets -->
+			<section v-if="similarAssets.length" class="mb-4">
+				<div class="flex justify-between mb-4">
+					<h4 class="font-bold text-xl">Similar Assets</h4>
+				</div>
+				<div class="shots-grid">
+					<div class="shots-grid-row grid md:grid-cols-2 xl:grid-cols-4 gap-8">
+						<AssetCard
+							v-for="item in similarAssets"
+							:key="item.id"
+							:asset="item"
+							:height="250"
+						/>
 					</div>
-				</section>
-				<!-- similar assets -->
-				<section v-if="similarAssets.length" class="mb-4">
-					<div class="flex justify-between mb-4">
-						<h4 class="font-bold text-xl">Similar Assets</h4>
-					</div>
-					<div class="shots-grid">
-						<div
-							class="shots-grid-row grid md:grid-cols-2 xl:grid-cols-4 gap-8"
-						>
-							<AssetCard
-								v-for="item in similarAssets"
-								:key="item.id"
-								:asset="item"
-								:height="250"
-							/>
-						</div>
-					</div>
-				</section>
-			</div>
-		</template>
-		<div v-else class="min-h-screen">
+				</div>
+			</section>
+		</div>
+		<!-- loading related assets -->
+		<div v-else class="relative mt-20 min-h-[500px]">
 			<div
 				class="
 					absolute

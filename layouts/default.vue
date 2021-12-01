@@ -1,12 +1,8 @@
 <script lang="ts">
 import Vue from 'vue'
-import { useHeaderStore } from '~/stores/header'
 
 export default Vue.extend({
-	name: 'DefaultLayout',
-	async fetch() {
-		await useHeaderStore().fetchCategories()
-	}
+	name: 'DefaultLayout'
 })
 </script>
 <template>
