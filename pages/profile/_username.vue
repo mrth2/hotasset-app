@@ -4,24 +4,23 @@ import Vue from 'vue'
 import { IUser, IUserFollower } from '~/@types'
 import { IAssetFilter } from '~/@types/asset'
 import { useAssetStore } from '~/stores/asset'
-
-interface UserResponse {
-	users: IUser[]
-	followers: {
-		aggregate: {
-			count: number
-			totalCount: number
-		}
-	}
-	followings: {
-		aggregate: {
-			count: number
-			totalCount: number
-		}
-	}
-}
+import { useUserStore } from '~/stores/user'
 
 export default Vue.extend({
+	async asyncData({ route, error }) {
+		try {
+			const data = await useUserStore().fetchUser(route.params.username)
+			if (!data.user) {
+				throw new Error('User not found')
+			}
+			return data
+		} catch (_err) {
+			error({
+				statusCode: 404,
+				message: 'User not found'
+			})
+		}
+	},
 	data() {
 		return {
 			filters: {
@@ -38,9 +37,6 @@ export default Vue.extend({
 			requestingFollow: false
 		}
 	},
-	async fetch() {
-		await this.fetchUser()
-	},
 	computed: {
 		isOwner(): boolean {
 			return this.$strapi.user?.username === this.$route.params.username
@@ -48,52 +44,7 @@ export default Vue.extend({
 	},
 	methods: {
 		async fetchUser() {
-			await this.$apollo
-				.query<UserResponse>({
-					query: gql`
-						query User($username: String!) {
-							users(where: { username: $username }, limit: 1) {
-								id
-								username
-								avatar {
-									provider
-									url
-								}
-								first_name
-								last_name
-								biography
-								website
-							}
-							followings: userFollowersConnection(
-								where: { user: { username: $username } }
-							) {
-								aggregate {
-									count
-									totalCount
-								}
-							}
-							followers: userFollowersConnection(
-								where: { follower: { username: $username } }
-							) {
-								aggregate {
-									count
-									totalCount
-								}
-							}
-						}
-					`,
-					variables: {
-						username: this.$route.params.username
-					}
-				})
-				.then(({ data }) => {
-					this.user = data.users[0]
-					this.followers = data.followers.aggregate.count
-					this.followings = data.followings.aggregate.count
-				})
-				.catch(() => {
-					throw new Error('Failed to fetch user profile')
-				})
+			await useUserStore().fetchUser(this.$route.params.username)
 		},
 		async follow() {
 			if (this.requestingFollow) {
@@ -164,7 +115,7 @@ export default Vue.extend({
 })
 </script>
 <template>
-	<main class="border-t relative">
+	<main v-if="user" class="border-t relative">
 		<div class="profile guest-view">
 			<CoreImage
 				src="~/assets/images/bgProfile.png"
@@ -173,13 +124,7 @@ export default Vue.extend({
 			/>
 			<div class="flex flex-col z-20">
 				<div class="profile__img">
-					<CoreImage
-						v-if="user.avatar"
-						:src="user.avatar.url"
-						:modifiers="{ roundCorner: 'max' }"
-						class="rounded-full mx-auto"
-					/>
-					<FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="6x" />
+					<Avatar :size="96" class="mx-auto" />
 				</div>
 
 				<div class="profile-social">

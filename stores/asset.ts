@@ -154,8 +154,6 @@ export const useAssetStore = defineStore('asset', {
           assetId,
           upvoter: upvoter ? [upvoter] : []
         }
-      }).catch((err) => {
-        this.$nuxt.app.$toast.error(err.message)
       })
       return response?.data?.updateAsset.asset
     }

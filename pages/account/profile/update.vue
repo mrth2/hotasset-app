@@ -184,10 +184,7 @@ export default Vue.extend({
       >People visiting your profile will see the following info</p>
     </div>
     <div class="user-upload-avatar flex items-center space-x-5">
-      <div v-if="user.avatar.url" class="rounded-full overflow-hidden">
-        <CoreImage class="object-cover" :srcset="`${user.avatar.url} 2x`" alt />
-      </div>
-      <FontAwesomeIcon v-else :icon="['far', 'user-circle']" size="4x" />
+      <Avatar :size="72" />
       <input ref="avatarInput" type="file" class="hidden" @change="selectAvatar" />
       <button class="btn-primary" @click="openFinder">Upload Different Image</button>
     </div>

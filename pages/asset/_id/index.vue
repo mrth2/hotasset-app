@@ -106,25 +106,19 @@ export default Vue.extend({
 	<main class="border-t relative">
 		<div class="container mx-auto px-4 sm:px-6 relative">
 			<div class="back xl:absolute mt-8 left-6">
-				<a href="" class="text-gray-500 inline-flex items-center"
-					><img
+				<a href="" class="text-gray-500 inline-flex items-center">
+					<img
 						src="~/assets/images/icons/arrow-left.svg"
 						class="inline-block mr-2"
 						alt=""
 					/>
-					back</a
-				>
+					Back
+				</a>
 			</div>
 			<div class="indivisual-card">
 				<div class="flex justify-between items-center py-7">
 					<div class="flex space-x-3">
-						<img
-							srcset="~/assets/images/avatar.png 2x"
-							alt=""
-							class="rounded-full"
-							width="44"
-							height="44"
-						/>
+						<Avatar :size="44" />
 						<div>
 							<span class="block">masump</span>
 							<a href="#" class="text-brand">Follow</a>
@@ -155,7 +149,12 @@ export default Vue.extend({
 			<div class="indivisual-card">
 				<div class="indivisual-card-container">
 					<div class="indivisual-card-img relative">
-						<Swiper v-if="Object.keys(swiper.main).length" ref="mainSwiper" class="card-img-large" :options="swiper.main">
+						<Swiper
+							v-if="Object.keys(swiper.main).length"
+							ref="mainSwiper"
+							class="card-img-large"
+							:options="swiper.main"
+						>
 							<SwiperSlide>
 								<img
 									src="https://swiperjs.com/demos/images/nature-1.jpg"

@@ -113,20 +113,7 @@ export default Vue.extend({
 					<template v-if="user">
 						<div class="site-nav-login">
 							<NuxtLink :to="`/profile/${user.username}`">
-								<CoreImage
-									v-if="user.avatar"
-									:component="'NuxtImg'"
-									class="rounded-full"
-									:src="user.avatar.url"
-									:modifiers="{ roundCorner: 'max', gravity: 'face' }"
-									fit="fill"
-									alt
-								/>
-								<FontAwesomeIcon
-									v-else
-									:icon="['far', 'user-circle']"
-									size="lg"
-								/>
+								<Avatar />
 							</NuxtLink>
 						</div>
 						<div class="site-nav-actions">
@@ -138,19 +125,7 @@ export default Vue.extend({
 								<span class="notify-count">7</span>
 							</a>
 							<NuxtLink :to="`/profile/${user.username}`">
-								<CoreImage
-									v-if="user.avatar"
-									class="rounded-full"
-									:src="user.avatar.url"
-									alt
-									width="36"
-									height="36"
-								/>
-								<FontAwesomeIcon
-									v-else
-									:icon="['far', 'user-circle']"
-									size="lg"
-								/>
+								<Avatar />
 							</NuxtLink>
 							<NuxtLink to="/upload" class="btn-primary ml-8">Upload</NuxtLink>
 						</div>
