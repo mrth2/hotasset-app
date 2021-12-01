@@ -34,7 +34,8 @@
       "cookie-universal-nuxt/types",
       "@nuxtjs/toast",
       "@pinia/nuxt",
-      "@nuxt/image"
+      "@nuxt/image",
+      "@types/swiper"
     ],
     "noImplicitAny": false
   },
