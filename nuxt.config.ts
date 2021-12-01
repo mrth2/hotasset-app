@@ -30,8 +30,16 @@ export default {
     'v-tooltip/dist/v-tooltip.css'
   ],
 
+  loading: {
+    color: '#FF5864',
+    height: '3px',
+    continuous: true,
+    throttle: 0
+  },
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/helper.ts' },
     { src: '~/plugins/google.ts', mode: 'client' },
     { src: '~/plugins/v-tooltip.ts', mode: 'client' }
   ],

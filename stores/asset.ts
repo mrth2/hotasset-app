@@ -22,6 +22,43 @@ export const useAssetStore = defineStore('asset', {
         const types = files.map(file => state.types.find(type => type.mimes.find(mime => mime.mimeType === file.type)))
         return types.filter(type => type)
       }
+    },
+    getAssetSchema() {
+      return `
+        id
+        title
+        description
+        likes
+        author {
+          username
+          avatar {
+            url
+          }
+        }
+        tags {
+          name
+        }
+        types {
+          name
+        }
+        channels {
+          name
+        }
+        upvoters {
+          id
+        }
+        resources {
+          name
+          mime
+          ext
+          size
+          url
+          width
+          height
+        }
+        createdAt
+        updatedAt
+      `
     }
   },
   actions: {
@@ -53,44 +90,37 @@ export const useAssetStore = defineStore('asset', {
         this.channels = data.assetChannels
       })
     },
-    async fetchAssets(options: IAssetFilter) {
+    async fetchAssets(options: Partial<IAssetFilter>) {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[] }>({
         query: gql`
-          query ASSETS ($author: ID, $category: String, $type: ID, $channel: ID, $tag: ID, $sort: String, $start: Int, $limit: Int, $download: Boolean) {
-            assets (where: { author: { username: $author }, categories: {slug: $category}, types: $type, channels: $channel, tags: $tag, resources: {size_gte: 0}, can_download: $download}, sort: $sort, start: $start, limit: $limit) {
-              id
-              title
-              description
-              likes
-              author {
-                username
-                avatar {
-                  url
-                }
-              }
-              tags {
-                name
-              }
-              types {
-                name
-              }
-              channels {
-                name
-              }
-              upvoters {
-                id
-              }
-              resources {
-                name
-                mime
-                ext
-                size
-                url
-                width
-                height
-              }
-              createdAt
-              updatedAt
+          query ASSETS (
+            $author: ID, $not_id: ID, 
+            $type: ID, $channel: ID, 
+            $category: String, $categories: [ID],
+            $tag: ID, $tags: [ID],
+            $sort: String, $start: Int, $limit: Int, $download: Boolean
+          ) {
+            assets (
+              where: { 
+                author: { username: $author }, 
+                id_ne: $not_id, 
+                categories: {slug: $category}, 
+                types: $type, 
+                channels: $channel, 
+                tags: $tag, 
+                tags_in: [$tags]
+                resources: { size_gte: 0 }, 
+                can_download: $download
+                _or: [
+                  { tags_in: [$tags] },
+                  { categories_in: [$categories] }
+                ]
+              },
+              sort: $sort, 
+              start: $start, 
+              limit: $limit
+            ) {
+              ${this.getAssetSchema}
             }
           }
         `,

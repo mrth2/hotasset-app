@@ -12,6 +12,10 @@ export default Vue.extend({
 			default() {
 				return {} as IAsset
 			}
+		},
+		height: {
+			type: Number as PropType<number>,
+			default: null
 		}
 	},
 	data() {
@@ -28,6 +32,18 @@ export default Vue.extend({
 				)
 			}
 			return false
+		},
+		figureHeight(): string {
+			if (this.height) {
+				return this.height + 'px'
+			}
+			return 'auto'
+		},
+		srcHeight(): number | null {
+			if (this.height) {
+				return this.height * 2
+			}
+			return null
 		}
 	},
 	watch: {
@@ -71,6 +87,9 @@ export default Vue.extend({
 				)
 				this.localLiked = currentLiked
 			}
+		},
+		getAssetExt(asset: IAsset): string | undefined {
+			return asset.resources[0].url.split('.').pop()
 		}
 	}
 })
@@ -81,30 +100,29 @@ export default Vue.extend({
 		<div class="inner">
 			<div class="shot-thumbnail group">
 				<template v-if="asset.thumbnail.provider === 'cloudinary'">
-					<figure>
+					<figure :style="`height: ${figureHeight}`">
 						<CoreImage
 							:src="asset.thumbnail.url"
 							:alt="`${asset.title}-${asset.resources[0].name}`"
+							:height="srcHeight"
 						/>
 					</figure>
 				</template>
 				<template v-else>
 					<figure
-						:class="`shot-thumnail-without-container ${asset.resources[0].url
-							.split('.')
-							.pop()}`"
+						:class="`shot-thumnail-without-container ${getAssetExt(asset)}`"
+						:style="`height: ${figureHeight}`"
 					>
 						<div class="shot-thumnail-without-img">
 							<CoreImage
 								:src="asset.thumbnail.url"
 								:format="asset.thumbnail.format"
 								:alt="`${asset.title} - ${asset.resources[0].name}`"
+								:height="srcHeight"
 							/>
-							<span class="text-center"
-								>{{ asset.title }}.{{
-									asset.resources[0].url.split('.').pop()
-								}}</span
-							>
+							<span class="text-center">
+								{{ asset.title }}.{{getAssetExt(asset)}}
+							</span>
 						</div>
 						<CoreImage
 							class="shot-thumbnail-icon"
@@ -184,6 +202,14 @@ export default Vue.extend({
 
 	&.mounted {
 		@apply translate-y-0;
+	}
+
+	.shot-thumbnail {
+		figure:not(.shot-thumnail-without-container) {
+			img {
+				@apply object-cover object-center w-full h-full;
+			}
+		}
 	}
 }
 </style>

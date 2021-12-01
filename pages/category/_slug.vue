@@ -15,7 +15,7 @@ export default Vue.extend({
         limit: 24,
         tag: undefined,
         start: 0
-      } as IAssetFilter,
+      } as Partial<IAssetFilter>,
     }
   }
 })

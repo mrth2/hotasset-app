@@ -30,7 +30,7 @@ export default Vue.extend({
 				sort: useAssetStore().sortTypes[0].value,
 				limit: 24,
 				start: 0
-			} as IAssetFilter,
+			} as Partial<IAssetFilter>,
 			user: {} as IUser,
 			followers: 0,
 			followings: 0,
@@ -139,7 +139,7 @@ export default Vue.extend({
 					</a>
 				</div>
 				<h2 class="profile__name">
-					{{ user.first_name }} {{ user.last_name }}
+					{{ $displayName(user) }}
 				</h2>
 				<p class="profile__desc">
 					{{ user.biography }}

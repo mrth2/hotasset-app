@@ -46,7 +46,7 @@ export interface IAsset {
   types: IAssetType[]
   channels: IAssetChannel[]
   can_download: boolean
-  category: ICategory
+  categories: ICategory[]
   tags: ITag[]
   likes: number
   upvoters: IUser[]
@@ -62,12 +62,15 @@ export interface IAsset {
 }
 
 export interface IAssetFilter {
-  author?: string
-  category?: string
-  channel?: string
-  type?: string
-  tag?: string
-  sort?: string
+  not_id: string
+  author: string
+  category: string
+  categories: string[]
+  channel: string
+  type: string
+  tag: string
+  tags: string[]
+  sort: string
   start: number
   limit: number
 }
