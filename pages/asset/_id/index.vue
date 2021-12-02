@@ -167,7 +167,7 @@ export default Vue.extend({
 			<div class="indivisual-card">
 				<div class="flex justify-between items-center py-7">
 					<div class="flex space-x-3">
-						<Avatar :size="44" />
+						<Avatar :src="asset.author.avatar.url" :size="44" />
 						<div>
 							<span class="block">{{ asset.author.username }}</span>
 							<a href="#" class="text-brand">Follow</a>
