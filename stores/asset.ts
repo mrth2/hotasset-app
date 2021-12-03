@@ -90,58 +90,86 @@ export const useAssetStore = defineStore('asset', {
         this.channels = data.assetChannels
       })
     },
-    async fetchAssets(options: Partial<IAssetFilter>): Promise<IAsset[]> {
-      const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[] }>({
+    async fetchAssets(options: Partial<IAssetFilter>, count = false) {
+      const where = `
+        { 
+          # on profile page
+          author: { username: $author },
+          # on categry page
+          categories: {slug: $category},
+          # on dropdown filters
+          types: $type, 
+          channels: $channel,
+          tags: $tag, 
+          can_download: $download,
+          # for detail page, query assets that different from current asset
+          id_ne: $not_id,
+          # as always to exclude broken asset posts with no valid file
+          resources: { size_gte: 0 },
+          # use or in specific case
+          _or: [
+            # query similar
+            { tags_in: [$tags] },
+            { categories_in: [$categories] },
+            # query search
+            { title_contains: $search },
+            { description_contains: $search }
+            { tags: { name_contains: $search } },
+            { categories: { title_contains: $search } }
+          ]
+        }
+      `
+      const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[], count?: { aggregate: { count: number } } }>({
         query: gql`
           query ASSETS (
             $author: ID, $not_id: ID, 
             $type: ID, $channel: ID, 
             $category: String, $categories: [ID],
             $tag: ID, $tags: [ID],
+            $search: String,
             $sort: String, $start: Int, $limit: Int, $download: Boolean
+            $count: Boolean!
           ) {
             assets (
-              where: { 
-                author: { username: $author }, 
-                id_ne: $not_id, 
-                categories: {slug: $category}, 
-                types: $type, 
-                channels: $channel, 
-                tags: $tag, 
-                tags_in: [$tags]
-                resources: { size_gte: 0 }, 
-                can_download: $download
-                _or: [
-                  { tags_in: [$tags] },
-                  { categories_in: [$categories] }
-                ]
-              },
+              where: ${where},
               sort: $sort, 
               start: $start, 
               limit: $limit
             ) {
               ${this.getAssetSchema}
             }
+            # get count
+            count: assetsConnection (where: ${where}) @include(if: $count) {
+              aggregate {
+                count
+              }
+            }
           }
         `,
-        variables: options,
+        variables: { ...options, count },
         fetchPolicy: 'network-only'
       })
       if (response) {
-        return response.data.assets.map(asset => {
-          const type = this.getAssetType(asset.resources[0])
-          const { provider, url, format } = this.$nuxt.app.$getAssetUrl(asset.resources[0].url, type?.value)
-          return {
-            ...asset,
-            thumbnail: {
-              provider,
-              url,
-              format
+        return {
+          assets: response.data.assets.map(asset => {
+            const type = this.getAssetType(asset.resources[0])
+            const { provider, url, format } = this.$nuxt.app.$getAssetUrl(asset.resources[0].url, type?.value)
+            return {
+              ...asset,
+              thumbnail: {
+                provider,
+                url,
+                format
+              }
             }
-          }
-        })
+          }),
+          count: response.data?.count?.aggregate.count || 0
+        }
       }
-      return [] as IAsset[]
+      return {
+        assets: [] as IAsset[],
+        count: 0
+      }
     },
     async likeOrUnlikeAsset(assetId: string, upvoter?: string) {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.mutate<{

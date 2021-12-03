@@ -9,6 +9,11 @@ type menuColCategories = ICategory & {
 
 export default Vue.extend({
 	name: 'Header',
+	data() {
+		return {
+			searchKeyword: ''
+		}
+	},
 	computed: {
 		headerCategories(): menuColCategories[] {
 			return useHeaderStore().categories.map((parent) => {
@@ -33,6 +38,9 @@ export default Vue.extend({
 			if (this.$route.name === 'category-slug') {
 				return this.$route.params.slug
 			}
+			else if (this.$route.name === 'search' && this.$route.query.category) {
+				return this.$route.query.category
+			}
 			return null
 		}
 	},
@@ -40,6 +48,16 @@ export default Vue.extend({
 		async logout() {
 			await this.$strapi.logout()
 			this.$nuxt.refresh()
+		},
+		searchAsset() {
+			if (this.searchKeyword !== '') {
+				const params = new URLSearchParams()
+				params.append('q', this.searchKeyword)
+				if (this.$route.params.slug) {
+					params.append('category', this.$route.params.slug)
+				}
+				this.$router.push(`/search?${params.toString()}`)
+			}
 		}
 	}
 })
@@ -56,7 +74,7 @@ export default Vue.extend({
 							<CoreIconLogo />
 						</NuxtLink>
 					</div>
-					<form action class="form-search">
+					<form class="form-search" @submit.prevent="searchAsset">
 						<div class="xl:ml-12 flex rounded-md shadow-sm">
 							<button class="form-search__btn">
 								<svg
@@ -81,9 +99,8 @@ export default Vue.extend({
 								</svg>
 							</button>
 							<input
-								id="company-website"
+								v-model="searchKeyword"
 								type="text"
-								name="company-website"
 								class="form-search__input"
 								placeholder="Search HotAsset..."
 							/>

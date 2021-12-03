@@ -70,6 +70,7 @@ export interface IAssetFilter {
   type: string
   tag: string
   tags: string[]
+  search: string
   sort: string
   start: number
   limit: number

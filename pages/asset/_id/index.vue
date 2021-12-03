@@ -152,11 +152,12 @@ export default Vue.extend({
 	methods: {
 		async fetchSameAuthorAssets() {
 			try {
-				this.sameAuthorAssets = await useAssetStore().fetchAssets({
+				const { assets } = await useAssetStore().fetchAssets({
 					author: this.asset.author.username,
 					not_id: this.assetId,
 					limit: 4
 				})
+				this.sameAuthorAssets = assets
 			} catch (err) {
 				if (err instanceof Error) {
 					this.$toast.error(err.message)
@@ -165,12 +166,13 @@ export default Vue.extend({
 		},
 		async fetchSimilarAssets() {
 			try {
-				this.similarAssets = await useAssetStore().fetchAssets({
+				const { assets } = await useAssetStore().fetchAssets({
 					tags: this.asset?.tags?.map((tag) => tag.id) || [],
 					categories: this.asset?.categories?.map((cat) => cat.id) || [],
 					not_id: this.assetId,
 					limit: 4
 				})
+				this.similarAssets = assets
 			} catch (err) {
 				if (err instanceof Error) {
 					this.$toast.error(err.message)

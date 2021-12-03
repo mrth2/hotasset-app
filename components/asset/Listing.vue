@@ -11,6 +11,10 @@ Vue.use(MasonryWall)
 export default Vue.extend({
 	name: 'AssetListing',
 	props: {
+		getCount: {
+			type: Boolean,
+			default: false
+		},
 		filters: {
 			type: Object as PropType<IAssetFilter>,
 			required: true
@@ -24,7 +28,7 @@ export default Vue.extend({
 			default: 'Sorry, we can not found any assets :('
 		}
 	},
-	// emits: ['update:filters', 'reload'],
+	// emits: ['update:filters', 'reload', 'counted'],
 	data() {
 		return {
 			showFilters: false,
@@ -45,13 +49,9 @@ export default Vue.extend({
 		}
 	},
 	async fetch() {
-		if (this.hasTagFilter) {
-			useTagStore().fetchPopularTags()
+		if (this.isSSR) {
+			await this.initListing()
 		}
-		await Promise.all([
-			useAssetStore().fetchAssetMetaData(),
-			this.fetchAssets()
-		])
 	},
 	computed: {
 		assetTypes() {
@@ -72,6 +72,15 @@ export default Vue.extend({
 		},
 		hasTagFilter(): boolean {
 			return Object.prototype.hasOwnProperty.call(this.filters, 'tag')
+		},
+		// if get total asset is not needed, we load data in SSR
+		isSSR() {
+			return !this.getCount
+		}
+	},
+	async mounted() {
+		if (!this.isSSR) {
+			await this.initListing()
 		}
 	},
 	created() {
@@ -84,6 +93,15 @@ export default Vue.extend({
 		)
 	},
 	methods: {
+		async initListing() {
+			if (this.hasTagFilter) {
+				useTagStore().fetchPopularTags()
+			}
+			await Promise.all([
+				useAssetStore().fetchAssetMetaData(),
+				this.fetchAssets()
+			])
+		},
 		updateFilters(update: Partial<IAssetFilter>) {
 			this.$emit('update:filters', {
 				...this.filters,
@@ -93,11 +111,18 @@ export default Vue.extend({
 		},
 		async fetchAssets() {
 			this.fetchingAsset = true
-			const results = await useAssetStore().fetchAssets(this.filters)
+			const { assets, count } = await useAssetStore().fetchAssets(
+				this.filters,
+				this.getCount
+			)
 			if (this.filters.start > 0) {
-				this.assets = [...this.assets, ...results]
+				this.assets = [...this.assets, ...assets]
 			} else {
-				this.assets = results
+				this.assets = assets
+			}
+			// emit counted assets
+			if (this.getCount && count) {
+				this.$emit('counted', count)
 			}
 			this.fetchingAsset = false
 		},
