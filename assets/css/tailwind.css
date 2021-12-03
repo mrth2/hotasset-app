@@ -183,6 +183,34 @@ svg.filter-icon {
 .site-nav-desktop-nav {
 	@apply flex flex-row overflow-x-auto whitespace-nowrap justify-between py-5 space-x-8;
 }
+.header-user-setting {
+	@apply relative cursor-pointer;
+}
+.dropdown-user-setting {
+	@apply text-sm absolute z-10 right-1/2 translate-x-1/2 mt-2  border border-gray-50 overflow-auto shadow-xl bg-white;
+	top: calc(100% + 0px);
+	min-width: 335px;
+}
+.dropdown-user-setting h2 {
+	@apply py-4 text-base text-title mx-8 border-b mt-5;
+}
+.dropdown-user-setting ul {
+	@apply my-3;
+}
+.dropdown-user-setting ul li {
+	@apply px-8 hover:bg-gray-100;
+}
+.dropdown-user-setting ul li a {
+	@apply py-3 flex items-center text-base text-paragraph hover:text-title;
+}
+.dropdown-user-setting img {
+	@apply inline-block mr-3 opacity-50;
+	/* filter: grayscale(1); */
+}
+.dropdown-user-setting ul li:hover img {
+	/* filter: grayscale(0); */
+	@apply opacity-100;
+}
 .navbar__link {
 	@apply text-gray-500 text-base font-medium py-4 relative;
 }
@@ -193,9 +221,23 @@ svg.filter-icon {
 /* =========SIDE-NAV ====== */
 .side-nav {
 	width: 300px;
+	height: 650px;
 }
 .side-nav__link {
-	@apply block py-3 px-10 border-l-4 border-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-900;
+	@apply block py-4 px-8 border-l-4 border-transparent text-paragraph hover:bg-gray-100 hover:text-title;
+}
+
+.side-nav img {
+	@apply inline-block mr-3 opacity-50;
+}
+.side-nav__link:hover img {
+	@apply opacity-100;
+}
+.side-nav__link.active {
+	@apply border-brand bg-gray-100 text-title;
+}
+.side-nav__link.active img {
+	@apply opacity-100;
 }
 /* =====BREADCRUMB ====== */
 .breadcrumb {
@@ -251,6 +293,9 @@ svg.filter-icon {
 .btn__like {
 	@apply border border-gray-500 rounded-md flex justify-between items-center py-2 px-4 text-gray-500 cursor-pointer hover:bg-brand hover:text-white hover:border-transparent;
 }
+.btn__like.active {
+	@apply bg-brand text-white border-brand;
+}
 /* =======+BANNER +======== */
 .banner {
 	background: #f8f9fd;
@@ -287,6 +332,9 @@ svg.filter-icon {
 }
 .shot-statistics {
 	@apply flex items-center text-gray-500 space-x-2;
+}
+.shot-statistics .shot-tools-icon.liked {
+	fill: #ff5864;
 }
 .grid-mansory {
 	@apply -mx-4;
@@ -411,10 +459,16 @@ svg.filter-icon {
 }
 
 .upload-gallery {
-	@apply grid grid-cols-3 xl:grid-cols-6 gap-4 mt-5 mb-14;
+	@apply grid grid-cols-3 xl:grid-cols-4 gap-4 mt-5 mb-14;
 }
 .upload-gallery-item {
-	@apply h-24 border border-dashed rounded-lg border-gray-300 bg-gray-100 relative;
+	@apply transition ease-in-out duration-300 h-24 border-2 border-transparent rounded-lg bg-gray-100 cursor-pointer relative hover:border-brand hover:border-solid focus:border-brand focus:border-solid;
+}
+.upload-gallery-item.active {
+	@apply border-brand;
+}
+.upload-gallery-item.upload-gallery-item-plus {
+	@apply border-dashed border-gray-300 hover:border-brand hover:border-solid;
 }
 .upload-gallery-delete {
 	@apply absolute -top-3 -right-3;
@@ -450,16 +504,19 @@ svg.filter-icon {
 }
 
 /* ========+SWIPERJS====== */
-.thumbnail-gallery {
-	width: 100px;
-	height: 650px;
+
+@media (min-width: 768px) {
+	.thumbnail-gallery {
+		width: 100px;
+		height: 650px;
+	}
 }
 
 .mySwiper .swiper-slide-thumb-active {
 	opacity: 1;
 }
 .card-img-gallery {
-	@apply hidden md:block md:absolute top-0 -right-32;
+	@apply md:block md:absolute top-0 -right-32;
 }
 .card-img-large .swiper-slide img {
 	@apply block w-full object-cover;
@@ -496,10 +553,6 @@ svg.filter-icon {
 	min-height: 100px;
 	max-height: 200px;
 }
-/* .profile.guest-view {
-	background: url("./images/bgProfile.png") no-repeat top left;
-	background-size: cover;
-} */
 .profile__img {
 	@apply w-24 md:w-48 mx-auto mb-6;
 }
@@ -520,6 +573,23 @@ svg.filter-icon {
 .badge {
 	@apply inline-block border border-brand px-1 rounded-full text-brand uppercase align-middle;
 	font-size: 9px;
+}
+.public-profile-banner {
+	height: 130px;
+	@apply relative bg-cover bg-no-repeat mb-16;
+}
+.public-profile-banner-upload {
+	@apply transform absolute -bottom-8 left-1/2 -translate-x-1/2 bg-cover bg-no-repeat flex items-center justify-center cursor-pointer rounded-full;
+	width: 72px;
+	height: 72px;
+}
+.public-profile-banner-upload:after {
+	content: "";
+	background: rgba(0, 0, 0, 0.5);
+	@apply absolute inset-0 rounded-full;
+}
+.public-profile-banner-upload img {
+	@apply relative z-50;
 }
 @media (min-width: 640px) {
 	.profile {

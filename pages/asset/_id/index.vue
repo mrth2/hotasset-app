@@ -50,6 +50,9 @@ export default Vue.extend({
 									url
 								}
 							}
+							upvoters {
+								id
+							}
 						}
 					}
 				`,
@@ -93,7 +96,8 @@ export default Vue.extend({
 					direction: 'vertical'
 				},
 				main: {} as SwiperOptions
-			}
+			},
+			localLiked: false
 		}
 	},
 	async fetch() {
@@ -114,9 +118,23 @@ export default Vue.extend({
 		},
 		mainSwiper(): SwiperClass {
 			return (this.$refs.mainSwiper as any)?.$swiper
+		},
+		isLiked(): boolean {
+			if (this.$strapi.user) {
+				return !!this.asset.upvoters.find(
+					(upvoter) => upvoter.id === this.$strapi.user.id
+				)
+			}
+			return false
+		}
+	},
+	watch: {
+		isLiked() {
+			this.localLiked = this.isLiked
 		}
 	},
 	mounted() {
+		this.localLiked = this.isLiked
 		const config = {
 			spaceBetween: 10,
 			navigation: {
@@ -158,6 +176,32 @@ export default Vue.extend({
 					this.$toast.error(err.message)
 				}
 			}
+		},
+		followAuthor() {},
+		async likeAsset() {
+			// direct user to login to be able to like asset
+			if (!this.$strapi.user) {
+				this.$router.push('/login')
+			}
+			const currentLiked = this.localLiked
+			this.localLiked = !this.localLiked
+			// else start liking
+			try {
+				const updatedAsset = await useAssetStore().likeOrUnlikeAsset(
+					this.asset.id,
+					currentLiked ? null : this.$strapi.user.id
+				)
+				if (updatedAsset) {
+					this.asset = { ...this.asset, ...updatedAsset }
+				}
+			} catch (e) {
+				this.$toast.error(
+					e instanceof Error
+						? e.message
+						: "Something went wrong, can't process your action!"
+				)
+				this.localLiked = currentLiked
+			}
 		}
 	}
 })
@@ -184,17 +228,26 @@ export default Vue.extend({
 				<div class="flex justify-between items-center py-7">
 					<div class="flex space-x-3">
 						<Avatar :src="asset.author.avatar.url" :size="44" />
-						<div>
+						<div class="flex flex-row items-center">
 							<span class="block">{{ asset.author.username }}</span>
-							<a href="#" class="text-brand">Follow</a>
+							<a
+								v-if="$strapi.user.username !== asset.author.username"
+								class="text-brand cursor-pointer hover:underline"
+								@click="followAuthor"
+								>Follow</a
+							>
 						</div>
 					</div>
 					<div>
-						<button class="btn__like">
+						<button
+							class="btn__like"
+							:class="{ active: localLiked }"
+							@click="likeAsset"
+						>
 							<CoreIconFavorite
 								class="icon fill-current shot-tools-icon mr-2"
 							/>
-							Like
+							{{ localLiked ? 'Unlike' : 'Like' }}
 						</button>
 					</div>
 				</div>
