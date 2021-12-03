@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
-import { IAssetFilter, IAsset, IAssetChannel, IAssetProvider, IAssetType, IAssetTypeValue } from '~/@types/asset'
+import { IAssetFilter, IAsset, IAssetChannel, IAssetType } from '~/@types/asset'
 import { IFile } from '~/@types'
 
 export const useAssetStore = defineStore('asset', {
@@ -90,7 +90,7 @@ export const useAssetStore = defineStore('asset', {
         this.channels = data.assetChannels
       })
     },
-    async fetchAssets(options: Partial<IAssetFilter>) {
+    async fetchAssets(options: Partial<IAssetFilter>): Promise<IAsset[]> {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[] }>({
         query: gql`
           query ASSETS (
@@ -130,26 +130,7 @@ export const useAssetStore = defineStore('asset', {
       if (response) {
         return response.data.assets.map(asset => {
           const type = this.getAssetType(asset.resources[0])
-          let provider = IAssetProvider.LOCAL
-          let format = 'jpg'
-          let url = ''
-          if (type?.value === IAssetTypeValue.IMAGE) {
-            provider = IAssetProvider.CLOUDINARY
-            url = asset.resources[0].url
-          }
-          else if (type?.value === IAssetTypeValue.PDF) {
-            url = '/icons/pdf.svg'
-            format = 'svg'
-          }
-          else if (type?.value === IAssetTypeValue.CSV) {
-            url = '/icons/csv.svg'
-            format = 'svg'
-          }
-          else if (type?.value === IAssetTypeValue.PPT) {
-            url = '/icons/ppt.svg'
-            format = 'svg'
-          }
-
+          const { provider, url, format } = this.$nuxt.app.$getAssetUrl(asset.resources[0].url, type?.value)
           return {
             ...asset,
             thumbnail: {

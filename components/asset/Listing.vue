@@ -230,6 +230,9 @@ export default Vue.extend({
 </template>
 
 <style scoped lang="postcss">
+.grid-masonry {
+	@apply mb-10;
+}
 .asset-transition {
 	@apply transition-all duration-500 ease-out -translate-y-48;
 }

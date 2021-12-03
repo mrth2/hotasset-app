@@ -16,4 +16,7 @@ export declare interface IFile {
   }
   createdAt: Date
   updatedAt: Date
+  // custom
+  type: string
+  format: string
 }

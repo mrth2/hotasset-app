@@ -59,6 +59,19 @@ export default Vue.extend({
 			})
 			.then(({ data }) => {
 				asset = data.asset
+				if (asset.resources.length > 0) {
+					asset.resources = asset.resources.map((resource) => {
+						const type = useAssetStore().getAssetType(resource)
+						if (!type) return resource
+						const { url, format } = app.$getAssetUrl(resource.url, type?.value)
+						return {
+							...resource,
+							url,
+							format,
+							type: type.value
+						}
+					})
+				}
 			})
 			.catch((err) => {
 				throw err
@@ -155,7 +168,10 @@ export default Vue.extend({
 		<!-- author, like and follow -->
 		<div class="container mx-auto px-4 sm:px-6 relative">
 			<div class="back xl:absolute mt-8 left-6">
-				<a href="" class="text-gray-500 inline-flex items-center">
+				<a
+					class="text-gray-500 inline-flex items-center cursor-pointer"
+					@click="$router.go(-1)"
+				>
 					<img
 						src="~/assets/images/icons/arrow-left.svg"
 						class="inline-block mr-2"
@@ -201,12 +217,22 @@ export default Vue.extend({
 							<SwiperSlide
 								v-for="resource in asset.resources"
 								:key="resource.id"
+								:class="{
+									'shot-thumnail-without-container': resource.type !== 'image',
+									[resource.type]: true
+								}"
 							>
-								<CoreImage
-									:src="resource.url"
-									:alt="resource.name"
-									class="sm:rounded-lg"
-								/>
+								<div
+									:class="{
+										'shot-thumnail-without-img': resource.type !== 'image'
+									}"
+								>
+									<CoreImage
+										:src="resource.url"
+										:alt="resource.name"
+										class="sm:rounded-lg"
+									/>
+								</div>
 							</SwiperSlide>
 						</Swiper>
 						<div
@@ -325,3 +351,12 @@ export default Vue.extend({
 		</div>
 	</main>
 </template>
+
+<style scoped lang="postcss">
+.shot-thumnail-without-img {
+	min-height: 400px;
+	img {
+		max-width: 150px;
+	}
+}
+</style>
