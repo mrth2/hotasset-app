@@ -121,7 +121,7 @@ export default Vue.extend({
 								:height="srcHeight"
 							/>
 							<span class="text-center">
-								{{ asset.title }}.{{getAssetExt(asset)}}
+								{{ asset.title }}.{{ getAssetExt(asset) }}
 							</span>
 						</div>
 						<CoreImage
@@ -181,10 +181,10 @@ export default Vue.extend({
 				<p class="shots-item__desc">{{ asset.description }}</p>
 				<div class="flex items-center justify-between">
 					<div class="user-information">
-						<a href class="user-infor__avatar">
+						<NuxtLink :to="`/profile/${asset.author.username}`" class="user-infor__avatar flex gap-1">
 							<Avatar :src="asset.author.avatar.url" :size="24" />
-						</a>
-						<a href class="user-info__name">{{ asset.author.username }}</a>
+							<span class="user-info__name">{{ asset.author.username }}</span>
+						</NuxtLink>
 					</div>
 					<div class="shot-statistics">
 						<CoreIconFavorite class="cursor-pointer" />

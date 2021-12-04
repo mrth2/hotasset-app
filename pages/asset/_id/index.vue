@@ -7,6 +7,8 @@ import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 import { IAsset } from '~/@types/asset'
 import 'swiper/css/swiper.css'
 import { useAssetStore } from '~/stores/asset'
+import { useUserStore } from '~/stores/user'
+import { IUserFollower } from '~/@types'
 
 export default Vue.extend({
 	name: 'AssetDetail',
@@ -14,50 +16,33 @@ export default Vue.extend({
 		Swiper,
 		SwiperSlide
 	},
-	async asyncData({ app, route }) {
+	async asyncData({ app, route, $strapi }) {
 		await useAssetStore().fetchAssetMetaData()
+		console.log($strapi.user)
 		let asset = null as IAsset | null
+		const checkFollowing = !!$strapi.user
 		await app.apolloProvider?.defaultClient
-			.query<{ asset: IAsset }>({
+			.query<{ asset: IAsset, isFollowing?: Partial<IUserFollower> }>({
 				query: gql`
-					query AssetDetail($id: ID!) {
+					query AssetDetail($id: ID!, $me: ID, $checkFollowing: Boolean!) {
 						asset(id: $id) {
-							id
-							title
-							description
+							${useAssetStore().getAssetSchema}
+						}
+						isFollowing: userFollowers ( 
+							where: { 
+								user: $id, 
+								follower: $me 
+							}
+						) @include(if: $checkFollowing) {
 							createdAt
 							updatedAt
-							tags {
-								id
-								name
-							}
-							resources {
-								id
-								name
-								mime
-								width
-								height
-								url
-								size
-								ext
-							}
-							likes
-							author {
-								username
-								first_name
-								last_name
-								avatar {
-									url
-								}
-							}
-							upvoters {
-								id
-							}
 						}
 					}
 				`,
 				variables: {
-					id: route.params.id
+					id: route.params.id,
+					me: $strapi.user.id,
+					checkFollowing
 				}
 			})
 			.then(({ data }) => {
@@ -97,7 +82,8 @@ export default Vue.extend({
 				},
 				main: {} as SwiperOptions
 			},
-			localLiked: false
+			localLiked: false,
+			requestingFollow: false
 		}
 	},
 	async fetch() {
@@ -184,7 +170,32 @@ export default Vue.extend({
 				}
 			}
 		},
-		followAuthor() {},
+		async followAuthor() {
+			if (this.requestingFollow) {
+				return
+			}
+			if (!this.$strapi.user) {
+				this.$router.push('/login')
+				return
+			}
+			this.requestingFollow = true
+			await useUserStore().followUser(this.asset.author.id)
+				.then((data) => {
+					if (data) {
+						this.$toast.success(
+							`You're now following ${this.$displayName(
+								data.createUserFollower.userFollower.user
+							)}.`
+						)
+					}
+				})
+				.catch((err) => {
+					this.$toast.error(err.message)
+				})
+				.finally(() => {
+					this.requestingFollow = false
+				})
+		},
 		async likeAsset() {
 			// direct user to login to be able to like asset
 			if (!this.$strapi.user) {

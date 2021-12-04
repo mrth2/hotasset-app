@@ -10,7 +10,7 @@ export declare interface IUserRole {
 }
 
 export declare interface IUser {
-  id: number
+  id: string
   username: string
   email: string
   first_name: string

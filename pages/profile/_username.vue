@@ -1,5 +1,4 @@
 <script lang="ts">
-import gql from 'graphql-tag'
 import Vue from 'vue'
 import { IUser, IUserFollower } from '~/@types'
 import { IAssetFilter } from '~/@types/asset'
@@ -34,6 +33,7 @@ export default Vue.extend({
 			user: {} as IUser,
 			followers: 0,
 			followings: 0,
+			isFollowing: {} as Partial<IUserFollower>,
 			requestingFollow: false
 		}
 	},
@@ -55,40 +55,13 @@ export default Vue.extend({
 				return
 			}
 			this.requestingFollow = true
-			await this.$apollo
-				.mutate<{
-					createUserFollower: {
-						userFollower: IUserFollower
-					}
-				}>({
-					mutation: gql`
-						mutation FOLLOW($user: ID!) {
-							createUserFollower(input: { data: { user: $user } }) {
-								userFollower {
-									id
-									user {
-										first_name
-										last_name
-										username
-									}
-									follower {
-										first_name
-										last_name
-										username
-									}
-								}
-							}
-						}
-					`,
-					variables: {
-						user: this.user.id
-					}
-				})
-				.then(async ({ data }) => {
+			await useUserStore()
+				.followUser(this.user.id)
+				.then(async (data) => {
 					await this.fetchUser()
 					if (data) {
 						this.$toast.success(
-							`You're now following ${this.getUserName(
+							`You're now following ${this.$displayName(
 								data.createUserFollower.userFollower.user
 							)}.`
 						)
@@ -101,15 +74,33 @@ export default Vue.extend({
 					this.requestingFollow = false
 				})
 		},
-		getUserName(user: IUser): string {
-			if (user.first_name && user.last_name) {
-				return `${user.first_name} ${user.last_name}`
-			} else if (user.first_name) {
-				return user.first_name
-			} else if (user.last_name) {
-				return user.last_name
+		async unFollow() {
+			if (this.requestingFollow) {
+				return
 			}
-			return user.username
+			if (!this.$strapi.user) {
+				this.$router.push('/login')
+				return
+			}
+			this.requestingFollow = true
+			await useUserStore()
+				.unFollowUser(this.user.id)
+				.then(async (data) => {
+					await this.fetchUser()
+					if (data) {
+						this.$toast.success(
+							`You have unfollowed ${this.$displayName(
+								data.deleteUserFollower.userFollower.user
+							)}.`
+						)
+					}
+				})
+				.catch((err) => {
+					this.$toast.error(err.message)
+				})
+				.finally(() => {
+					this.requestingFollow = false
+				})
 		}
 	}
 })
@@ -154,15 +145,19 @@ export default Vue.extend({
 						<span>&nbsp;followings </span>
 					</div>
 				</div>
+				<!-- owner action: upload and check likes -->
 				<div v-if="isOwner" class="flex space-x-4 justify-center">
-					<NuxtLink to="/upload" class="btn-secondary w-full md:w-auto mb-4"
-						>Upload</NuxtLink
-					>
+					<NuxtLink to="/upload" class="btn-secondary w-full md:w-auto mb-4">
+						Upload
+					</NuxtLink>
 					<button class="btn-secondary w-full md:w-auto mb-4">Likes</button>
 				</div>
+				<!-- guest action: un/follow -->
 				<div v-else>
-					<button class="btn btn-primary w-full md:w-auto mb-4" @click="follow">
-						<template v-if="!requestingFollow">Follow</template>
+					<button class="btn btn-primary w-full md:w-auto mb-4" @click="!!isFollowing ? unFollow : follow">
+						<template v-if="!requestingFollow">
+							{{ !!isFollowing ? 'Unfollow' : 'Follow' }}
+						</template>
 						<FontAwesomeIcon v-else icon="fire" class="fa-spin mx-5" />
 					</button>
 				</div>
