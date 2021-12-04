@@ -18,7 +18,6 @@ export default Vue.extend({
 	},
 	async asyncData({ app, route, $strapi }) {
 		await useAssetStore().fetchAssetMetaData()
-		console.log($strapi.user)
 		let asset = null as IAsset | null
 		const checkFollowing = !!$strapi.user
 		await app.apolloProvider?.defaultClient

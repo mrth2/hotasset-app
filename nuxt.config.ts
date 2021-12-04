@@ -41,7 +41,8 @@ export default {
   plugins: [
     { src: '~/plugins/helper.ts' },
     { src: '~/plugins/google.ts', mode: 'client' },
-    { src: '~/plugins/v-tooltip.ts', mode: 'client' }
+    { src: '~/plugins/v-tooltip.ts', mode: 'client' },
+    { src: '~/plugins/directive.js', mode: 'client' }
   ],
 
   router: {

@@ -148,12 +148,7 @@ export default Vue.extend({
 				<!-- filter with popular tags -->
 				<div
 					v-if="hasTagFilter"
-					class="
-						filter-categories
-						relative
-						text-center
-						overflow-x-auto overflow-y-hidden
-					"
+					class="filter-categories relative text-center overflow-x-auto overflow-y-hidden mr-4 cursor-move"
 				>
 					<ul
 						class="
@@ -162,6 +157,7 @@ export default Vue.extend({
 							px-1
 							flex
 							justify-between
+							hide-scroller
 						"
 					>
 						<li v-for="tag in popularTags" :key="tag.id" class="inline-block">

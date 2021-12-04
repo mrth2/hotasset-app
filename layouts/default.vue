@@ -12,8 +12,13 @@ export default Vue.extend({
 		<Footer />
 	</div>
 </template>
-<style scoped lang="postcss">
-:global(body) {
+<style lang="postcss">
+body {
 	@apply min-h-screen;
+}
+.hide-scroller {
+	&::-webkit-scrollbar {
+		display: none;
+	}
 }
 </style>

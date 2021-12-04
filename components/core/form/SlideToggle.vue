@@ -10,6 +10,14 @@ export default Vue.extend({
 		isAbsolute: {
 			type: Boolean,
 			default: false
+		},
+		zIndex: {
+			type: Number,
+			default: 20
+		},
+		hideOnClickOut: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -26,19 +34,25 @@ export default Vue.extend({
 		},
 		toggle() {
 			this.isShow = !this.isShow
+		},
+		clickOutside() { 
+			if (this.hideOnClickOut) {
+				this.hide()
+			}
 		}
 	}
 })
 </script>
 
 <template>
-	<div class="select-none">
+	<div v-click-outside="clickOutside" class="select-none">
 		<slot name="trigger" :toggle="toggle" />
 		<transition name="slide">
 			<div
 				v-if="isShow || manualShow"
-				class="slide-content"
-				:class="{ absolute: isAbsolute }"
+				class="slide-content relative"
+				:class="{ '!absolute': isAbsolute }"
+				:style="`z-index: ${zIndex}`"
 			>
 				<slot name="content" :hide="hide" :show="show" :toggle="toggle" />
 			</div>
@@ -48,8 +62,6 @@ export default Vue.extend({
 
 <style scoped lang="postcss">
 .slide-content {
-	@apply z-50 translate-y-0;
-
 	::v-deep .btn-dropdown-options {
 		@apply static;
 	}
@@ -57,21 +69,21 @@ export default Vue.extend({
 .slide-enter-active,
 .slide-leave-active {
 	@apply transition-all duration-300 ease-linear;
-	transform: translateY(-40%);
-  opacity: .5;
-  height: 50%;
+	opacity: 0.5;
+	height: 50%;
 }
 
 .slide-enter-to,
 .slide-leave {
-	transform: translateY(-0%);
+	transform: translateY(0%);
 	opacity: 1;
-  height: 100%;
+	height: 100%;
 }
 
-.slide-enter .slide-leave-to {
+.slide-enter,
+.slide-leave-to {
 	transform: translateY(-40%);
-	opacity: 0.3;
-  height: 30%;
+	opacity: 0;
+	height: 0%;
 }
 </style>

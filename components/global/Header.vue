@@ -11,7 +11,8 @@ export default Vue.extend({
 	name: 'Header',
 	data() {
 		return {
-			searchKeyword: ''
+			searchKeyword: '',
+			showUserNavigator: false
 		}
 	},
 	computed: {
@@ -37,8 +38,7 @@ export default Vue.extend({
 		currentCategorySlug() {
 			if (this.$route.name === 'category-slug') {
 				return this.$route.params.slug
-			}
-			else if (this.$route.name === 'search' && this.$route.query.category) {
+			} else if (this.$route.name === 'search' && this.$route.query.category) {
 				return this.$route.query.category
 			}
 			return null
@@ -133,19 +133,81 @@ export default Vue.extend({
 								<Avatar />
 							</NuxtLink>
 						</div>
-						<div class="site-nav-actions">
-							<NuxtLink to="/about" class="site-nav-actions__link"
-								>About</NuxtLink
+						<ul class="site-nav-actions">
+							<li>
+								<NuxtLink to="/about" class="site-nav-actions__link">
+									About
+								</NuxtLink>
+							</li>
+							<li>
+								<a class="site-nav-actions__link relative">
+									<CoreImage src="~/assets/images/icons/bell.svg" alt />
+									<span class="notify-count">7</span>
+								</a>
+							</li>
+							<li
+								id="header-user-setting"
+								class="header-user-setting"
+								@click="showUserNavigator = !showUserNavigator"
 							>
-							<a class="site-nav-actions__link relative">
-								<CoreImage src="~/assets/images/icons/bell.svg" alt />
-								<span class="notify-count">7</span>
-							</a>
-							<NuxtLink :to="`/profile/${user.username}`">
 								<Avatar />
-							</NuxtLink>
-							<NuxtLink to="/upload" class="btn-primary ml-8">Upload</NuxtLink>
-						</div>
+								<CoreFormSlideToggle :manual-show="showUserNavigator" :is-absolute="true" :z-index="30">
+									<template #content>
+										<div class="dropdown-user-setting !z-20">
+											<h2>
+												👋
+												<span class="inline-block ml-2">
+													Welcome, <NuxtLink :to="`/profile/${user.username}`">{{ $displayName(user) }}</NuxtLink>!
+												</span>
+											</h2>
+											<ul>
+												<li>
+													<NuxtLink to="/settings">
+														<img
+															src="~/assets/images/icons/user/Setting.svg"
+															alt=""
+														/>
+														Settings
+													</NuxtLink>
+												</li>
+												<li>
+													<NuxtLink to="/help">
+														<img
+															src="~/assets/images/icons/user/Danger-Circle.svg"
+															alt=""
+														/>
+														Get Help
+													</NuxtLink>
+												</li>
+												<li>
+													<NuxtLink to="/terms">
+														<img
+															src="~/assets/images/icons/user/Paper.svg"
+															alt=""
+														/>
+														Terms & Privacy
+													</NuxtLink>
+												</li>
+												<li>
+													<NuxtLink to="/logout" @click.prevent="logout">
+														<img
+															src="~/assets/images/icons/user/Logout.svg"
+															alt=""
+														/>
+														Log Out
+													</NuxtLink>
+												</li>
+											</ul>
+										</div>
+									</template>
+								</CoreFormSlideToggle>
+							</li>
+							<li>
+								<NuxtLink to="/upload" class="btn-primary ml-8">
+									Upload
+								</NuxtLink>
+							</li>
+						</ul>
 					</template>
 					<template v-else>
 						<div class="site-nav-login">
@@ -239,6 +301,32 @@ export default Vue.extend({
 </template>
 
 <style scoped lang="postcss">
+.dropdown-user-setting {
+	@apply absolute text-sm z-10 -right-1/2 translate-x-1/2 mt-2  border border-gray-50 overflow-auto shadow-xl bg-white;
+	top: calc(100% + 0px);
+	min-width: 335px;
+
+	h2 {
+		@apply py-4 text-base text-title mx-8 border-b mt-5;
+	}
+	ul {
+		@apply my-3;
+		li {
+			@apply px-8 hover:bg-gray-100;
+			a {
+				@apply py-3 flex items-center text-base text-paragraph hover:text-title;
+			}
+		}
+		&:hover img {
+			/* filter: grayscale(0); */
+			@apply opacity-100;
+		}
+	}
+	img {
+		@apply inline-block mr-3 opacity-50;
+		/* filter: grayscale(1); */
+	}
+}
 .menu-item:hover .dropdown-menu {
 	@apply block;
 }

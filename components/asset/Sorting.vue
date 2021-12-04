@@ -32,7 +32,7 @@ export default Vue.extend({
 </script>
 <template>
 	<div class="filter-views mr-10">
-		<CoreFormSlideToggle :is-absolute="true">
+		<CoreFormSlideToggle :is-absolute="true" :hide-on-click-out="true">
 			<template #trigger="{ toggle }">
 				<span
 					class="
