@@ -150,6 +150,11 @@ export default Vue.extend({
 		this.swiper.main = config
 	},
 	methods: {
+		searchByTag(tag: string) {
+			const params = new URLSearchParams()
+			params.append('q', tag)
+			return `/search?${params.toString()}`
+		},
 		async fetchSameAuthorAssets() {
 			try {
 				const { assets } = await useAssetStore().fetchAssets({
@@ -324,14 +329,15 @@ export default Vue.extend({
 			<div class="indivisual-card">
 				<div class="indivisual-card-container">
 					<div class="indivisual-tag">
-						<a
+						<NuxtLink
 							v-for="(tag, index) in asset.tags"
 							:key="tag.id"
+							:to="searchByTag(tag.name)"
 							class="indivisual-tag__item capitalize"
 							:class="{ active: index === 0 }"
 						>
 							{{ tag.name }}
-						</a>
+						</NuxtLink>
 					</div>
 					<h1 class="indivisual__name">{{ asset.title }}</h1>
 					<p class="indivisual__desc">
