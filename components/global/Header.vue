@@ -141,8 +141,8 @@ export default Vue.extend({
 							</li>
 							<li>
 								<a class="site-nav-actions__link relative">
-									<CoreImage src="~/assets/images/icons/bell.svg" alt />
-									<span class="notify-count">7</span>
+									<CoreImage src="~/assets/images/icons/bell.svg" alt :width="20" />
+									<span class="notify-count !-right-6">7</span>
 								</a>
 							</li>
 							<li
