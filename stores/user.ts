@@ -83,7 +83,8 @@ export const useUserStore = defineStore('user', {
       return {
         user: data?.data.users[0],
         followers: data?.data.followers.aggregate.count,
-        followings: data?.data.followings.aggregate.count
+        followings: data?.data.followings.aggregate.count,
+				isFollowing: !!data?.data.isFollowing
       }
     },
 		async followUser(userId: string) {
@@ -129,7 +130,7 @@ export const useUserStore = defineStore('user', {
 				.mutate<FollowResponse>({
 					mutation: gql`
 						mutation UN_FOLLOW($user: ID!) {
-							deleteUserFollower(input: { data: { user: $user } }) {
+							deleteUserFollower(input: { where: { id: $user } }) {
 								userFollower {
 									id
 									user {

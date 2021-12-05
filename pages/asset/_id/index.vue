@@ -19,9 +19,10 @@ export default Vue.extend({
 	async asyncData({ app, route, $strapi }) {
 		await useAssetStore().fetchAssetMetaData()
 		let asset = null as IAsset | null
+		let isFollowing = false
 		const checkFollowing = !!$strapi.user
 		await app.apolloProvider?.defaultClient
-			.query<{ asset: IAsset, isFollowing?: Partial<IUserFollower> }>({
+			.query<{ asset: IAsset; isFollowing?: Partial<IUserFollower> }>({
 				query: gql`
 					query AssetDetail($id: ID!, $me: ID, $checkFollowing: Boolean!) {
 						asset(id: $id) {
@@ -59,16 +60,20 @@ export default Vue.extend({
 						}
 					})
 				}
+				if (data.isFollowing) {
+					isFollowing = !!data.isFollowing.createdAt
+				}
 			})
 			.catch((err) => {
 				throw err
 			})
-		return { asset }
+		return { asset, isFollowing }
 	},
 	data() {
 		return {
 			loading: true,
 			asset: null as unknown as IAsset,
+			isFollowing: false,
 			sameAuthorAssets: [] as IAsset[],
 			similarAssets: [] as IAsset[],
 			swiper: {
@@ -170,7 +175,7 @@ export default Vue.extend({
 			}
 		},
 		async followAuthor() {
-			if (this.requestingFollow) {
+			if (this.requestingFollow || this.isFollowing) {
 				return
 			}
 			if (!this.$strapi.user) {
@@ -178,7 +183,9 @@ export default Vue.extend({
 				return
 			}
 			this.requestingFollow = true
-			await useUserStore().followUser(this.asset.author.id)
+			this.isFollowing = true
+			await useUserStore()
+				.followUser(this.asset.author.id)
 				.then((data) => {
 					if (data) {
 						this.$toast.success(
@@ -189,6 +196,34 @@ export default Vue.extend({
 					}
 				})
 				.catch((err) => {
+					this.isFollowing = false
+					this.$toast.error(err.message)
+				})
+				.finally(() => {
+					this.requestingFollow = false
+				})
+		},
+		async unFollowAuthor() {
+			if (this.requestingFollow || !this.isFollowing) {
+				return
+			}
+			if (!this.$strapi.user) {
+				this.$router.push('/login')
+				return
+			}
+			this.requestingFollow = true
+			this.isFollowing = false
+			await useUserStore()
+				.unFollowUser(this.asset.author.id)
+				.then((data) => {
+					if (data) {
+						this.$toast.success(
+							`You have unfollowed ${this.$displayName(this.asset.author)}.`
+						)
+					}
+				})
+				.catch((err) => {
+					this.isFollowing = true
 					this.$toast.error(err.message)
 				})
 				.finally(() => {
@@ -244,15 +279,20 @@ export default Vue.extend({
 			<div class="indivisual-card">
 				<div class="flex justify-between items-center py-7">
 					<div class="flex space-x-3">
-						<Avatar :src="asset.author.avatar.url" :size="44" />
-						<div class="flex flex-row items-center">
-							<span class="block">{{ asset.author.username }}</span>
+						<NuxtLink :to="`/profile/${asset.author.username}`">
+							<Avatar :src="asset.author.avatar.url" :size="44" />
+						</NuxtLink>
+						<div class="flex flex-col justify-center items-start">
+							<NuxtLink :to="`/profile/${asset.author.username}`" class="block">
+								{{ asset.author.username }}
+							</NuxtLink>
 							<a
 								v-if="$strapi.user.username !== asset.author.username"
-								class="text-brand cursor-pointer hover:underline"
-								@click="followAuthor"
-								>Follow</a
+								class="text-brand text-sm cursor-pointer hover:underline"
+								@click="isFollowing ? unFollowAuthor() : followAuthor()"
 							>
+								{{ isFollowing ? 'Unfollow' : 'Follow' }}
+							</a>
 						</div>
 					</div>
 					<div>

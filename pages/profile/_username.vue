@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { IUser, IUserFollower } from '~/@types'
+import { IUser } from '~/@types'
 import { IAssetFilter } from '~/@types/asset'
 import { useAssetStore } from '~/stores/asset'
 import { useUserStore } from '~/stores/user'
@@ -33,7 +33,7 @@ export default Vue.extend({
 			user: {} as IUser,
 			followers: 0,
 			followings: 0,
-			isFollowing: {} as Partial<IUserFollower>,
+			isFollowing: false,
 			requestingFollow: false
 		}
 	},
@@ -47,7 +47,7 @@ export default Vue.extend({
 			await useUserStore().fetchUser(this.$route.params.username)
 		},
 		async follow() {
-			if (this.requestingFollow) {
+			if (this.requestingFollow || this.isFollowing) {
 				return
 			}
 			if (!this.$strapi.user) {
@@ -55,6 +55,7 @@ export default Vue.extend({
 				return
 			}
 			this.requestingFollow = true
+			this.isFollowing = true
 			await useUserStore()
 				.followUser(this.user.id)
 				.then(async (data) => {
@@ -68,6 +69,7 @@ export default Vue.extend({
 					}
 				})
 				.catch((err) => {
+					this.isFollowing = false
 					this.$toast.error(err.message)
 				})
 				.finally(() => {
@@ -75,7 +77,7 @@ export default Vue.extend({
 				})
 		},
 		async unFollow() {
-			if (this.requestingFollow) {
+			if (this.requestingFollow || !this.isFollowing) {
 				return
 			}
 			if (!this.$strapi.user) {
@@ -83,20 +85,20 @@ export default Vue.extend({
 				return
 			}
 			this.requestingFollow = true
+			this.isFollowing = false
 			await useUserStore()
 				.unFollowUser(this.user.id)
 				.then(async (data) => {
 					await this.fetchUser()
 					if (data) {
 						this.$toast.success(
-							`You have unfollowed ${this.$displayName(
-								data.deleteUserFollower.userFollower.user
-							)}.`
+							`You have unfollowed ${this.$displayName(this.user)}.`
 						)
 					}
 				})
 				.catch((err) => {
 					this.$toast.error(err.message)
+					this.isFollowing = true
 				})
 				.finally(() => {
 					this.requestingFollow = false
@@ -115,7 +117,7 @@ export default Vue.extend({
 			/>
 			<div class="flex flex-col z-20">
 				<div class="profile__img">
-					<Avatar :size="96" class="mx-auto" />
+					<Avatar :src="user.avatar.url" :size="96" class="mx-auto" />
 				</div>
 
 				<div class="profile-social">
@@ -154,11 +156,11 @@ export default Vue.extend({
 				</div>
 				<!-- guest action: un/follow -->
 				<div v-else>
-					<button class="btn btn-primary w-full md:w-auto mb-4" @click="isFollowing.createdAt ? unFollow() : follow()">
-						<template v-if="!requestingFollow">
-							{{ isFollowing.createdAt ? 'Unfollow' : 'Follow' }}
-						</template>
-						<FontAwesomeIcon v-else icon="fire" class="fa-spin mx-5" />
+					<button
+						class="btn btn-primary w-full md:w-auto mb-4"
+						@click="isFollowing ? unFollow() : follow()"
+					>
+						{{ isFollowing ? 'Unfollow' : 'Follow' }}
 					</button>
 				</div>
 			</div>

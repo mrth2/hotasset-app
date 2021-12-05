@@ -187,7 +187,7 @@ export default Vue.extend({
 						</NuxtLink>
 					</div>
 					<div class="shot-statistics">
-						<CoreIconFavorite class="cursor-pointer" />
+						<CoreIconFavorite />
 						<span>{{ asset.likes || 0 }}</span>
 					</div>
 				</div>

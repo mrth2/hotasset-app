@@ -30,6 +30,7 @@ export const useAssetStore = defineStore('asset', {
         description
         likes
         author {
+          id
           username
           avatar {
             url
