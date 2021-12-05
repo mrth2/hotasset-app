@@ -1,8 +1,16 @@
 <script lang="ts">
 import Vue from 'vue'
+import { useAppStore } from '~/stores/app'
 
 export default Vue.extend({
-	name: 'DefaultLayout'
+	name: 'DefaultLayout',
+	head() {
+		return {
+			bodyAttrs: {
+				class: useAppStore().menuOpen ? 'toggled' : ''
+			}
+		}
+	}
 })
 </script>
 <template>

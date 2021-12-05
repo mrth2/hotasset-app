@@ -19,38 +19,6 @@ body.toggled {
 body.toggled .sidebar {
 	transform: translateY(0);
 }
-.sidebar {
-	@apply fixed z-10 h-full shadow-md block md:hidden;
-}
-.sidebar {
-	@apply z-40 w-full;
-	top: 57px;
-	transform: translateY(-140%);
-}
-.sidebar-menu {
-	@apply bg-white h-full px-5;
-}
-.sidebar-menu__link {
-	@apply text-lg py-3 flex;
-}
-.sidebar-menu__parent svg {
-	@apply font-bold text-xl;
-}
-.sidebar-menu__parent.open svg {
-	@apply transform rotate-180;
-}
-.sidebar-menu__child {
-	@apply text-base flex py-2;
-}
-.sidebar-menu-sub__link {
-	@apply text-gray-500 block py-1.5;
-}
-.sidebar-menu-setting {
-	@apply py-4;
-}
-.sidebar-menu-setting img {
-	@apply mr-3;
-}
 .or:before {
 	content: "";
 	height: 1px;
