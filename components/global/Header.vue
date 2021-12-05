@@ -57,6 +57,14 @@ export default Vue.extend({
 			return useAppStore().menuOpen
 		}
 	},
+	mounted() {
+		this.$watch(
+			() => this.$route.fullPath,
+			() => {
+				this.toggleMenu()
+			}
+		)
+	},
 	methods: {
 		toggleMenu() {
 			useAppStore().toggleMenu()
@@ -514,13 +522,13 @@ export default Vue.extend({
 }
 /* sidebar */
 .sidebar {
-	@apply fixed z-10 h-full shadow-md block md:hidden;
+	@apply fixed z-10 h-full shadow-md block md:hidden overflow-y-auto;
 	@apply z-40 w-full;
 	top: 57px;
 	transform: translateY(-140%);
 }
 .sidebar-menu {
-	@apply bg-white h-full px-5;
+	@apply bg-white h-full px-5 pb-10;
 }
 .sidebar-menu__link {
 	@apply text-lg py-3 flex;
