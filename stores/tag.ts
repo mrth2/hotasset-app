@@ -19,11 +19,7 @@ export const useTagStore = defineStore('tag', {
           }
         `
       }).then(res => {
-        this.popularTags = [{
-          id: undefined as unknown as string,
-          name: 'All',
-          slug: 'all'
-        }, ...res.data.tags]
+        this.popularTags = res.data.tags
       })
     }
   }

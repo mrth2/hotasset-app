@@ -151,13 +151,23 @@ export default Vue.extend({
 								@click="showUserNavigator = !showUserNavigator"
 							>
 								<Avatar />
-								<CoreFormSlideToggle :manual-show="showUserNavigator" :is-absolute="true" :z-index="30">
+								<CoreFormSlideToggle
+									:manual-show="showUserNavigator"
+									:is-absolute="true"
+									:z-index="30"
+									:hide-on-click-out="true"
+									@hide="showUserNavigator = false"
+								>
 									<template #content>
 										<div class="dropdown-user-setting !z-20">
 											<h2>
 												👋
 												<span class="inline-block ml-2">
-													Welcome, <NuxtLink :to="`/profile/${user.username}`">{{ $displayName(user) }}</NuxtLink>!
+													Welcome,
+													<NuxtLink :to="`/profile/${user.username}`">{{
+														$displayName(user)
+													}}</NuxtLink
+													>!
 												</span>
 											</h2>
 											<ul>

@@ -76,6 +76,10 @@ export default Vue.extend({
 		// if get total asset is not needed, we load data in SSR
 		isSSR() {
 			return !this.getCount
+		},
+		// in search page => change filter tags
+		inSearch() {
+			return this.$route.name === 'search'
 		}
 	},
 	async mounted() {
@@ -148,7 +152,14 @@ export default Vue.extend({
 				<!-- filter with popular tags -->
 				<div
 					v-if="hasTagFilter"
-					class="filter-categories relative text-center overflow-x-auto overflow-y-hidden mr-4 cursor-move"
+					class="
+						filter-categories
+						relative
+						text-center
+						overflow-x-auto overflow-y-hidden
+						mr-4
+						cursor-move
+					"
 				>
 					<ul
 						class="
@@ -160,10 +171,27 @@ export default Vue.extend({
 							hide-scroller
 						"
 					>
+						<li class="inline-block">
+							<!-- in search page -->
+							<a v-if="inSearch" class="filter-categories__link">
+								Popular Tags
+							</a>
+							<!-- in other page: has All tag -->
+							<a
+								v-else
+								class="filter-categories__link"
+								:class="{ active: filters.tag === undefined }"
+								@click="updateFilters({ tag: undefined })"
+								>All</a
+							>
+						</li>
 						<li v-for="tag in popularTags" :key="tag.id" class="inline-block">
 							<a
 								class="filter-categories__link"
-								:class="{ active: tag.id === filters.tag }"
+								:class="{
+									active: !inSearch && tag.id === filters.tag,
+									'text-brand': inSearch
+								}"
 								@click="updateFilters({ tag: tag.id })"
 								>{{ tag.name }}</a
 							>

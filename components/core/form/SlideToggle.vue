@@ -22,7 +22,23 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			isShow: false
+			isShow: false,
+			showing: false
+		}
+	},
+	computed: {
+		isOpen(): boolean {
+			return this.isShow || this.manualShow
+		}
+	},
+	watch: {
+		isOpen(value) {
+			if (value) {
+				this.showing = true
+				setTimeout(() => {
+					this.showing = false
+				}, 300)
+			}
 		}
 	},
 	methods: {
@@ -35,8 +51,9 @@ export default Vue.extend({
 		toggle() {
 			this.isShow = !this.isShow
 		},
-		clickOutside() { 
-			if (this.hideOnClickOut) {
+		clickOutside() {
+			if (this.hideOnClickOut && !this.showing) {
+				this.$emit('hide')
 				this.hide()
 			}
 		}
@@ -49,7 +66,7 @@ export default Vue.extend({
 		<slot name="trigger" :toggle="toggle" />
 		<transition name="slide">
 			<div
-				v-if="isShow || manualShow"
+				v-if="isOpen"
 				class="slide-content relative"
 				:class="{ '!absolute': isAbsolute }"
 				:style="`z-index: ${zIndex}`"
