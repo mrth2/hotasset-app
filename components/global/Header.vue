@@ -189,13 +189,13 @@ export default Vue.extend({
 													</NuxtLink>
 												</li>
 												<li>
-													<NuxtLink to="/logout" @click.prevent="logout">
+													<a @click="logout">
 														<img
 															src="~/assets/images/icons/user/Logout.svg"
 															alt=""
 														/>
 														Log Out
-													</NuxtLink>
+													</a>
 												</li>
 											</ul>
 										</div>

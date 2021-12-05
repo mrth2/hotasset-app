@@ -129,7 +129,13 @@ export default {
 
   strapi: {
     entities: ['users'],
-    url: process.env.API_ENDPOINT || 'https://hotasset.herokuapp.com'
+    url: process.env.API_ENDPOINT || 'https://hotasset.herokuapp.com',
+    key: 'ignore-strapi-cookie',
+    expires: '31d',
+    cookie: {
+      sameSite: true,
+      path: '/'
+    }
   },
 
   toast: {

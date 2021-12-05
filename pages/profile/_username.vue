@@ -154,9 +154,9 @@ export default Vue.extend({
 				</div>
 				<!-- guest action: un/follow -->
 				<div v-else>
-					<button class="btn btn-primary w-full md:w-auto mb-4" @click="!!isFollowing ? unFollow : follow">
+					<button class="btn btn-primary w-full md:w-auto mb-4" @click="isFollowing.createdAt ? unFollow() : follow()">
 						<template v-if="!requestingFollow">
-							{{ !!isFollowing ? 'Unfollow' : 'Follow' }}
+							{{ isFollowing.createdAt ? 'Unfollow' : 'Follow' }}
 						</template>
 						<FontAwesomeIcon v-else icon="fire" class="fa-spin mx-5" />
 					</button>
