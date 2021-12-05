@@ -117,7 +117,7 @@ export default Vue.extend({
 			/>
 			<div class="flex flex-col z-20">
 				<div class="profile__img">
-					<Avatar :src="user.avatar.url" :size="96" class="mx-auto" />
+					<Avatar :src="user.avatar ? user.avatar.url : null" :size="96" class="mx-auto" />
 				</div>
 
 				<div class="profile-social">

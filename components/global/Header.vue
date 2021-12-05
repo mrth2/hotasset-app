@@ -172,7 +172,7 @@ export default Vue.extend({
 											</h2>
 											<ul>
 												<li>
-													<NuxtLink to="/settings">
+													<NuxtLink to="/account/settings">
 														<img
 															src="~/assets/images/icons/user/Setting.svg"
 															alt=""

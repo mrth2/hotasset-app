@@ -116,7 +116,7 @@ export default {
     clientConfigs: {
       default: {
         httpEndpoint: `${process.env.API_ENDPOINT}/graphql` || 'https://hotasset.herokuapp.com/graphql',
-        tokenName: 'strapi_jwt'
+        tokenName: 'hotasset-jwt'
       }
     },
     defaultOptions: {
@@ -130,7 +130,7 @@ export default {
   strapi: {
     entities: ['users'],
     url: process.env.API_ENDPOINT || 'https://hotasset.herokuapp.com',
-    key: 'ignore-strapi-cookie',
+    key: 'hotasset-jwt',
     expires: '31d',
     cookie: {
       sameSite: true,
