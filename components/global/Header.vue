@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
+import { mapActions } from 'pinia'
 import { ICategory, IUser } from '~/@types'
 import { useAppStore } from '~/stores/app'
 import { useHeaderStore } from '~/stores/header'
@@ -61,14 +62,12 @@ export default Vue.extend({
 		this.$watch(
 			() => this.$route.fullPath,
 			() => {
-				this.toggleMenu()
+				this.toggleMenu(false)
 			}
 		)
 	},
 	methods: {
-		toggleMenu() {
-			useAppStore().toggleMenu()
-		},
+		...mapActions(useAppStore, ['toggleMenu']),
 		toggleCategory(id: string) {
 			if (Object.prototype.hasOwnProperty.call(this.openCategoryMenu, id))
 				this.openCategoryMenu[id] = !this.openCategoryMenu[id]

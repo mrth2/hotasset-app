@@ -1,3 +1,4 @@
+import isBoolean from 'lodash/isBoolean'
 import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
@@ -6,8 +7,13 @@ export const useAppStore = defineStore('app', {
   }),
 
   actions: {
-    toggleMenu() {
-      this.menuOpen = !this.menuOpen
+    toggleMenu(force: boolean | null = null) {
+      if (isBoolean(force)) {
+        this.menuOpen = force
+      }
+      else {
+        this.menuOpen = !this.menuOpen
+      }
     }
   }
 })
