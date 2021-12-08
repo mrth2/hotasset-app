@@ -7,6 +7,49 @@ import { ICategory, ITag } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
 import { useAssetStore } from '~/stores/asset'
 import { IAsset } from '~/@types/asset'
+
+interface AssetPreview {
+	name: string
+	url: string
+}
+
+function initData(asset: IAsset | null) {
+	const initialForm = {
+		title: asset?.title || '',
+		description: asset?.description || '',
+		categories: asset?.categories || ([] as ICategory[]),
+		tags: asset?.tags || ([] as ITag[]),
+		files: [] as File[]
+	}
+	let assetPreviews: AssetPreview[] = []
+	if (asset) {
+		assetPreviews = asset.resources.map((image) => {
+			let url = image.url
+			if (image.ext === 'csv') {
+				url = '~/assets/images/icons/csv.svg'
+			} else if (image.ext === 'ppt') {
+				url = '~/assets/images/icons/ppt.svg'
+			} else if (image.ext === 'pdf') {
+				url = '~/assets/images/icons/pdf.svg'
+			}
+			return {
+				name: image.name,
+				url
+			}
+		})
+	}
+	let assetResourceIds: string[] = []
+	if (asset) {
+		assetResourceIds = asset.resources.map((image) => image.id)
+	}
+	return {
+		initialForm,
+		form: cloneDeep(initialForm),
+		assetPreviews,
+		assetResourceIds
+	}
+}
+
 export default Vue.extend({
 	props: {
 		asset: {
@@ -17,21 +60,9 @@ export default Vue.extend({
 		}
 	},
 	data() {
-		const initialForm = {
-			title: this.asset?.title || '',
-			description: this.asset?.description || '',
-			categories: this.asset?.categories || ([] as ICategory[]),
-			tags: this.asset?.tags || ([] as ITag[]),
-			files: [] as File[]
-		}
-		let imagesPreview: string[] = []
-		if (this.asset) {
-			imagesPreview = this.asset.resources.map((image) => image.url)
-		}
 		return {
-			initialForm,
-			form: cloneDeep(initialForm),
-			imagesPreview,
+			...initData(this.asset),
+			filePreviews: [] as AssetPreview[],
 			currentPreviewIndex: 0,
 			listTags: [] as ITag[],
 			isLoading: false,
@@ -48,6 +79,11 @@ export default Vue.extend({
 		},
 		isEditMode(): boolean {
 			return !!this.asset?.id
+		},
+		imagePreviews: {
+			get(): Array<{ name: string; url: string }> {
+				return [...this.assetPreviews, ...this.filePreviews]
+			}
 		}
 	},
 	methods: {
@@ -82,6 +118,11 @@ export default Vue.extend({
 					}
 				})
 			this.isLoading = false
+		},
+		isIcon(url: string) {
+			return (
+				url.includes('ppt.svg') || url.includes('pdf.svg') || url.includes('csv.svg')
+			)
 		},
 		openSelectImage() {
 			if (this.$refs.images) {
@@ -128,7 +169,7 @@ export default Vue.extend({
 				}
 			})
 			this.form.files = [...this.form.files, ...allowedFiles]
-			this.imagesPreview = await this.getFilePreviews()
+			this.filePreviews = await this.getFilePreviews()
 		},
 		async getFilePreviews() {
 			// create function with return resolved promise
@@ -145,20 +186,32 @@ export default Vue.extend({
 				})
 			}
 			// here will be array of promisified functions
-			const promises: string[] | Promise<string> = []
+			const promises: AssetPreview[] | Promise<AssetPreview> = []
 
 			// loop through fileList with for loop
 			for (let i = 0; i < this.form.files.length; i++) {
 				const file = this.form.files[i]
 				const assetType = this.getAssetType(file)
 				if (assetType?.value === 'pdf') {
-					promises.push(require('~/assets/images/icons/pdf.svg'))
+					promises.push({
+						name: file.name,
+						url: '~/assets/images/icons/pdf.svg'
+					})
 				} else if (assetType?.value === 'csv') {
-					promises.push(require('~/assets/images/icons/csv.svg'))
+					promises.push({
+						name: file.name,
+						url: '~/assets/images/icons/csv.svg'
+					})
 				} else if (assetType?.value === 'ppt') {
-					promises.push(require('~/assets/images/icons/ppt.svg'))
+					promises.push({
+						name: file.name,
+						url: '~/assets/images/icons/ppt.svg'
+					})
 				} else {
-					promises.push(await getBase64(file))
+					promises.push({
+						name: file.name,
+						url: await getBase64(file)
+					})
 				}
 			}
 
@@ -175,8 +228,16 @@ export default Vue.extend({
 			} else if (this.currentPreviewIndex > index) {
 				this.currentPreviewIndex--
 			}
-			this.form.files.splice(index, 1)
-			this.imagesPreview.splice(index, 1)
+			// remove from new files if removed index is new added files
+			if (index >= this.assetPreviews.length) {
+				this.form.files.splice(index - this.assetPreviews.length, 1)
+				this.filePreviews.splice(index - this.assetPreviews.length, 1)
+			}
+			// on current asset previews, remove index if the pressed file is on current asset
+			else {
+				this.assetPreviews.splice(index, 1)
+				this.assetResourceIds.splice(index, 1)
+			}
 		},
 		validateForm() {
 			if (this.form.title === '') {
@@ -199,16 +260,23 @@ export default Vue.extend({
 				title,
 				description,
 				categories: categories.map((c) => c.id),
-				tags: tags.map((t) => {
-					// when tag is new ( id === name )
-					if (t.id === t.name) {
-						return { name: t.name }
-					}
-					return t.id
-				}),
+				tags: tags
+					.map((t) => {
+						// when tag is new ( id === name )
+						if (t.id === t.name) {
+							return { name: t.name }
+						}
+						return t.id
+					})
+					.filter((t) => t),
 				types: useAssetStore()
 					.getAssetTypes(files)
-					.map((t) => t?.id)
+					.map((t) => t?.id),
+				resources: [] as string[]
+			}
+			// on edit mode, add existing resource Ids excluding removed ids in the payload
+			if (this.asset) {
+				data.resources = this.assetResourceIds.filter((id) => id !== null)
 			}
 			files.forEach((file) => {
 				formData.append('files.resources', file, file.name)
@@ -234,7 +302,7 @@ export default Vue.extend({
 				.$post<IAsset>('assets', formData)
 				.then(() => {
 					this.$toast.success('Congrats! Your assets is successfully posted!')
-					this.imagesPreview = []
+					this.filePreviews = []
 					this.form = cloneDeep(this.initialForm)
 				})
 				.catch((err) => {
@@ -252,9 +320,10 @@ export default Vue.extend({
 
 			await this.$strapi.$http
 				.$put<IAsset>(`assets/${this.asset.id}`, formData)
-				.then(() => {
+				.then(async () => {
 					this.$toast.success('Updated your post!')
-					this.$nuxt.refresh()
+					await this.$nuxt.refresh()
+					Object.assign(this.$data, initData(this.asset))
 				})
 				.catch((err) => {
 					this.$toast.error(err.message)
@@ -317,22 +386,19 @@ export default Vue.extend({
 					@change="uploadFiles"
 				/>
 				<div
-					v-if="imagesPreview.length && imagesPreview[currentPreviewIndex]"
+					v-if="imagePreviews.length && imagePreviews[currentPreviewIndex]"
 					class="upload-big-preview"
 					:class="{
-						icon: imagesPreview[currentPreviewIndex].includes('_nuxt')
+						icon: isIcon(imagePreviews[currentPreviewIndex].url)
 					}"
 				>
 					<CoreImage
-						:src="imagesPreview[currentPreviewIndex]"
+						:src="imagePreviews[currentPreviewIndex].url"
 						alt
 						class="mx-auto"
 					/>
-					<p v-if="form.files.length" class="text-gray-500 mt-4">
-						{{ form.files[currentPreviewIndex].name }}
-					</p>
-					<p v-else-if="asset" class="text-gray-500 mt-4">
-						{{ asset.resources[currentPreviewIndex].name }}
+					<p class="text-gray-500 mt-4">
+						{{ imagePreviews[currentPreviewIndex].name }}
 					</p>
 				</div>
 				<template v-else>
@@ -361,47 +427,45 @@ export default Vue.extend({
 				</template>
 			</div>
 			<div class="upload-gallery">
-				<template v-if="imagesPreview.length > 0">
+				<template v-if="imagePreviews.length > 0">
 					<div
-						v-for="(item, index) in imagesPreview"
+						v-for="(item, index) in imagePreviews"
 						:key="index"
 						class="upload-gallery-item relative"
 						:class="{ active: currentPreviewIndex === index }"
 					>
-						<template v-if="imagesPreview[index]">
-							<div class="h-full rounded-[10px] overflow-hidden" @click="currentPreviewIndex = index">
-								<CoreImage
-									:src="imagesPreview[index]"
-									alt
-									:class="{ icon: imagesPreview[index].includes('_nuxt') }"
-								/>
-								<p
-									v-if="imagesPreview[index].includes('_nuxt')"
-									class="
-										text-gray-500 text-xs
-										absolute
-										px-4
-										text-center
-										w-full
-										truncate
-										bottom-0
-									"
-								>
-									<template v-if="form.files.length">
-										{{ form.files[index].name }}
-									</template>
-									<template v-else-if="asset">
-										{{ asset.resources[index].name }}
-									</template>
-								</p>
-							</div>
-							<span class="upload-gallery-delete" @click="removeFile(index)">
-								<CoreImage
-									src="~/assets/images/icons/delete.svg"
-									alt="Remove asset"
-								/>
-							</span>
-						</template>
+						<div
+							class="h-full rounded-[10px] overflow-hidden"
+							@click="currentPreviewIndex = index"
+						>
+							<CoreImage
+								:src="item.url"
+								alt
+								:class="{
+									icon: isIcon(item.url)
+								}"
+							/>
+							<p
+								v-if="isIcon(item.url)"
+								class="
+									text-gray-500 text-xs
+									absolute
+									px-4
+									text-center
+									w-full
+									truncate
+									bottom-0
+								"
+							>
+								{{ item.name }}
+							</p>
+						</div>
+						<span class="upload-gallery-delete" @click="removeFile(index)">
+							<CoreImage
+								src="~/assets/images/icons/delete.svg"
+								alt="Remove asset"
+							/>
+						</span>
 					</div>
 				</template>
 				<template v-else-if="!isEditMode">

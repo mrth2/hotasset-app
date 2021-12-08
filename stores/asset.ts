@@ -36,8 +36,16 @@ export const useAssetStore = defineStore('asset', {
             url
           }
         }
+        categories {
+          id
+          title
+          slug
+          is_new
+        }
         tags {
+          id
           name
+          slug
         }
         types {
           name
@@ -49,6 +57,7 @@ export const useAssetStore = defineStore('asset', {
           id
         }
         resources {
+          id
           name
           mime
           ext
