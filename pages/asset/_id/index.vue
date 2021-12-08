@@ -20,7 +20,7 @@ export default Vue.extend({
 		let isFollowing = false
 		const checkFollowing = !!$strapi.user
 		await useAssetStore()
-			.fetchAssetDetail(route.params.id, $strapi.user.id, checkFollowing)
+			.fetchAssetDetail(route.params.id, $strapi.user?.id, checkFollowing)
 			.then((data) => {
 				if (data) {
 					asset = data.asset
@@ -200,6 +200,7 @@ export default Vue.extend({
 			// direct user to login to be able to like asset
 			if (!this.$strapi.user) {
 				this.$router.push('/login')
+				return
 			}
 			const currentLiked = this.localLiked
 			this.localLiked = !this.localLiked
@@ -253,7 +254,7 @@ export default Vue.extend({
 								{{ asset.author.username }}
 							</NuxtLink>
 							<a
-								v-if="$strapi.user.username !== asset.author.username"
+								v-if="$strapi.user && $strapi.user.username !== asset.author.username"
 								class="text-brand text-sm cursor-pointer hover:underline"
 								@click="isFollowing ? unFollowAuthor() : followAuthor()"
 							>

@@ -67,6 +67,7 @@ export default Vue.extend({
 			// direct user to login to be able to like asset
 			if (!this.$strapi.user) {
 				this.$router.push('/login')
+				return
 			}
 			const currentLiked = this.localLiked
 			this.localLiked = !this.localLiked
