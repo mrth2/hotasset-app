@@ -80,6 +80,11 @@ export default Vue.extend({
 		isEditMode(): boolean {
 			return !!this.asset?.id
 		},
+		isOwner(): boolean {
+			return (
+				this.$strapi.user && this.$strapi.user.id === this.asset?.author?.id
+			)
+		},
 		imagePreviews: {
 			get(): Array<{ name: string; url: string }> {
 				return [...this.assetPreviews, ...this.filePreviews]
@@ -121,7 +126,9 @@ export default Vue.extend({
 		},
 		isIcon(url: string) {
 			return (
-				url.includes('ppt.svg') || url.includes('pdf.svg') || url.includes('csv.svg')
+				url.includes('ppt.svg') ||
+				url.includes('pdf.svg') ||
+				url.includes('csv.svg')
 			)
 		},
 		openSelectImage() {
@@ -332,10 +339,31 @@ export default Vue.extend({
 			this.isSubmitting = false
 		},
 		async deletePost() {
+			if (!this.isEditMode || !this.isOwner) {
+				return
+			}
 			this.isSubmitting = true
-			await setTimeout(() => {
-				this.isSubmitting = false
-			}, 3000)
+			await this.$apollo
+				.mutate({
+					mutation: gql`
+						mutation deleteAsset($id: ID!) {
+							deleteAsset(input: {where: { id: $id }}) {
+								__typename
+							}
+						}
+					`,
+					variables: {
+						id: this.asset?.id
+					}
+				})
+				.then(() => {
+					this.$toast.success(`Deleted post ${this.asset?.title}!`)
+					this.$router.push(`/profile/${this.$strapi.user.username}`)
+				})
+				.catch((err) => {
+					this.$toast.error(err.message)
+				})
+			this.isSubmitting = false
 		}
 	}
 })
