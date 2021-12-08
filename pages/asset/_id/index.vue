@@ -1,4 +1,5 @@
 <script lang="ts">
+import { mapActions } from 'pinia'
 import Vue from 'vue'
 import SwiperClass from 'swiper'
 import type { SwiperOptions } from 'swiper'
@@ -41,11 +42,27 @@ export default Vue.extend({
 			similarAssets: [] as IAsset[],
 			swiper: {
 				thumbnail: {
-					spaceBetween: 10,
-					slidesPerView: 8,
+					spaceBetween: 8,
+					slidesPerView: 2,
+					direction: 'horizontal',
+					breakpoints: {
+						1024: {
+							slidesPerView: 8
+						},
+						768: {
+							slidesPerView: 6
+						},
+						640: {
+							slidesPerView: 4
+						},
+						320: {
+							slidesPerView: 3
+						}
+					},
 					freeMode: true,
 					watchSlidesProgress: true,
-					direction: 'vertical'
+					shortSwipes: false,
+					threshold: 10
 				},
 				main: {} as SwiperOptions
 			},
@@ -104,8 +121,25 @@ export default Vue.extend({
 			}
 		}
 		this.swiper.main = config
+		// on window resize, update swiper
+		window.addEventListener('resize', this.onWindowResize)
+		this.onWindowResize()
+	},
+	beforeDestroy() {
+		window.removeEventListener('resize', this.onWindowResize)
 	},
 	methods: {
+		...mapActions(useAssetStore, ['isIcon']),
+		onWindowResize() {
+			if (window.innerWidth < 768) {
+				this.swiper.thumbnail.direction = 'horizontal'
+			} else {
+				this.swiper.thumbnail.direction = 'vertical'
+			}
+			;(this.thumbSwiper as any).changeDirection(
+				this.swiper.thumbnail.direction
+			)
+		},
 		searchByTag(tag: string) {
 			const params = new URLSearchParams()
 			params.append('q', tag)
@@ -254,7 +288,10 @@ export default Vue.extend({
 								{{ asset.author.username }}
 							</NuxtLink>
 							<a
-								v-if="$strapi.user && $strapi.user.username !== asset.author.username"
+								v-if="
+									$strapi.user &&
+									$strapi.user.username !== asset.author.username
+								"
 								class="text-brand text-sm cursor-pointer hover:underline"
 								@click="isFollowing ? unFollowAuthor() : followAuthor()"
 							>
@@ -323,7 +360,7 @@ export default Vue.extend({
 						</Swiper>
 						<div
 							v-if="asset.resources.length > 1"
-							class="card-img-gallery z-10"
+							class="card-img-gallery z-10 mt-5 md:mt-0"
 						>
 							<Swiper
 								ref="thumbnailSwiper"
@@ -334,6 +371,7 @@ export default Vue.extend({
 									v-for="resource in asset.resources"
 									:key="resource.id"
 									class="rounded-lg"
+									:class="{ icon: isIcon(resource.url) }"
 								>
 									<CoreImage
 										:src="resource.url"
@@ -445,5 +483,36 @@ export default Vue.extend({
 	img {
 		max-width: 150px;
 	}
+}
+.card-img-large .swiper-slide {
+	height: 500px;
+	> div {
+		@apply h-full;
+	}
+	img {
+		@apply object-contain h-full;
+	}
+	@screen md {
+		height: auto;
+		> div {
+			height: unset;
+		}
+		img {
+			@apply object-cover;
+		}
+	}
+}
+.thumbnail-gallery .swiper-slide {
+	img {
+		@apply block w-full h-full object-cover;
+	}
+	&.icon {
+		img {
+			@apply object-contain;
+		}
+	}
+}
+.thumbnail-gallery ::v-deep .swiper-wrapper {
+	@apply items-center;
 }
 </style>

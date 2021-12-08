@@ -3,6 +3,7 @@ import Vue from 'vue'
 import type { PropType } from 'vue'
 import gql from 'graphql-tag'
 import cloneDeep from 'lodash/cloneDeep'
+import { mapActions } from 'pinia'
 import { ICategory, ITag } from '~/@types'
 import { useHeaderStore } from '~/stores/header'
 import { useAssetStore } from '~/stores/asset'
@@ -92,6 +93,7 @@ export default Vue.extend({
 		}
 	},
 	methods: {
+		...mapActions(useAssetStore, ['isIcon']),
 		addTag(name: string) {
 			this.form.tags.push({
 				id: name,
@@ -123,13 +125,6 @@ export default Vue.extend({
 					}
 				})
 			this.isLoading = false
-		},
-		isIcon(url: string) {
-			return (
-				url.includes('ppt.svg') ||
-				url.includes('pdf.svg') ||
-				url.includes('csv.svg')
-			)
 		},
 		openSelectImage() {
 			if (this.$refs.images) {
@@ -347,7 +342,7 @@ export default Vue.extend({
 				.mutate({
 					mutation: gql`
 						mutation deleteAsset($id: ID!) {
-							deleteAsset(input: {where: { id: $id }}) {
+							deleteAsset(input: { where: { id: $id } }) {
 								__typename
 							}
 						}

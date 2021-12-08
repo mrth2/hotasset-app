@@ -473,7 +473,6 @@ svg.filter-icon {
 }
 .card-img-large .swiper-slide img {
 	@apply block w-full object-cover;
-	max-height: 643px;
 }
 
 .thumbnail-gallery .swiper-slide img {

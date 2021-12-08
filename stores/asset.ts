@@ -72,6 +72,13 @@ export const useAssetStore = defineStore('asset', {
     }
   },
   actions: {
+    isIcon(url: string) {
+      return (
+        url.includes('ppt.svg') ||
+        url.includes('pdf.svg') ||
+        url.includes('csv.svg')
+      )
+    },
     async fetchAssetMetaData() {
       await this.$nuxt.app.apolloProvider?.defaultClient.query({
         query: gql`
