@@ -10,14 +10,14 @@ export default Vue.extend({
 	<main class="border-t relative">
 		<div class="container mx-auto px-5 relative">
 			<div class="back xl:absolute mt-8 left-6">
-				<span class="text-gray-500 inline-flex items-center cursor-pointer" @click="$router.go(-1)">
+				<a class="text-gray-500 inline-flex items-center cursor-pointer" @click="$router.go(-1)">
 					<CoreImage
 						src="~/assets/images/icons/arrow-left.svg"
 						class="inline-block mr-2"
 						alt
 					/>
 					Back
-				</span>
+				</a>
 			</div>
 			<div class="content py-10">
 				<AssetForm />

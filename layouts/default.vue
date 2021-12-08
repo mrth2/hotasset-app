@@ -9,7 +9,6 @@ export default Vue.extend({
 		const store = useAppStore()
 		if (store.menuOpen) classes.push('toggled')
 		if (store.modalOpen) classes.push('overflow-auto', 'md:overflow-hidden')
-		console.log(classes)
 		return {
 			bodyAttrs: {
 				class: classes.join(' ')

@@ -61,12 +61,13 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/composition-api/module',
     ['@pinia/nuxt', { disableVuex: true }],
+    '@nuxtjs/device',
   ],
 
   fontawesome: {
     icons: {
       brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram'],
-      regular: ['faUserCircle', 'faTimesCircle'],
+      regular: ['faUserCircle'],
       solid: ['faFire', 'faPen']
     }
   },

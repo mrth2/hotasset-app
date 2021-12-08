@@ -34,6 +34,9 @@ export default Vue.extend({
 			asset: null as unknown as IAsset,
 			isLoading: false
 		}
+	},
+	beforeDestroy() {
+		useAppStore().toggleModal(false)
 	}
 })
 </script>
@@ -104,30 +107,30 @@ export default Vue.extend({
                 To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             -->
 						<div id="modal-edit-post" class="modal modal-edit-post">
+							<a
+								class="close-modal"
+								:style="{
+									background: `url(${$img('/icons/close.svg')})`
+								}"
+								@click="$router.go(-1)"
+							/>
 							<AssetForm :asset="asset" />
 						</div>
 					</div>
 				</div>
 				<AssetForm :asset="asset" class="mx-auto block md:hidden" />
-
-				<!-- Link to open the modal -->
-				<p>
-					<a href="#modal-edit-post" rel="modal:open" class="hidden md:block"
-						>Open Modal</a
-					>
-				</p>
 			</div>
 		</div>
 	</main>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .modal-edit-post {
-	@apply align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle;
-	@apply py-14 mx-auto px-10 lg:px-14 w-auto max-w-3xl;
-}
-.modal-edit-post a.close-modal {
-	@apply top-7 right-7;
-	background: url('/images/icons/close.png');
+	@apply align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle;
+	@apply py-14 mx-auto px-24 lg:px-28 w-auto max-w-3xl;
+
+	.close-modal {
+		@apply absolute top-7 right-7 w-6 h-6 cursor-pointer block;
+	}
 }
 </style>

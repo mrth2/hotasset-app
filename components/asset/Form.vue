@@ -10,9 +10,9 @@ import { IAsset } from '~/@types/asset'
 export default Vue.extend({
 	props: {
 		asset: {
-			type: Object as PropType<IAsset>,
+			type: Object as PropType<IAsset | null>,
 			default() {
-				return {} as IAsset
+				return null
 			}
 		}
 	},
@@ -24,10 +24,14 @@ export default Vue.extend({
 			tags: this.asset?.tags || ([] as ITag[]),
 			files: [] as File[]
 		}
+		let imagesPreview: string[] = []
+		if (this.asset) {
+			imagesPreview = this.asset.resources.map((image) => image.url)
+		}
 		return {
 			initialForm,
 			form: cloneDeep(initialForm),
-			imagesPreview: [] as string[],
+			imagesPreview,
 			currentPreviewIndex: 0,
 			listTags: [] as ITag[],
 			isLoading: false,
@@ -240,7 +244,7 @@ export default Vue.extend({
 			this.isSubmitting = false
 		},
 		async savePost() {
-			if (!this.validateForm()) {
+			if (!this.validateForm() || !this.asset) {
 				return
 			}
 			this.isSubmitting = true
@@ -257,13 +261,19 @@ export default Vue.extend({
 				})
 
 			this.isSubmitting = false
+		},
+		async deletePost() {
+			this.isSubmitting = true
+			await setTimeout(() => {
+				this.isSubmitting = false
+			}, 3000)
 		}
 	}
 })
 </script>
 
 <template>
-	<form action="#" class="mx-auto" :class="{ 'cursor-wait': isSubmitting }">
+	<form action="#" class="mx-auto" :class="{ submitting: isSubmitting }">
 		<div class="max-w-3xl w-full mx-auto">
 			<div class="mb-8">
 				<h2
@@ -295,7 +305,6 @@ export default Vue.extend({
 
 			<div
 				class="upload-workspace cursor-pointer"
-				:class="{ 'cursor-wait pointer-events-none': isSubmitting }"
 				@dragover.prevent
 				@drop.prevent="dropFiles"
 				@click="openSelectImage"
@@ -319,8 +328,11 @@ export default Vue.extend({
 						alt
 						class="mx-auto"
 					/>
-					<p class="text-gray-500 mt-4">
+					<p v-if="form.files.length" class="text-gray-500 mt-4">
 						{{ form.files[currentPreviewIndex].name }}
+					</p>
+					<p v-else-if="asset" class="text-gray-500 mt-4">
+						{{ asset.resources[currentPreviewIndex].name }}
 					</p>
 				</div>
 				<template v-else>
@@ -332,8 +344,16 @@ export default Vue.extend({
 						/>
 					</div>
 					<p class="font-medium text-gray-500 mb-3">
-						Drag & Drop an Image or
-						<a href="javascript:" class="text-red-500 underline">Browse</a>
+						<!-- on desktop -->
+						<template v-if="$device.isDesktop">
+							Drag & Drop an Image or
+							<a href="javascript:" class="text-red-500 underline">Browse</a>
+						</template>
+						<template v-else>
+							<a href="javascript:" class="text-red-500 underline">
+								Browser from Camera Roll
+							</a>
+						</template>
 					</p>
 					<p class="text-gray-500">
 						1600x1200 is recommended or higher. Max 10MB for each image
@@ -341,17 +361,15 @@ export default Vue.extend({
 				</template>
 			</div>
 			<div class="upload-gallery">
-				<template v-if="form.files.length === 0">
-					<div v-for="i in 6" :key="i" class="upload-gallery-item"></div>
-				</template>
-				<template v-else>
+				<template v-if="imagesPreview.length > 0">
 					<div
-						v-for="(file, index) in form.files"
+						v-for="(item, index) in imagesPreview"
 						:key="index"
 						class="upload-gallery-item relative"
+						:class="{ active: currentPreviewIndex === index }"
 					>
 						<template v-if="imagesPreview[index]">
-							<div class="h-full" @click="currentPreviewIndex = index">
+							<div class="h-full rounded-[10px] overflow-hidden" @click="currentPreviewIndex = index">
 								<CoreImage
 									:src="imagesPreview[index]"
 									alt
@@ -369,18 +387,38 @@ export default Vue.extend({
 										bottom-0
 									"
 								>
-									{{ file.name }}
+									<template v-if="form.files.length">
+										{{ form.files[index].name }}
+									</template>
+									<template v-else-if="asset">
+										{{ asset.resources[index].name }}
+									</template>
 								</p>
 							</div>
-							<FontAwesomeIcon
-								class="absolute top-1 right-1 opacity-0"
-								:icon="['far', 'times-circle']"
-								size="lg"
-								@click="removeFile(index)"
-							/>
+							<span class="upload-gallery-delete" @click="removeFile(index)">
+								<CoreImage
+									src="~/assets/images/icons/delete.svg"
+									alt="Remove asset"
+								/>
+							</span>
 						</template>
 					</div>
 				</template>
+				<template v-else-if="!isEditMode">
+					<div v-for="i in 6" :key="i" class="upload-gallery-item"></div>
+				</template>
+				<div
+					class="
+						upload-gallery-item
+						flex
+						items-center
+						justify-center
+						upload-gallery-item-plus
+					"
+					@click="openSelectImage"
+				>
+					<span><img src="~/assets/images/icons/plus.svg" alt="" /></span>
+				</div>
 			</div>
 		</div>
 
@@ -452,11 +490,12 @@ export default Vue.extend({
 					{{ isEditMode ? 'Save Changes' : 'Upload a Post' }}
 				</button>
 				<button
+					v-if="isEditMode"
 					type="button"
 					class="btn-secondary w-full md:w-auto"
 					:class="{ 'opacity-50 cursor-wait': isSubmitting }"
 					:disabled="isSubmitting"
-					@click="submitForm"
+					@click="deletePost"
 				>
 					Delete Post
 				</button>
@@ -465,6 +504,13 @@ export default Vue.extend({
 	</form>
 </template>
 <style lang="postcss" scoped>
+form.submitting {
+	@apply cursor-wait;
+
+	* {
+		@apply pointer-events-none;
+	}
+}
 .upload-big-preview {
 	@apply absolute w-full h-full;
 	&.icon {
@@ -475,8 +521,19 @@ export default Vue.extend({
 		}
 	}
 }
+.upload-gallery {
+	@apply grid grid-cols-3 xl:grid-cols-4 gap-4 mt-5 mb-14;
+}
 .upload-gallery-item {
-	@apply overflow-hidden cursor-pointer;
+	@apply transition ease-in-out duration-300 h-24 border-2 border-transparent rounded-[10px] bg-gray-100 cursor-pointer relative;
+	@apply hover:border-brand hover:rounded-xl hover:border-solid focus:border-brand focus:border-solid;
+
+	&.upload-gallery-item-plus {
+		@apply border-dashed border-gray-300 hover:border-brand hover:border-solid;
+	}
+	&.active {
+		@apply border-brand rounded-xl;
+	}
 
 	svg {
 		@apply transition-all text-paragraph;
@@ -493,6 +550,15 @@ export default Vue.extend({
 
 		&.icon {
 			@apply object-contain py-5;
+		}
+	}
+
+	.upload-gallery-delete {
+		@apply absolute -top-3 -right-3 opacity-0;
+	}
+	&:hover {
+		.upload-gallery-delete {
+			@apply opacity-100;
 		}
 	}
 }

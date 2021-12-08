@@ -35,6 +35,7 @@
       "@nuxtjs/toast",
       "@pinia/nuxt",
       "@nuxt/image",
+      "@nuxtjs/device",
       "@types/swiper"
     ],
     "noImplicitAny": false

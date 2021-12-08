@@ -58,13 +58,10 @@ export default Vue.extend({
 			return useAppStore().menuOpen
 		}
 	},
-	mounted() {
-		this.$watch(
-			() => this.$route.fullPath,
-			() => {
-				this.toggleMenu(false)
-			}
-		)
+	watch: {
+		'$route.fullPath'() {
+			this.toggleMenu(false)
+		}
 	},
 	methods: {
 		...mapActions(useAppStore, ['toggleMenu']),
