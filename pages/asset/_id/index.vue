@@ -354,6 +354,7 @@ export default Vue.extend({
 										:src="resource.url"
 										:alt="resource.name"
 										class="sm:rounded-lg"
+										:modifiers="{ roundCorner: 12 }"
 									/>
 								</div>
 							</SwiperSlide>
@@ -485,20 +486,17 @@ export default Vue.extend({
 	}
 }
 .card-img-large .swiper-slide {
+	@apply md:!h-auto md:max-h-[800px];
 	height: 500px;
 	> div {
 		@apply h-full;
 	}
 	img {
-		@apply object-contain h-full;
+		@apply rounded-lg md:rounded-xl object-contain h-full md:object-top;
 	}
-	@screen md {
-		height: auto;
-		> div {
-			height: unset;
-		}
+	.shot-thumnail-without-img {
 		img {
-			@apply object-cover;
+			@apply object-center;
 		}
 	}
 }
