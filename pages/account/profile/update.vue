@@ -8,7 +8,7 @@ export default Vue.extend({
 	middleware: 'require-login',
 	data() {
 		return {
-			avatarFile: null,
+			avatarFile: null as File | null,
 			previewSrc: null as string | null
 		}
 	},
