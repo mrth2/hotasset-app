@@ -1,5 +1,4 @@
 <script lang="ts">
-import gql from 'graphql-tag'
 import Vue from 'vue'
 import SwiperClass from 'swiper'
 import type { SwiperOptions } from 'swiper'
@@ -8,7 +7,6 @@ import { IAsset } from '~/@types/asset'
 import 'swiper/css/swiper.css'
 import { useAssetStore } from '~/stores/asset'
 import { useUserStore } from '~/stores/user'
-import { IUserFollower } from '~/@types'
 
 export default Vue.extend({
 	name: 'AssetDetail',
@@ -16,57 +14,22 @@ export default Vue.extend({
 		Swiper,
 		SwiperSlide
 	},
-	async asyncData({ app, route, $strapi }) {
+	async asyncData({ error, route, $strapi }) {
 		await useAssetStore().fetchAssetMetaData()
 		let asset = null as IAsset | null
 		let isFollowing = false
 		const checkFollowing = !!$strapi.user
-		await app.apolloProvider?.defaultClient
-			.query<{ asset: IAsset; isFollowing?: Partial<IUserFollower> }>({
-				query: gql`
-					query AssetDetail($id: ID!, $me: ID, $checkFollowing: Boolean!) {
-						asset(id: $id) {
-							${useAssetStore().getAssetSchema}
-						}
-						isFollowing: userFollowers ( 
-							where: { 
-								user: $id, 
-								follower: $me 
-							}
-						) @include(if: $checkFollowing) {
-							createdAt
-							updatedAt
-						}
-					}
-				`,
-				variables: {
-					id: route.params.id,
-					me: $strapi.user.id,
-					checkFollowing
+		await useAssetStore()
+			.fetchAssetDetail(route.params.id, $strapi.user.id, checkFollowing)
+			.then((data) => {
+				if (data) {
+					asset = data.asset
+					isFollowing = data.isFollowing
 				}
 			})
-			.then(({ data }) => {
-				asset = data.asset
-				if (asset.resources.length > 0) {
-					asset.resources = asset.resources.map((resource) => {
-						const type = useAssetStore().getAssetType(resource)
-						if (!type) return resource
-						const { url, format } = app.$getAssetUrl(resource.url, type?.value)
-						return {
-							...resource,
-							url,
-							format,
-							type: type.value
-						}
-					})
-				}
-				if (data.isFollowing) {
-					isFollowing = !!data.isFollowing.createdAt
-				}
-			})
-			.catch((err) => {
-				throw err
-			})
+		if (!asset) {
+			error({ statusCode: 404, message: 'Asset not found' })
+		}
 		return { asset, isFollowing }
 	},
 	data() {
@@ -116,6 +79,9 @@ export default Vue.extend({
 				)
 			}
 			return false
+		},
+		isOwner(): boolean {
+			return this.$strapi.user && this.asset.author.id === this.$strapi.user.id
 		}
 	},
 	watch: {
@@ -295,7 +261,7 @@ export default Vue.extend({
 							</a>
 						</div>
 					</div>
-					<div>
+					<div class="flex flex-row">
 						<button
 							class="btn__like"
 							:class="{ active: localLiked }"
@@ -306,6 +272,15 @@ export default Vue.extend({
 							/>
 							{{ localLiked ? 'Unlike' : 'Like' }}
 						</button>
+						<NuxtLink
+							v-if="isOwner"
+							tag="button"
+							class="btn__like ml-2"
+							:to="`/asset/${asset.id}/edit`"
+						>
+							<FontAwesomeIcon icon="pen" class="mr-2" />
+							Edit Post
+						</NuxtLink>
 					</div>
 				</div>
 			</div>

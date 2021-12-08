@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    menuOpen: false
+    menuOpen: false,
+    modalOpen: false
   }),
 
   actions: {
@@ -13,6 +14,14 @@ export const useAppStore = defineStore('app', {
       }
       else {
         this.menuOpen = !this.menuOpen
+      }
+    },
+    toggleModal(force: boolean | null = null) {
+      if (isBoolean(force)) {
+        this.modalOpen = force
+      }
+      else {
+        this.modalOpen = !this.modalOpen
       }
     }
   }

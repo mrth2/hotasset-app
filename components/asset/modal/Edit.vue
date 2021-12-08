@@ -135,14 +135,3 @@ export default Vue.extend({
 		</form>
 	</div>
 </template>
-<style lang="postcss">
-.modal-edit-post {
-	max-width: 850px;
-	@apply py-14;
-}
-.modal-edit-post a.close-modal {
-	top: 27.5px;
-	right: 27.5px;
-	background: url('/images/icons/close.png');
-}
-</style>

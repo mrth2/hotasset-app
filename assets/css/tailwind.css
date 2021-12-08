@@ -13,12 +13,6 @@
 body {
 	font-family: "Roboto", sans-serif;
 }
-body.toggled {
-	overflow: hidden;
-}
-body.toggled .sidebar {
-	transform: translateY(0);
-}
 .or:before {
 	content: "";
 	height: 1px;

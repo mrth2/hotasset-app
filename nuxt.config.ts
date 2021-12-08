@@ -67,7 +67,7 @@ export default {
     icons: {
       brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram'],
       regular: ['faUserCircle', 'faTimesCircle'],
-      solid: ['faFire']
+      solid: ['faFire', 'faPen']
     }
   },
 

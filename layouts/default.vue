@@ -5,9 +5,14 @@ import { useAppStore } from '~/stores/app'
 export default Vue.extend({
 	name: 'DefaultLayout',
 	head() {
+		const classes: string[] = []
+		const store = useAppStore()
+		if (store.menuOpen) classes.push('toggled')
+		if (store.modalOpen) classes.push('overflow-auto', 'md:overflow-hidden')
+		console.log(classes)
 		return {
 			bodyAttrs: {
-				class: useAppStore().menuOpen ? 'toggled' : ''
+				class: classes.join(' ')
 			}
 		}
 	}
@@ -26,7 +31,21 @@ body {
 }
 .hide-scroller {
 	&::-webkit-scrollbar {
-		display: none;
+		@apply hidden;
+	}
+}
+body.toggled {
+	@apply overflow-scroll;
+
+	.sidebar {
+		@apply translate-y-0;
+	}
+	header {
+		@apply fixed top-0 right-0 left-0;
+	}
+	main,
+	footer {
+		@apply hidden;
 	}
 }
 </style>

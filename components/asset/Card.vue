@@ -44,6 +44,9 @@ export default Vue.extend({
 				return this.height * 2
 			}
 			return null
+		},
+		isOwner(): boolean {
+			return this.$strapi.user && this.asset.author.id === this.$strapi.user.id
 		}
 	},
 	watch: {
@@ -142,6 +145,15 @@ export default Vue.extend({
 							{{ asset.title }}
 						</div>
 						<div class="shot-action ml-auto">
+							<NuxtLink
+								v-if="isOwner"
+								v-tooltip.left-start="`Edit this post`"
+								:to="`/asset/${asset.id}/edit`"
+								tag="button"
+								class="like-shot mb-2"
+							>
+								<FontAwesomeIcon icon="pen" />
+							</NuxtLink>
 							<button
 								v-tooltip.left-start="
 									`I ${localLiked ? 'unlike' : 'like'} this`
@@ -181,7 +193,10 @@ export default Vue.extend({
 				<p class="shots-item__desc">{{ asset.description }}</p>
 				<div class="flex items-center justify-between">
 					<div class="user-information">
-						<NuxtLink :to="`/profile/${asset.author.username}`" class="user-infor__avatar flex gap-1">
+						<NuxtLink
+							:to="`/profile/${asset.author.username}`"
+							class="user-infor__avatar flex gap-1"
+						>
 							<Avatar :src="asset.author.avatar.url" :size="24" />
 							<span class="user-info__name">{{ asset.author.username }}</span>
 						</NuxtLink>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
 import { IAssetFilter, IAsset, IAssetChannel, IAssetType } from '~/@types/asset'
-import { IFile } from '~/@types'
+import { IFile, IUserFollower } from '~/@types'
 
 export const useAssetStore = defineStore('asset', {
   state: () => ({
@@ -171,6 +171,56 @@ export const useAssetStore = defineStore('asset', {
         assets: [] as IAsset[],
         count: 0
       }
+    },
+    async fetchAssetDetail(assetId: string, meId: string, checkFollowing = true) {
+      return await this.$nuxt.app.apolloProvider?.defaultClient
+        .query<{ asset: IAsset; isFollowing?: Partial<IUserFollower> }>({
+          query: gql`
+					query AssetDetail($id: ID!, $me: ID, $checkFollowing: Boolean!) {
+						asset(id: $id) {
+							${useAssetStore().getAssetSchema}
+						}
+						isFollowing: userFollowers ( 
+							where: { 
+								user: $id, 
+								follower: $me 
+							}
+						) @include(if: $checkFollowing) {
+							createdAt
+							updatedAt
+						}
+					}
+				`,
+          variables: {
+            id: assetId,
+            me: meId,
+            checkFollowing
+          }
+        })
+        .then(({ data }) => {
+          const asset = data.asset
+          let isFollowing = false
+          if (asset.resources.length > 0) {
+            asset.resources = asset.resources.map((resource) => {
+              const type = useAssetStore().getAssetType(resource)
+              if (!type) return resource
+              const { url, format } = this.$nuxt.app.$getAssetUrl(resource.url, type?.value)
+              return {
+                ...resource,
+                url,
+                format,
+                type: type.value
+              }
+            })
+          }
+          if (data.isFollowing) {
+            isFollowing = !!data.isFollowing.createdAt
+          }
+          return { asset, isFollowing }
+        })
+        .catch((err) => {
+          throw err
+        })
     },
     async likeOrUnlikeAsset(assetId: string, upvoter?: string) {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.mutate<{

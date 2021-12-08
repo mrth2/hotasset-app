@@ -521,7 +521,7 @@ export default Vue.extend({
 .sidebar {
 	@apply fixed z-10 h-full shadow-md block md:hidden overflow-y-auto;
 	@apply z-40 w-full;
-	top: 57px;
+	top: 69px;
 	transform: translateY(-140%);
 }
 .sidebar-menu {
