@@ -319,14 +319,12 @@ export default Vue.extend({
 										<template #content>
 											<div class="dropdown-user-setting !z-20">
 												<h2>
-													👋
-													<span class="inline-block ml-2">
-														Welcome,
-														<NuxtLink :to="`/profile/${user.username}`">{{
-															$displayName(user)
-														}}</NuxtLink
-														>!
-													</span>
+													<NuxtLink
+														:to="`/profile/${user.username}`"
+														class="inline-block ml-2"
+													>
+														👋 Welcome, {{ $displayName(user) }}!
+													</NuxtLink>
 												</h2>
 												<ul>
 													<li>
