@@ -211,7 +211,8 @@ export const useAssetStore = defineStore('asset', {
             id: assetId,
             me: meId,
             checkFollowing
-          }
+          },
+          fetchPolicy: 'no-cache'
         })
         .then(({ data }) => {
           const asset = data.asset

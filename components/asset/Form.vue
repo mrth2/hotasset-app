@@ -67,7 +67,8 @@ export default Vue.extend({
 			currentPreviewIndex: 0,
 			listTags: [] as ITag[],
 			isLoading: false,
-			isSubmitting: false
+			isSubmitting: false,
+			MAX_FILES_ALLOWED: 6
 		}
 	},
 	async fetch() {
@@ -152,8 +153,10 @@ export default Vue.extend({
 			return !!this.getAssetType(file)
 		},
 		async processFiles(files: FileList) {
-			if (files.length + this.form.files.length > 6) {
-				this.$toast.error('Sorry, you can only upload maximum 6 files!')
+			if (files.length + this.imagePreviews.length > this.MAX_FILES_ALLOWED) {
+				this.$toast.error(
+					`Sorry, you can only upload maximum ${this.MAX_FILES_ALLOWED} files!`
+				)
 				return
 			}
 			// check if uploaded files is allowed
@@ -383,7 +386,7 @@ export default Vue.extend({
 					{{
 						isEditMode
 							? 'You can make a changes to your existed post here'
-							: 'Drag and drop up to 6 images to create a post'
+							: `Drag and drop up to ${MAX_FILES_ALLOWED} files to create a post`
 					}}
 				</p>
 			</div>
@@ -492,9 +495,14 @@ export default Vue.extend({
 					</div>
 				</template>
 				<template v-else-if="!isEditMode">
-					<div v-for="i in 6" :key="i" class="upload-gallery-item"></div>
+					<div
+						v-for="i in MAX_FILES_ALLOWED"
+						:key="i"
+						class="upload-gallery-item"
+					></div>
 				</template>
 				<div
+					v-if="imagePreviews.length < MAX_FILES_ALLOWED"
 					class="
 						upload-gallery-item
 						flex
