@@ -325,10 +325,10 @@ export default Vue.extend({
 
 			await this.$strapi.$http
 				.$put<IAsset>(`assets/${this.asset.id}`, formData)
-				.then(async () => {
+				.then(async (asset) => {
 					this.$toast.success('Updated your post!')
 					await this.$nuxt.refresh()
-					Object.assign(this.$data, initData(this.asset))
+					Object.assign(this.$data, initData(asset))
 				})
 				.catch((err) => {
 					this.$toast.error(err.message)
