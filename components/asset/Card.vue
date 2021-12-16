@@ -191,7 +191,7 @@ export default Vue.extend({
         </Swiper>-->
 			</div>
 			<div class="shot-details-container">
-				<p class="shots-item__desc">{{ asset.description }}</p>
+				<p class="shots-item__desc line-clamp-2">{{ asset.description }}</p>
 				<div class="flex items-center justify-between">
 					<div class="user-information">
 						<NuxtLink
