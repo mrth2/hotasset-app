@@ -41,14 +41,7 @@ export const useHeaderStore = defineStore('header', {
           return acc
         }, [] as ICategory[])
       }
-      return flatten(state.categories).map(category => {
-        return {
-          id: category.id,
-          title: category.title,
-          slug: category.slug,
-          is_new: category.is_new
-        }
-      })
+      return flatten(state.categories)
     }
   },
   actions: {
