@@ -244,7 +244,7 @@ export default Vue.extend({
 				v-if="assets.length > 0"
 				class="grid-masonry"
 				:items="assets"
-				:ssr-column="3"
+				:ssr-column="10"
 				:column-width="300"
 				:gap="16"
 			>

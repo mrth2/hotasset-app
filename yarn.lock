@@ -3284,10 +3284,10 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@yeger/vue2-masonry-wall@^2.0.7":
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/@yeger/vue2-masonry-wall/-/vue2-masonry-wall-2.0.7.tgz#966771a4b2513c12d4465bcfebfc6404431a0731"
-  integrity sha512-Z8gCdtv0GwRWiPGhbjXBOITuUMbSd2SZ51fQqVZbarzOFfcSGbSz8YImJ03/3XtDjz3Awo/Cpj7jYl9HsmSeMA==
+"@yeger/vue2-masonry-wall@^2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@yeger/vue2-masonry-wall/-/vue2-masonry-wall-2.0.10.tgz#dbbf4f0e5f964d0c66761b8970e2337104d8be64"
+  integrity sha512-l4yoiIEaa6LbKxPJ5ns7/8qvym5mEKG+prgvJ4XBIj33hi8+WXvSegPEkuMUTAYGsWvEPEa6R0cn48hXjqOm1w==
 
 abbrev@1:
   version "1.1.1"
