@@ -62,6 +62,8 @@ export default {
     '@nuxtjs/composition-api/module',
     ['@pinia/nuxt', { disableVuex: true }],
     '@nuxtjs/device',
+    // https://go.nuxtjs.dev/pwa
+    '@nuxtjs/pwa',
   ],
 
   fontawesome: {
@@ -79,8 +81,6 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa',
     '@nuxtjs/apollo',
     '@nuxtjs/strapi',
     '@nuxtjs/toast',
