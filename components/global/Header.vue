@@ -424,6 +424,7 @@ export default Vue.extend({
 												<h4 class="megamenu__title">
 													<NuxtLink
 														:to="`/category/${child.slug}`"
+															class="megamenu__link"
 														:class="{
 															current: child.slug === currentCategorySlug
 														}"
@@ -506,7 +507,6 @@ export default Vue.extend({
 		display: none;
 	}
 }
-.megamenu__title > a.current,
 .navbar__link.current:after {
 	content: '';
 	@apply absolute bottom-2 inset-x-0 bg-brand h-1;
