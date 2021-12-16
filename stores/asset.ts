@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
-import { IAssetFilter, IAsset, IAssetChannel, IAssetType } from '~/@types/asset'
-import { IFile, IUserFollower } from '~/@types'
+import { IAssetFilter, IAsset, IAssetChannel, IAssetType } from '~/types/asset'
+import { IFile, IUserFollower } from '~/types'
 
 export const useAssetStore = defineStore('asset', {
   state: () => ({

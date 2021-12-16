@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import type { PropType } from 'vue'
 import MasonryWall from '@yeger/vue2-masonry-wall'
-import { IAssetFilter, IAsset } from '~/@types/asset'
+import { IAssetFilter, IAsset } from '~/types/asset'
 import { useAssetStore } from '~/stores/asset'
 import { useTagStore } from '~/stores/tag'
 

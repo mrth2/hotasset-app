@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
-import { IUser } from '~/@types'
-import { IAssetFilter } from '~/@types/asset'
+import { IUser } from '~/types'
+import { IAssetFilter } from '~/types/asset'
 import { useAssetStore } from '~/stores/asset'
 import { useUserStore } from '~/stores/user'
 

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
-import { ICategory } from '~/@types'
+import { ICategory } from '~/types'
 
 export const HEADER_CATEGORIES_QUERY = gql`
   query HEADER_CATEGORIES {

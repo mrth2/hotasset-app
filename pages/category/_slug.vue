@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { IAssetFilter } from '~/@types/asset'
+import { IAssetFilter } from '~/types/asset'
 import { useAssetStore } from '~/stores/asset'
 export default Vue.extend({
   name: 'Category',

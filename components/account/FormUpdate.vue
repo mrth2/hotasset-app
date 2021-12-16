@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import gql from 'graphql-tag'
-import { ICategory, IUser } from '~/@types'
+import { ICategory, IUser } from '~/types'
 import { useHeaderStore } from '~/stores/header'
 export default Vue.extend({
 	props: {

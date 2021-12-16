@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import type { PropType } from 'vue'
-import { IAsset } from '~/@types/asset/index'
+import { IAsset } from '~/types/asset/index'
 import { useAssetStore } from '~/stores/asset'
 
 export default Vue.extend({

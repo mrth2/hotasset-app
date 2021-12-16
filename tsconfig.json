@@ -29,14 +29,14 @@
     "types": [
       "@nuxt/types",
       "@types/node",
-      "@nuxtjs/strapi",
       "vue-apollo/types",
       "cookie-universal-nuxt/types",
       "@nuxtjs/toast",
       "@pinia/nuxt",
       "@nuxt/image",
       "@nuxtjs/device",
-      "@types/swiper"
+      "@types/swiper",
+      "@nuxtjs/strapi"
     ],
     "noImplicitAny": false
   },

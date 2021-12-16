@@ -4,10 +4,10 @@ import type { PropType } from 'vue'
 import gql from 'graphql-tag'
 import cloneDeep from 'lodash/cloneDeep'
 import { mapActions } from 'pinia'
-import { ICategory, ITag } from '~/@types'
+import { ICategory, ITag } from '~/types'
 import { useHeaderStore } from '~/stores/header'
 import { useAssetStore } from '~/stores/asset'
-import { IAsset } from '~/@types/asset'
+import { IAsset } from '~/types/asset'
 
 interface AssetPreview {
 	name: string

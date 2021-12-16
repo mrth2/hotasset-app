@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { IAsset } from '~/@types/asset'
+import { IAsset } from '~/types/asset'
 import { useAppStore } from '~/stores/app'
 import { useAssetStore } from '~/stores/asset'
 export default Vue.extend({

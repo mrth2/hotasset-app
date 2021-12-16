@@ -1,7 +1,7 @@
 import { Context } from '@nuxt/types'
 import { Inject } from '@nuxt/types/app'
-import { IUser } from '~/@types'
-import { IAssetProvider, IAssetTypeValue } from '~/@types/asset'
+import { IUser } from '~/types'
+import { IAssetProvider, IAssetTypeValue } from '~/types/asset'
 
 interface HAHelper {
   $displayName(user: IUser): string

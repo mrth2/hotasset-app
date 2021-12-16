@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { IUser } from '~/@types'
+import { IUser } from '~/types'
 export default Vue.extend({
 	middleware: 'require-login',
 	data() {

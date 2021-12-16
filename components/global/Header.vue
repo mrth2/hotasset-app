@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapActions } from 'pinia'
-import { ICategory, IUser } from '~/@types'
+import { ICategory, IUser } from '~/types'
 import { useAppStore } from '~/stores/app'
 import { useHeaderStore } from '~/stores/header'
 

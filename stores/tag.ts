@@ -1,6 +1,6 @@
 import gql from "graphql-tag"
 import { defineStore } from "pinia"
-import { ITag } from "~/@types"
+import { ITag } from "~/types"
 
 export const useTagStore = defineStore('tag', {
   state: () => ({

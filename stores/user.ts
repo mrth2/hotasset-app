@@ -1,6 +1,6 @@
 import gql from "graphql-tag"
 import { defineStore } from "pinia"
-import { IUser, IUserFollower } from "~/@types/user"
+import { IUser, IUserFollower } from "~/types/user"
 
 interface UserResponse {
   users: IUser[]

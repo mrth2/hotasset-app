@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import type { PropType } from 'vue'
 import { useAssetStore } from '~/stores/asset'
-import { IAssetFilter } from '~/@types/asset'
+import { IAssetFilter } from '~/types/asset'
 export default Vue.extend({
 	props: {
 		filters: {

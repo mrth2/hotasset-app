@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
-import { IUser } from '~/@types/user'
+import { IUser } from '~/types/user'
 export default Vue.extend({
 	props: {
 		size: {
