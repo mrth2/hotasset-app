@@ -26,8 +26,11 @@ export default Vue.extend({
 		v-model="propModel"
 		class="form-control"
 		v-bind="$attrs"
-		select-label=''
-    v-on="$listeners"
+		select-label=""
+		select-group-label=""
+		deselect-label=""
+		deselect-group-label=""
+		v-on="$listeners"
 	/>
 </template>
 <style scoped lang="postcss">
@@ -57,7 +60,7 @@ export default Vue.extend({
 		@apply bg-transparent;
 	}
 	.multiselect__single {
-		@apply leading-6;
+		@apply leading-6 bg-transparent;
 	}
 	.multiselect__placeholder {
 		@apply pt-0 mb-2;
