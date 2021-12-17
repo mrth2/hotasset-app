@@ -12,11 +12,11 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'HotAsset',
+    title: 'Inspiration to do your best work.',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'Hot Asset is where sales and marketing professionals gain inspiration to do their best work through an extensive library of relevant asset examples.' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
