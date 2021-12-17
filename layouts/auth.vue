@@ -1,14 +1,9 @@
 <script lang="ts">
 import Vue from 'vue'
 import { useAppStore } from '~/stores/app'
-import { useHeaderStore } from '~/stores/header'
 
 export default Vue.extend({
 	name: 'NoFooterLayout',
-	async fetch() {
-		const headerStore = useHeaderStore()
-		await headerStore.fetchCategories()
-	},
 	head() {
 		return {
 			bodyAttrs: {

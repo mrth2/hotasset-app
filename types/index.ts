@@ -7,6 +7,14 @@ export declare interface ICategory {
     sub_categories?: ICategory[]
 }
 
+export declare interface ISocialLinks {
+    twitter: string
+    instagram: string
+    facebook: string
+    linkedin: string
+    dribble: string
+}
+
 export * from './user'
 export * from './file'
 export * from './tag'

@@ -1,7 +1,12 @@
 <script lang="ts">
+import { mapState } from 'pinia'
 import Vue from 'vue'
+import { useHeaderStore } from '~/stores/header'
 export default Vue.extend({
 	name: 'Footer',
+	computed: {
+		...mapState(useHeaderStore, ['socialLinks'])
+	}
 })
 </script>
 
@@ -14,21 +19,25 @@ export default Vue.extend({
 						<CoreIconLogo class="footer-info__logo" />
 					</a>
 					<p class="footer__desc">
-						HotAsset is the world’s leading community for creatives to share, grow, and
-						get hired.
+						HotAsset is the world’s leading community for creatives to share,
+						grow, and get hired.
 					</p>
 					<div class="social">
-						<a href class="social__link">
-							<FontAwesomeIcon :icon="['fab', 'dribbble']" size="lg" />
+						<a
+							v-if="socialLinks.linkedin"
+							:href="socialLinks.linkedin"
+							class="social__link"
+							target="_blank"
+						>
+							<FontAwesomeIcon :icon="['fab', 'linkedin']" size="lg" />
 						</a>
-						<a href class="social__link">
-							<FontAwesomeIcon :icon="['fab', 'twitter']" size="lg" />
-						</a>
-						<a href class="social__link">
+						<a
+							v-if="socialLinks.facebook"
+							:href="socialLinks.facebook"
+							class="social__link"
+							target="_blank"
+						>
 							<FontAwesomeIcon :icon="['fab', 'facebook']" size="lg" />
-						</a>
-						<a href class="social__link">
-							<FontAwesomeIcon :icon="['fab', 'instagram']" size="lg" fill="black" />
 						</a>
 					</div>
 				</div>
@@ -39,70 +48,96 @@ export default Vue.extend({
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Go
-									Pro!
+									Go Pro!
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Explore
-									design works
+									Explore design works
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Design
-									blog
+									Design blog
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Overtime
-									podcast
+									Overtime podcast
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Dribbble
-									meetups
+									Dribbble meetups
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-								>Playoffs</a>
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+									>Playoffs</a
+								>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Weekly
-									warm-ups
+									Weekly warm-ups
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Code
-									of conduct
+									Code of conduct
 								</a>
 							</li>
 						</ul>
@@ -114,28 +149,37 @@ export default Vue.extend({
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Post
-										a job opening
+										Post a job opening
 									</a>
 								</li>
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Post
-										a freelance project
+										Post a freelance project
 									</a>
 								</li>
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Search
-										for designers
+										Search for designers
 									</a>
 								</li>
 							</ul>
@@ -146,10 +190,13 @@ export default Vue.extend({
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Advertise
-										with us
+										Advertise with us
 									</a>
 								</li>
 							</ul>
@@ -161,61 +208,93 @@ export default Vue.extend({
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-								>About</a>
-							</li>
-							<li class="footer__item">
-								<a
-									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-								>Careers</a>
-							</li>
-							<li class="footer__item">
-								<a
-									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+									>About</a
 								>
-									Media
-									Kit
+							</li>
+							<li class="footer__item">
+								<a
+									href="#"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+									>Careers</a
+								>
+							</li>
+							<li class="footer__item">
+								<a
+									href="#"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+								>
+									Media Kit
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Dribbble
-									shop
+									Dribbble shop
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-								>Testimonials</a>
-							</li>
-							<li class="footer__item">
-								<a
-									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-								>API</a>
-							</li>
-							<li class="footer__item">
-								<a
-									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+									>Testimonials</a
 								>
-									Terms
-									of service
+							</li>
+							<li class="footer__item">
+								<a
+									href="#"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+									>API</a
+								>
+							</li>
+							<li class="footer__item">
+								<a
+									href="#"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
+								>
+									Terms of service
 								</a>
 							</li>
 							<li class="footer__item">
 								<a
 									href="#"
-									class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+									class="
+										text-gray-500
+										border-b border-solid border-transparent
+										hover:border-red-500 hover:text-red-500
+									"
 								>
-									Privacy
-									policy
+									Privacy policy
 								</a>
 							</li>
 						</ul>
@@ -227,32 +306,48 @@ export default Vue.extend({
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Design
-										jobs
+										Design jobs
 									</a>
 								</li>
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Designers
-										to hire
+										Designers to hire
 									</a>
 								</li>
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-									>Tags</a>
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
+										>Tags</a
+									>
 								</li>
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
-									>Places</a>
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
+										>Places</a
+									>
 								</li>
 							</ul>
 						</div>
@@ -263,10 +358,13 @@ export default Vue.extend({
 								<li class="footer__item">
 									<a
 										href="#"
-										class="text-gray-500 border-b border-solid border-transparent hover:border-red-500 hover:text-red-500"
+										class="
+											text-gray-500
+											border-b border-solid border-transparent
+											hover:border-red-500 hover:text-red-500
+										"
 									>
-										Shop
-										Creative Market
+										Shop Creative Market
 									</a>
 								</li>
 							</ul>

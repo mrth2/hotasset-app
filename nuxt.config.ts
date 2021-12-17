@@ -69,7 +69,7 @@ export default {
 
   fontawesome: {
     icons: {
-      brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram'],
+      brands: ['faFacebook', 'faTwitter', 'faDribbble', 'faInstagram', 'faLinkedin'],
       regular: ['faUserCircle'],
       solid: ['faFire', 'faPen']
     }

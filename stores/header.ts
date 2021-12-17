@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
-import { ICategory } from '~/types'
+import { ICategory, ISocialLinks } from '~/types'
 
-export const HEADER_CATEGORIES_QUERY = gql`
-  query HEADER_CATEGORIES {
+export const APP_REQUIRED_DATA = gql`
+  query APP_REQUIRED_DATA {
     headerCategories: categories(where: { parent_category_null: true }) {
       id
       title
@@ -22,12 +22,17 @@ export const HEADER_CATEGORIES_QUERY = gql`
         }  
       }
     }
+    socialLink {
+      linkedin
+      facebook
+    }
   } 
 `
 export const useHeaderStore = defineStore('header', {
   state: () => {
     return {
-      categories: [] as ICategory[]
+      categories: [] as ICategory[],
+      socialLinks: {} as ISocialLinks
     }
   },
   getters: {
@@ -45,10 +50,11 @@ export const useHeaderStore = defineStore('header', {
     }
   },
   actions: {
-    async fetchCategories() {
-      await this.$nuxt.app.apolloProvider?.defaultClient.query({ query: HEADER_CATEGORIES_QUERY })
+    async fetchRequiredData() {
+      await this.$nuxt.app.apolloProvider?.defaultClient.query({ query: APP_REQUIRED_DATA })
         .then((res) => {
           this.categories = res.data.headerCategories
+          this.socialLinks = res.data.socialLink
         })
     }
   }
