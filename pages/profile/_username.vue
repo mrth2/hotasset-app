@@ -144,7 +144,7 @@ export default Vue.extend({
 					</div>
 					<div class="follow-count">
 						<em>{{ followings }}</em>
-						<span>&nbsp;followings </span>
+						<span>&nbsp;following </span>
 					</div>
 				</div>
 				<!-- owner action: upload and check likes -->
