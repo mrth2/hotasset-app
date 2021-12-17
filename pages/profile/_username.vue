@@ -150,7 +150,7 @@ export default Vue.extend({
 				<!-- owner action: upload and check likes -->
 				<div v-if="isOwner" class="flex space-x-4 justify-center">
 					<NuxtLink to="/upload" class="btn-secondary w-full md:w-auto mb-4">
-						Upload
+						Uploads
 					</NuxtLink>
 					<button class="btn-secondary w-full md:w-auto mb-4">Likes</button>
 				</div>
