@@ -198,7 +198,7 @@ export default Vue.extend({
 							:to="`/profile/${asset.author.username}`"
 							class="user-infor__avatar flex gap-1"
 						>
-							<Avatar :src="asset.author.avatar.url" :size="24" />
+							<Avatar :src="asset.author.avatar ? asset.author.avatar.url : null" :size="24" />
 							<span class="user-info__name">{{ asset.author.username }}</span>
 						</NuxtLink>
 					</div>
