@@ -305,7 +305,7 @@ export default Vue.extend({
 			></textarea>
 		</div>
 		<div class="mb-8">
-			<label for="pronounce" class="form-label">Pronounce</label>
+			<label for="pronounce" class="form-label">Favorite Categories</label>
 			<CoreFormMultiSelect
 				:model="form.pronounces"
 				:preserve-search="true"
