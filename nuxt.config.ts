@@ -42,7 +42,8 @@ export default {
     { src: '~/plugins/helper.ts' },
     { src: '~/plugins/google.ts', mode: 'client' },
     { src: '~/plugins/v-tooltip.ts', mode: 'client' },
-    { src: '~/plugins/directive.js', mode: 'client' }
+    { src: '~/plugins/directive.js', mode: 'client' },
+    { src: '~/plugins/google-analytics.client.js' }
   ],
 
   router: {
