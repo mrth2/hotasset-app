@@ -276,8 +276,8 @@ export default Vue.extend({
 			/>
 			<div class="flex justify-between items-center pt-4">
 				<p class="text-gray-500 text-sm">
-					hotasset.com/
-					<strong class="text-red-500">{{
+					<span>hotasset.com/profile/</span>
+					<strong class="text-red-500 -ml-0.5">{{
 						form.username || 'username'
 					}}</strong>
 				</p>
