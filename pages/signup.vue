@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-8">
-      <h2 class="auth__title">Register in HotAsset</h2>
+      <h2 class="auth__title">Register to HotAsset</h2>
       <p class="auth__desc">
         Already a member?
         <NuxtLink :to="{ name: 'login' }" class="auth__note">Sign In</NuxtLink>
