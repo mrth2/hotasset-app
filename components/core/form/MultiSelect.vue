@@ -10,7 +10,7 @@ export default Vue.extend({
 	inheritAttrs: false,
 	props: {
 		model: {
-			type: Array as PropType<any>,
+			type: [Array, Object] as PropType<any>,
 			default: null
 		},
 		hideContent: {
@@ -27,9 +27,6 @@ export default Vue.extend({
 				this.$emit('update:model', value)
 			}
 		}
-	},
-	mounted() {
-		console.log(this.$attrs)
 	}
 })
 </script>

@@ -18,7 +18,7 @@ function initData(asset: IAsset | null) {
 	const initialForm = {
 		title: asset?.title || '',
 		description: asset?.description || '',
-		categories: asset?.categories || ([] as ICategory[]),
+		category: asset?.categories?.[0] || ({} as ICategory),
 		tags: asset?.tags || ([] as ITag[]),
 		files: [] as File[]
 	}
@@ -262,12 +262,11 @@ export default Vue.extend({
 		},
 		getFormData() {
 			const formData = new FormData()
-			const { title, description, categories, tags, files } = this.form
-
+			const { title, description, category, tags, files } = this.form
 			const data = {
 				title,
 				description,
-				categories: categories.map((c) => c.id),
+				categories: [category.id],
 				tags: tags
 					.map((t) => {
 						// when tag is new ( id === name )
@@ -537,7 +536,7 @@ export default Vue.extend({
 				<label for="categories" class="form-label">Category</label>
 				<CoreFormMultiSelect
 					id="categories"
-					:model="form.categories"
+					:model="form.category"
 					class="form-control"
 					:options="listCategories"
 					:preserve-search="true"
@@ -547,7 +546,7 @@ export default Vue.extend({
 					placeholder="Select category"
 					label="title"
 					track-by="slug"
-					@update:model="form.categories = $event"
+					@update:model="form.category = $event"
 				/>
 			</div>
 			<div class="mb-8">
