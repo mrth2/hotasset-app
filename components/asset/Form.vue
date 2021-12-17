@@ -517,7 +517,7 @@ export default Vue.extend({
 			</div>
 		</div>
 
-		<div class="w-full mx-auto self-center">
+		<div class="max-w-3xl w-full mx-auto self-center">
 			<div class="mb-8">
 				<label for="description" class="form-label">Post Description</label>
 				<textarea
