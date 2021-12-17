@@ -68,11 +68,13 @@ export default Vue.extend({
 			listTags: [] as ITag[],
 			isLoading: false,
 			isSubmitting: false,
-			MAX_FILES_ALLOWED: 6
+			MAX_FILES_ALLOWED: 6,
+			// hide tag dropdown when there are no tags
+			hideTagSelection: true
 		}
 	},
 	async fetch() {
-		await this.findTags('', 10)
+		// await this.findTags('', 10)
 		await useAssetStore().fetchAssetMetaData()
 	},
 	computed: {
@@ -101,6 +103,7 @@ export default Vue.extend({
 				name,
 				slug: name
 			})
+			this.hideTagSelection = true
 			return true
 		},
 		async findTags(query: string, limit = 20) {
@@ -551,13 +554,14 @@ export default Vue.extend({
 				<label for="tags" class="form-label">Tags</label>
 				<CoreFormMultiSelect
 					:model="form.tags"
+					:hide-content="hideTagSelection"
 					class="form-control"
-					:options="listTags"
+					:options="[]"
 					:multiple="true"
 					:close-on-select="false"
 					:clear-on-select="false"
 					:hide-selected="true"
-					placeholder="Add tags (separate by comma)"
+					placeholder="Add tags ( up to 10 )"
 					label="name"
 					track-by="id"
 					:searchable="true"
@@ -566,11 +570,15 @@ export default Vue.extend({
 					:options-limit="300"
 					:show-no-results="false"
 					:taggable="true"
-					:tag-placeholder="'Add tags (separate by comma)'"
+					:tag-placeholder="'Enter to add this tag'"
 					:max="10"
 					@update:model="form.tags = $event"
 					@tag="addTag"
-					@search-change="findTags"
+					@search-change="hideTagSelection = false"
+					@input="hideTagSelection = true"
+					@select="hideTagSelection = true"
+					@open="hideTagSelection = true"
+					@close="hideTagSelection = true"
 				/>
 			</div>
 

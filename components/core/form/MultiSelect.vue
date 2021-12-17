@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from 'vue'
+import type { PropType } from 'vue'
 import Multiselect from 'vue-multiselect'
 export default Vue.extend({
 	name: 'MultiSelect',
@@ -7,8 +8,16 @@ export default Vue.extend({
 		Multiselect
 	},
 	inheritAttrs: false,
-	// eslint-disable-next-line vue/require-prop-types
-	props: ['model'],
+	props: {
+		model: {
+			type: Array as PropType<any>,
+			default: null
+		},
+		hideContent: {
+			type: Boolean as PropType<boolean>,
+			default: false
+		}
+	},
 	computed: {
 		propModel: {
 			get(): any {
@@ -18,6 +27,9 @@ export default Vue.extend({
 				this.$emit('update:model', value)
 			}
 		}
+	},
+	mounted() {
+		console.log(this.$attrs)
 	}
 })
 </script>
@@ -25,13 +37,18 @@ export default Vue.extend({
 	<Multiselect
 		v-model="propModel"
 		class="form-control"
+		:class="{ hideContent }"
 		v-bind="$attrs"
 		select-label=""
 		select-group-label=""
 		deselect-label=""
 		deselect-group-label=""
 		v-on="$listeners"
-	/>
+	>
+		<template #noOptions>
+			<p>{{ $attrs.placeholder }}</p>
+		</template>
+	</Multiselect>
 </template>
 <style scoped lang="postcss">
 .multiselect ::v-deep {
@@ -67,6 +84,11 @@ export default Vue.extend({
 	}
 	.multiselect__option--highlight {
 		background: #bfbfc2;
+	}
+}
+.multiselect.hideContent ::v-deep {
+	.multiselect__content-wrapper {
+		display: none !important;
 	}
 }
 </style>
