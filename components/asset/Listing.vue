@@ -26,6 +26,10 @@ export default Vue.extend({
 		noPhotoMessage: {
 			type: String,
 			default: 'Sorry, we can not found any assets :('
+		},
+		hideFilters: {
+			type: Boolean,
+			default: false
 		}
 	},
 	// emits: ['update:filters', 'reload', 'counted'],
@@ -143,7 +147,7 @@ export default Vue.extend({
 
 <template>
 	<div>
-		<div class="filter-subnav">
+		<div v-if="!hideFilters" class="filter-subnav">
 			<div
 				class="filter-subnav-inner flex flex-row items-center justify-between"
 			>

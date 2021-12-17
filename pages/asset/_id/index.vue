@@ -4,7 +4,7 @@ import Vue from 'vue'
 import SwiperClass from 'swiper'
 import type { SwiperOptions } from 'swiper'
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
-import { IAsset } from '~/types/asset'
+import { IAsset, IAssetFilter } from '~/types/asset'
 import 'swiper/css/swiper.css'
 import { useAssetStore } from '~/stores/asset'
 import { useUserStore } from '~/stores/user'
@@ -39,7 +39,6 @@ export default Vue.extend({
 			asset: null as unknown as IAsset,
 			isFollowing: false,
 			sameAuthorAssets: [] as IAsset[],
-			similarAssets: [] as IAsset[],
 			swiper: {
 				thumbnail: {
 					spaceBetween: 8,
@@ -71,17 +70,21 @@ export default Vue.extend({
 		}
 	},
 	async fetch() {
-		await Promise.all([
-			// fetch related assets
-			this.fetchSameAuthorAssets(),
-			this.fetchSimilarAssets()
-		]).then(() => {
-			this.loading = false
-		})
+		// fetch related assets
+		await this.fetchSameAuthorAssets()
+		this.loading = false
 	},
 	computed: {
 		assetId() {
 			return this.$route.params.id
+		},
+		similarAssetFilter(): Partial<IAssetFilter> {
+			return {
+				tags: this.asset?.tags?.map((tag) => tag.id) || [],
+				categories: this.asset?.categories?.map((cat) => cat.id) || [],
+				not_id: this.assetId,
+				limit: 24
+			}
 		},
 		thumbSwiper(): SwiperClass & {
 			changeDirection: (direction: string) => void
@@ -155,21 +158,6 @@ export default Vue.extend({
 					limit: 4
 				})
 				this.sameAuthorAssets = assets
-			} catch (err) {
-				if (err instanceof Error) {
-					this.$toast.error(err.message)
-				}
-			}
-		},
-		async fetchSimilarAssets() {
-			try {
-				const { assets } = await useAssetStore().fetchAssets({
-					tags: this.asset?.tags?.map((tag) => tag.id) || [],
-					categories: this.asset?.categories?.map((cat) => cat.id) || [],
-					not_id: this.assetId,
-					limit: 4
-				})
-				this.similarAssets = assets
 			} catch (err) {
 				if (err instanceof Error) {
 					this.$toast.error(err.message)
@@ -441,20 +429,11 @@ export default Vue.extend({
 				</div>
 			</section>
 			<!-- similar assets -->
-			<section v-if="similarAssets.length" class="mb-4">
+			<section class="mb-4">
 				<div class="flex justify-between mb-4">
 					<h4 class="font-bold text-xl">Similar Assets</h4>
 				</div>
-				<div class="shots-grid">
-					<div class="shots-grid-row grid md:grid-cols-2 xl:grid-cols-4 gap-8">
-						<AssetCard
-							v-for="item in similarAssets"
-							:key="item.id"
-							:asset="item"
-							:height="250"
-						/>
-					</div>
-				</div>
+				<AssetListing :filters="similarAssetFilter" :hide-filters="true" />
 			</section>
 		</div>
 		<!-- loading related assets -->

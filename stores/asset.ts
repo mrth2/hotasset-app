@@ -126,8 +126,8 @@ export const useAssetStore = defineStore('asset', {
           # use or in specific case
           _or: [
             # query similar
-            { tags_in: [$tags] },
-            { categories_in: [$categories] },
+            { tags_in: $tags },
+            { categories_in: $categories },
             # query search
             { title_contains: $search },
             { description_contains: $search }
