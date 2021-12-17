@@ -120,7 +120,7 @@ export default Vue.extend({
 					<Avatar :src="user.avatar ? user.avatar.url : null" :size="96" class="mx-auto" />
 				</div>
 
-				<div class="profile-social">
+				<!-- <div class="profile-social">
 					<a href="#">
 						<CoreImage src="~/assets/images/icons/twitter.svg" alt="" />
 					</a>
@@ -130,7 +130,7 @@ export default Vue.extend({
 					<a href="#">
 						<CoreImage src="~/assets/images/icons/instagram.svg" alt="" />
 					</a>
-				</div>
+				</div> -->
 				<h2 class="profile__name">
 					{{ $displayName(user) }}
 				</h2>
