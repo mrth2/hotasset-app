@@ -83,7 +83,9 @@ export default Vue.extend({
 		assetId() {
 			return this.$route.params.id
 		},
-		thumbSwiper(): SwiperClass {
+		thumbSwiper(): SwiperClass & {
+			changeDirection: (direction: string) => void
+		} {
 			return (this.$refs.thumbnailSwiper as any)?.$swiper
 		},
 		mainSwiper(): SwiperClass {
@@ -136,9 +138,9 @@ export default Vue.extend({
 			} else {
 				this.swiper.thumbnail.direction = 'vertical'
 			}
-			;(this.thumbSwiper as any).changeDirection(
-				this.swiper.thumbnail.direction
-			)
+			if (this.thumbSwiper) {
+				this.thumbSwiper.changeDirection(this.swiper.thumbnail.direction)
+			}
 		},
 		searchByTag(tag: string) {
 			const params = new URLSearchParams()
