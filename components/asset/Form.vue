@@ -308,7 +308,7 @@ export default Vue.extend({
 			await this.$strapi.$http
 				.$post<IAsset>('assets', formData)
 				.then(() => {
-					this.$toast.success('Congrats! Your assets is successfully posted!')
+					this.$toast.success('Congrats! Your asset has successfully been posted!')
 					this.filePreviews = []
 					this.form = cloneDeep(this.initialForm)
 				})
