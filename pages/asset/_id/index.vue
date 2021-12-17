@@ -406,7 +406,7 @@ export default Vue.extend({
 			</div>
 		</div>
 		<!-- related assets -->
-		<div v-if="!loading" class="container mx-auto px-4 sm:px-6 relative">
+		<div v-if="!loading" class="container mx-auto px-4 sm:px-6 relative min-h-[80px]">
 			<!-- same author assets -->
 			<section v-if="sameAuthorAssets.length" class="mb-8 mt-20">
 				<div class="flex justify-between items-center mb-4">
