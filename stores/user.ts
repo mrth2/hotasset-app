@@ -27,6 +27,7 @@ export const useUserStore = defineStore('user', {
     async fetchUser(username: string) {
 			// if there is user logged in, check for the following
 			const checkFollowing = !!this.$nuxt.app.$strapi.user
+			const me = this.$nuxt.app.$strapi.user
       const data = await this.$nuxt.app.apolloProvider?.defaultClient
         .query<UserResponse>({
           query: gql`
@@ -76,7 +77,7 @@ export const useUserStore = defineStore('user', {
 					`,
           variables: { 
 						username, 
-						me: this.$nuxt.app.$strapi.user.id,  
+						me: me ? me.id : null,  
 						checkFollowing
 					}
         })
