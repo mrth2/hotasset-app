@@ -124,16 +124,18 @@ export const useAssetStore = defineStore('asset', {
           # as always to exclude broken asset posts with no valid file
           resources: { size_gte: 0 },
           # use or in specific case
-          _or: [
-            # query similar
-            { tags_in: $tags },
-            { categories_in: $categories },
-            # query search
-            { title_contains: $search },
-            { description_contains: $search }
-            { tags: { name_contains: $search } },
-            { categories: { title_contains: $search } }
-          ]
+          ${(options.tags || options.categories || options.search) ?
+          `_or: [
+                # query similar
+                ${options.tags ? `{ tags_in: $tags }` : ''},
+                ${options.categories ? `{ categories_in: $categories }` : ''},
+                # query search
+                ${options.search ? `{ title_contains: $search },
+                { description_contains: $search }
+                { tags: { name_contains: $search } },
+                { categories: { title_contains: $search } }` : ''}
+              ]`
+          : ''}
         }
       `
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[], count?: { aggregate: { count: number } } }>({
@@ -141,8 +143,8 @@ export const useAssetStore = defineStore('asset', {
           query ASSETS (
             $author: ID, $not_id: ID, 
             $type: ID, $channel: ID, 
-            $category: String, $categories: [ID],
-            $tag: ID, $tags: [ID],
+            $category: String, ${options.categories ? `$categories: [ID]` : ''},
+            $tag: ID, ${options.tags ? `$tags: [ID]` : ''},
             $search: String,
             $sort: String, $start: Int, $limit: Int, $download: Boolean
             $count: Boolean!
