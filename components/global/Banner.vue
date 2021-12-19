@@ -15,7 +15,11 @@ export default Vue.extend({
 		hasButton: {
 			type: Boolean,
 			default: true
-		}
+		},
+		cover: {
+			type: String,
+			default: null
+		},
 	}
 })
 </script>
@@ -42,7 +46,7 @@ export default Vue.extend({
 				</div>
 				<div class="banner-image">
 					<CoreImage
-						:src="`/homepage/${!$strapi.user ? 'hero-' : ''}illustration.png`"
+						:src="cover || `/homepage/${!$strapi.user ? 'hero-' : ''}illustration.png`"
 						alt
 						class="mx-auto"
 					/>
