@@ -76,7 +76,7 @@ export default Vue.extend({
 
 <template>
 	<div v-if="page">
-		<Banner :title="page.page.title" :description="page.page.description" :has-button="false" :cover="page.page.cover.url || null" />
+		<Banner :title="page.page.title" :description="page.page.description" :has-button="false" :cover="page.page.cover ? page.page.cover.url : null" />
 		<main class="border-t relative">
 			<div
 				v-show="cleaned"
