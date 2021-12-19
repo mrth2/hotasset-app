@@ -46,7 +46,8 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			page: null as IPage | null
+			page: null as IPage | null,
+			cleaned: true
 		}
 	},
 	head() {
@@ -69,16 +70,6 @@ export default Vue.extend({
 			title,
 			meta: [{ hid: 'description', name: 'description', content: description }]
 		}
-	},
-	computed: {
-		pageContent(): string {
-			return (
-				this.page?.page.content.replace(/<style>(.*)<\/style>/g, '') || ''
-			)
-		}
-	},
-	mounted() {
-		console.log(this.page.page)
 	}
 })
 </script>
@@ -88,7 +79,12 @@ export default Vue.extend({
 		<!-- main banner with CTA -->
 		<Banner :title="page.page.title" :description="page.page.description" />
 		<main class="border-t relative">
-			<div class="container mx-auto py-12 px-4 sm:px-6" v-html="pageContent" />
+			<div
+				v-show="cleaned"
+				ref="pageContent"
+				class="container mx-auto py-12 px-4 sm:px-6"
+				v-html="page.page.content"
+			/>
 		</main>
 	</div>
 </template>
@@ -97,13 +93,24 @@ export default Vue.extend({
 .container ::v-deep {
 	* {
 		font-family: 'Roboto', sans-serif !important;
-		@apply font-normal text-base text-paragraph !important;
+		@apply font-normal text-base leading-6 text-paragraph !important;
 	}
-}
-::v-deep table {
-	tr {
-		td {
-			@apply px-3;
+	h1, h1 *,
+	h2, h2 *,
+	h3, h3 * {
+		@apply font-semibold text-lg !important;
+	}
+	strong, u {
+		@apply font-semibold !important;
+	}
+	ul {
+		@apply pl-4 list-disc list-inside !important;
+	}
+	table {
+		tr {
+			td {
+				@apply px-3;
+			}
 		}
 	}
 }
