@@ -49,11 +49,11 @@ export default Vue.extend({
 						totalResults
 					}}</small>
 				</h1>
-				<ul class="breadcrumb flex items-center justify-center space-x-2">
+				<!-- <ul class="breadcrumb flex items-center justify-center space-x-2">
 					<li><a href="" class="breadcrumb__link">Digital Marketing</a></li>
 					<li><a href="" class="breadcrumb__link">Webpages</a></li>
 					<li>Whitepaper</li>
-				</ul>
+				</ul> -->
 			</div>
 			<!-- asset listing query with current search -->
 			<AssetListing

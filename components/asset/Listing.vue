@@ -5,6 +5,7 @@ import MasonryWall from '@yeger/vue2-masonry-wall'
 import { IAssetFilter, IAsset } from '~/types/asset'
 import { useAssetStore } from '~/stores/asset'
 import { useTagStore } from '~/stores/tag'
+import { ITag } from '~/types'
 
 Vue.use(MasonryWall)
 
@@ -64,7 +65,29 @@ export default Vue.extend({
 		assetChannels() {
 			return useAssetStore().channels
 		},
-		popularTags() {
+		popularTags(): ITag[] {
+			// in search page, we get all tags from assets, sort by count and get the first 10
+			if (this.inSearch && this.assets.length) {
+				const allTags = this.assets.reduce((tags, asset) => {
+					return [...tags, ...asset.tags]
+				}, [] as ITag[])
+				// unique tags, sort by count
+				const tags: {
+					[key: number]: ITag & { count: number }
+				} = {}
+				allTags.forEach((tag) => {
+					if (!tags[tag.id]) tags[tag.id] = { ...tag, count: 1 }
+					else tags[tag.id].count++
+				})
+				return Object.values(tags)
+					.sort((a, b) => b.count - a.count)
+					.slice(0, 10)
+					.map((t) => {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						const {count, ...rest} = t
+						return rest
+					})
+			}
 			return useTagStore().popularTags
 		},
 		loadMoreAble(): boolean {
