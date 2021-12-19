@@ -17,7 +17,7 @@ export default Vue.extend({
 			return this.$strapi.user as IUser
 		},
     avatar(): string | null {
-      return this.src || (this.user.avatar ? this.user.avatar.url : null)
+      return this.src || (this.user && this.user.avatar ? this.user.avatar.url : null)
     }
 	}
 })
