@@ -234,7 +234,19 @@ export default Vue.extend({
 }
 .banner-guest-view {
 	min-height: 100px;
-	max-height: 200px;
+	max-height: 130px;
+
+	@screen md {
+		max-height: 150px;
+	}
+
+	@screen xl {
+		max-height: 200px;
+	}
+
+	@screen 2xl {
+		max-height: 250px;
+	}
 }
 /* .profile.guest-view {
 	background: url("./images/bgProfile.png") no-repeat top left;

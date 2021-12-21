@@ -18,6 +18,10 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      screen: {
+        '2xl': '1440px',
+        '3xl': '1980px',
+      },
       fontSize: {
         'xxs': ['9px', {
           letterSpacing: '-0.01em'
