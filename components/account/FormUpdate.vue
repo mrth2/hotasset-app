@@ -30,14 +30,15 @@ export default Vue.extend({
 			},
 			form: {
 				username: user.username,
-				firstName: user.first_name,
-				lastName: user.last_name,
-				biography: user.biography,
+				firstName: user.first_name || '',
+				lastName: user.last_name || '',
+				biography: user.biography || '',
 				pronounces: [] as IUser['pronounces'],
-				website: user.website
+				website: user.website || ''
 			},
 			checkingUsername: false,
-			checkingUsernameTimeout: null as number | null
+			checkingUsernameTimeout: null as number | null,
+			maxBioLength: 280
 		}
 	},
 	// emits: ['avatar-uploaded', 'cover-uploaded']
@@ -68,6 +69,12 @@ export default Vue.extend({
 	watch: {
 		pronounceList() {
 			this.form.pronounces = this.pronounceList
+		},
+		'form.biography': {
+			handler(value) {
+				this.form.biography = value.substring(0, this.maxBioLength)
+			},
+			immediate: true
 		}
 	},
 	mounted() {
@@ -365,6 +372,7 @@ export default Vue.extend({
 				class="form-control"
 				placeholder="Tell about yourself"
 			></textarea>
+			<small class="float-right mt-1 text-paragraph">{{ form.biography.length }} / {{ maxBioLength }} characters.</small>
 		</div>
 		<div class="mb-8">
 			<label for="pronounce" class="form-label">Favorite Categories</label>
