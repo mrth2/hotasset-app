@@ -80,15 +80,15 @@
         <input id="accept-term" type="checkbox" />
         <label for="accept-term" class="text-sm text-gray-600">
           I accept your
-          <a
-            href="#"
+          <NuxtLink
+            to="/terms"
             class="font-medium underline transition duration-150 ease-in-out text-red-500 hover:text-gray-500"
-          >Terms of Service</a>
+          >Terms of Service</NuxtLink>
           and
-          <a
-            href="#"
+          <NuxtLink
+            to="/privacy"
             class="font-medium underline transition duration-150 ease-in-out text-red-500 hover:text-gray-500"
-          >Privacy Policy terms</a>.
+          >Privacy Policy terms</NuxtLink>.
         </label>
       </div>
       <div class="mt-8">
