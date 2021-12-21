@@ -10,7 +10,7 @@ export default Vue.extend({
 		description: {
 			type: String,
 			default:
-				"Dribbble is the leading destination to find &amp; showcase creative work and home to the world's best design professionals."
+				"Dribbble is the leading destination to find & showcase creative work and home to the world's best design professionals."
 		},
 		hasButton: {
 			type: Boolean,
@@ -75,7 +75,7 @@ export default Vue.extend({
 	max-width: min(724px, 50%);
 }
 .banner__title {
-	@apply text-2xl lg:text-5xl text-gray-900 font-bold w-max;
+	@apply text-2xl lg:text-5xl text-gray-900 font-bold max-w-full w-max whitespace-normal;
 }
 .banner__desc {
 	@apply my-5 text-gray-500 text-base;
