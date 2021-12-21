@@ -72,6 +72,7 @@ export interface IAssetFilter {
   download: boolean
   tags: string[]
   search: string
+  upvoter: string
   sort: string
   start: number
   limit: number

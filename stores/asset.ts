@@ -112,6 +112,8 @@ export const useAssetStore = defineStore('asset', {
         { 
           # on profile page
           ${options.author ? `author: { username: $author },` : ''}
+          # liked by user
+          ${options.upvoter ? `upvoters: { id: $upvoter },` : ''}
           # on categry page
           ${options.category ? `categories: {slug: $category},` : ''}
           # on dropdown filters
@@ -142,6 +144,7 @@ export const useAssetStore = defineStore('asset', {
         query: gql`
           query ASSETS (
             ${options.author ? `$author: ID,` : ''}
+            ${options.upvoter ? `$upvoter: ID,` : ''}
             ${options.not_id ? `$not_id: ID,` : ''} 
             ${options.type ? `$type: ID,` : ''}
             ${options.channel ? `$channel: ID,` : ''}

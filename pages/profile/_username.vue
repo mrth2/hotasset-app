@@ -30,6 +30,7 @@ export default Vue.extend({
 				limit: 24,
 				start: 0
 			} as Partial<IAssetFilter>,
+			activeTab: 'uploads' as 'uploads' | 'likes',
 			user: {} as IUser,
 			followers: 0,
 			followings: 0,
@@ -103,6 +104,22 @@ export default Vue.extend({
 				.finally(() => {
 					this.requestingFollow = false
 				})
+		},
+		showUploads() {
+			this.activeTab = 'uploads'
+			this.filters = {
+				...this.filters,
+				author: this.$route.params.username,
+				upvoter: undefined
+			}
+		},
+		showLikes() {
+			this.activeTab = 'likes'
+			this.filters = {
+				...this.filters,
+				upvoter: this.user.id,
+				author: undefined
+			}
 		}
 	}
 })
@@ -161,16 +178,29 @@ export default Vue.extend({
 				</div>
 				<!-- owner action: upload and check likes -->
 				<div v-if="isOwner" class="flex space-x-4 justify-center">
-					<NuxtLink to="/upload" class="btn-secondary w-full md:w-auto mb-4">
+					<button
+						class="btn-secondary w-full md:w-auto mb-4"
+						:class="{ 'border-2 border-brand': activeTab === 'uploads' }"
+						@click="showUploads"
+					>
 						Uploads
-					</NuxtLink>
-					<button class="btn-secondary w-full md:w-auto mb-4">Likes</button>
+					</button>
+					<button
+						class="btn-secondary w-full md:w-auto mb-4"
+						:class="{ 'border-2 border-brand': activeTab === 'likes' }"
+						@click="showLikes"
+					>
+						Likes
+					</button>
 				</div>
 				<!-- guest action: un/follow -->
 				<div v-else>
 					<button
 						class="btn btn-follow"
-						:class="{ 'btn-primary': isFollowing, 'btn-secondary': !isFollowing }"
+						:class="{
+							'btn-primary': isFollowing,
+							'btn-secondary': !isFollowing
+						}"
 						@click="isFollowing ? unFollow() : follow()"
 					>
 						{{ isFollowing ? 'Unfollow' : 'Follow' }}
