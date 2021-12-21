@@ -36,6 +36,10 @@ export const useUserStore = defineStore('user', {
 							users(where: { username: $username }, limit: 1) {
 								id
 								username
+								cover {
+									provider
+									url
+								}
 								avatar {
 									provider
 									url

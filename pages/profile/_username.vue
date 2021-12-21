@@ -111,9 +111,9 @@ export default Vue.extend({
 	<main v-if="user" class="border-t relative">
 		<div class="profile guest-view">
 			<CoreImage
-				src="~/assets/images/bgProfile.png"
+				:src="user.cover ? user.cover.url : '~/assets/images/bgProfile.png'"
 				alt=""
-				class="banner-guest-view absolute inset-0 z-10 w-full justify-center"
+				class="banner-guest-view absolute inset-0 z-10 w-full justify-center object-cover object-center"
 			/>
 			<div class="flex flex-col z-20">
 				<div class="profile__img">
