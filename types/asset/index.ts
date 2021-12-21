@@ -69,6 +69,7 @@ export interface IAssetFilter {
   channel: string
   type: string
   tag: string
+  download: boolean
   tags: string[]
   search: string
   sort: string

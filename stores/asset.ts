@@ -111,24 +111,24 @@ export const useAssetStore = defineStore('asset', {
       const where = `
         { 
           # on profile page
-          author: { username: $author },
+          ${options.author ? `author: { username: $author },` : ''}
           # on categry page
-          categories: {slug: $category},
+          ${options.category ? `categories: {slug: $category},` : ''}
           # on dropdown filters
-          types: $type, 
-          channels: $channel,
-          tags: $tag, 
-          can_download: $download,
+          ${options.type ? `types: $type,` : ''} 
+          ${options.channel ? `channels: $channel,` : ''}
+          ${options.tag ? `tags: $tag,` : ''} 
+          ${options.download ? `can_download: $download,` : ''}
           # for detail page, query assets that different from current asset
-          id_ne: $not_id,
+          ${options.not_id ? `id_ne: $not_id,` : ''}
           # as always to exclude broken asset posts with no valid file
           resources: { size_gte: 0 },
           # use or in specific case
           ${(options.tags || options.categories || options.search) ?
           `_or: [
                 # query similar
-                ${options.tags ? `{ tags_in: $tags }` : ''},
-                ${options.categories ? `{ categories_in: $categories }` : ''},
+                ${options.tags ? `{ tags_in: $tags },` : ''}
+                ${options.categories ? `{ categories_in: $categories },` : ''}
                 # query search
                 ${options.search ? `{ title_contains: $search },
                 { description_contains: $search }
@@ -141,12 +141,17 @@ export const useAssetStore = defineStore('asset', {
       const response = await this.$nuxt.app.apolloProvider?.defaultClient.query<{ assets: IAsset[], count?: { aggregate: { count: number } } }>({
         query: gql`
           query ASSETS (
-            $author: ID, $not_id: ID, 
-            $type: ID, $channel: ID, 
-            $category: String, ${options.categories ? `$categories: [ID]` : ''},
-            $tag: ID, ${options.tags ? `$tags: [ID]` : ''},
-            $search: String,
-            $sort: String, $start: Int, $limit: Int, $download: Boolean
+            ${options.author ? `$author: ID,` : ''}
+            ${options.not_id ? `$not_id: ID,` : ''} 
+            ${options.type ? `$type: ID,` : ''}
+            ${options.channel ? `$channel: ID,` : ''}
+            ${options.category ? `$category: String,` : ''}
+            ${options.categories ? `$categories: [ID],` : ''}
+            ${options.tag ? `$tag: ID,` : ''} 
+            ${options.tags ? `$tags: [ID],` : ''}
+            ${options.search ? `$search: String,` : ''}
+            $sort: String, $start: Int, $limit: Int,
+            ${options.download ? `$download: Boolean,` : ''}
             $count: Boolean!
           ) {
             assets (
