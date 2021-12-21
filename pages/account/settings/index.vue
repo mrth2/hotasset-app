@@ -174,13 +174,20 @@ export default Vue.extend({
 						@change="selectCover"
 					/>
 					<div class="public-profile-banner relative">
-						<div class="absolute inset-0 bg-center bg-cover bg-no-repeat" :style="coverUrl()" @click="openFinder('cover')"></div>
+						<div
+							class="absolute inset-0 bg-center bg-cover bg-no-repeat"
+							:style="coverUrl()"
+							@click="openFinder('cover')"
+						></div>
 						<div
 							class="public-profile-banner-upload"
 							:style="avatarUrl()"
 							@click.prevent="openFinder('avatar')"
 						>
 							<span><img src="~/assets/images/icons/upload.svg" alt="" /></span>
+						</div>
+						<div class="btn-edit" @click="openFinder('cover')">
+							<FontAwesomeIcon icon="pen" size="sm" />
 						</div>
 					</div>
 					<AccountFormUpdate
@@ -195,3 +202,32 @@ export default Vue.extend({
 		</div>
 	</main>
 </template>
+
+<style scoped lang="postcss">
+.public-profile-banner {
+	height: 130px;
+	@apply relative bg-cover bg-no-repeat mb-16 cursor-pointer;
+
+	&:hover {
+		.btn-edit {
+			@apply opacity-100;
+		}
+	}
+}
+.public-profile-banner-upload {
+	@apply transform absolute -bottom-8 left-1/2 -translate-x-1/2 bg-cover bg-no-repeat flex items-center justify-center cursor-pointer rounded-full;
+	width: 72px;
+	height: 72px;
+}
+.public-profile-banner-upload:after {
+	content: '';
+	background: rgba(0, 0, 0, 0.5);
+	@apply absolute inset-0 rounded-full;
+}
+.public-profile-banner-upload img {
+	@apply relative z-50;
+}
+.btn-edit {
+	@apply opacity-0 transition-all p-2 rounded-full bg-white bg-opacity-50 cursor-pointer w-8 h-8 absolute right-4 bottom-4 flex items-center justify-center;
+}
+</style>
