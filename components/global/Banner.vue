@@ -19,7 +19,7 @@ export default Vue.extend({
 		cover: {
 			type: String,
 			default: null
-		},
+		}
 	}
 })
 </script>
@@ -46,7 +46,10 @@ export default Vue.extend({
 				</div>
 				<div class="banner-image">
 					<CoreImage
-						:src="cover || `/homepage/${!$strapi.user ? 'hero-' : ''}illustration.png`"
+						:src="
+							cover ||
+							`/homepage/${!$strapi.user ? 'hero-' : ''}illustration.png`
+						"
 						alt
 						class="mx-auto"
 					/>
@@ -55,3 +58,29 @@ export default Vue.extend({
 		</div>
 	</section>
 </template>
+
+<style scoped lang="postcss">
+/* =======+BANNER +======== */
+.banner {
+	background: #f8f9fd;
+}
+.banner-inner {
+	@apply flex flex-col pt-10 items-center justify-center md:flex-row md:py-0 md:justify-between;
+}
+.banner-image {
+	@apply self-auto;
+}
+.banner-content {
+	@apply flex flex-col items-center py-0 mb-5 text-center md:py-10 md:items-start md:m-0 md:text-left;
+	max-width: min(724px, 50%);
+}
+.banner__title {
+	@apply text-2xl lg:text-5xl text-gray-900 font-bold w-max;
+}
+.banner__desc {
+	@apply my-5 text-gray-500 text-base;
+}
+.banner__btn {
+	@apply w-full md:w-auto;
+}
+</style>
