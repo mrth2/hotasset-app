@@ -6,7 +6,9 @@ export default Vue.extend({
 	data() {
 		return {
 			avatarFile: null as File | null,
-			previewSrc: null as string | null
+			coverFile: null as File | null,
+			previewAvatar: null as string | null,
+			previewCover: null as string | null
 		}
 	},
 	computed: {
@@ -19,26 +21,49 @@ export default Vue.extend({
 			if (this.avatarFile) {
 				const reader = new FileReader()
 				reader.addEventListener('load', () => {
-					this.previewSrc = reader.result as string
+					this.previewAvatar = reader.result as string
 				})
 				reader.readAsDataURL(this.avatarFile)
 			} else {
-				this.previewSrc = null
+				this.previewAvatar = null
+			}
+		},
+		coverFile() {
+			if (this.coverFile) {
+				const reader = new FileReader()
+				reader.addEventListener('load', () => {
+					this.previewCover = reader.result as string
+				})
+				reader.readAsDataURL(this.coverFile)
+			} else {
+				this.previewCover = null
 			}
 		}
 	},
 	methods: {
 		avatarUrl() {
 			let url: string | null = null
-			if (this.previewSrc) url = this.previewSrc
+			if (this.previewAvatar) url = this.previewAvatar
 			else if (this.user.avatar) url = this.user.avatar.url
 			return {
 				backgroundImage: url ? `url(${url})` : 'none'
 			}
 		},
-		openFinder() {
-			if (this.$refs.avatarInput) {
-				;(this.$refs.avatarInput as HTMLElement).click()
+		coverUrl() {
+			let url: string | null = this.$img('bgPublicProfile.png')
+			if (this.previewCover) url = this.previewCover
+			else if (this.user.cover) url = this.user.cover.url
+			return {
+				backgroundImage: `url(${url})`
+			}
+		},
+		openFinder(type: 'avatar' | 'cover') {
+			if (type === 'avatar') {
+				const avatarInput = this.$refs.avatarInput as HTMLElement
+				if (avatarInput) avatarInput.click()
+			} else {
+				const coverInput = this.$refs.coverInput as HTMLElement
+				if (coverInput) coverInput.click()
 			}
 		},
 		selectAvatar({ target: { files = [] } }: any): void {
@@ -48,12 +73,26 @@ export default Vue.extend({
 			}
 			this.avatarFile = files[0]
 		},
-		uploaded() {
+		selectCover({ target: { files = [] } }: any): void {
+			if (!files.length) {
+				this.coverFile = null
+				return
+			}
+			this.coverFile = files[0]
+		},
+		avatarUploaded() {
 			if (
 				this.$refs.avatarInput &&
 				this.$refs.avatarInput instanceof HTMLInputElement
 			)
 				this.$refs.avatarInput.value = ''
+		},
+		coverUploaded() {
+			if (
+				this.$refs.coverInput &&
+				this.$refs.coverInput instanceof HTMLInputElement
+			)
+				this.$refs.coverInput.value = ''
 		}
 	}
 })
@@ -128,19 +167,28 @@ export default Vue.extend({
 						class="hidden"
 						@change="selectAvatar"
 					/>
-					<div
-						class="public-profile-banner"
-						:style="`background-image: url(${$img('bgPublicProfile.png')})`"
-						@click="openFinder"
-					>
-						<div class="public-profile-banner-upload" :style="avatarUrl()">
+					<input
+						ref="coverInput"
+						type="file"
+						class="hidden"
+						@change="selectCover"
+					/>
+					<div class="public-profile-banner relative">
+						<div class="absolute inset-0 bg-center bg-cover bg-no-repeat" :style="coverUrl()" @click="openFinder('cover')"></div>
+						<div
+							class="public-profile-banner-upload"
+							:style="avatarUrl()"
+							@click.prevent="openFinder('avatar')"
+						>
 							<span><img src="~/assets/images/icons/upload.svg" alt="" /></span>
 						</div>
 					</div>
 					<AccountFormUpdate
 						btn-text="Save Changes"
 						:avatar-file="avatarFile"
-						@uploaded="uploaded"
+						:cover-file="coverFile"
+						@avatar-uploaded="avatarUploaded"
+						@cover-uploaded="coverUploaded"
 					/>
 				</div>
 			</div>

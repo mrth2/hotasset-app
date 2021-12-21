@@ -9,6 +9,10 @@ export default Vue.extend({
 		avatarFile: {
 			default: null
 		},
+		// eslint-disable-next-line vue/require-prop-types
+		coverFile: {
+			default: null
+		},
 		buttonText: {
 			type: String,
 			default: 'Update Profile'
@@ -36,7 +40,7 @@ export default Vue.extend({
 			checkingUsernameTimeout: null as number | null
 		}
 	},
-	// emits: ['uploaded']
+	// emits: ['avatar-uploaded', 'cover-uploaded']
 	computed: {
 		headerStore: () => useHeaderStore(),
 		categories(): ICategory[] {
@@ -95,8 +99,8 @@ export default Vue.extend({
 								width
 								url
 								height
-                size
-                mime
+								size
+								mime
 							}
 						}
 					`,
@@ -116,81 +120,139 @@ export default Vue.extend({
 
 				this.$toast.success('Upload avatar successfully')
 				// emit uploaded events
-				this.$emit('uploaded')
+				this.$emit('avatar-uploaded')
 			} catch (err) {
 				this.$toast.error(
 					err instanceof Error ? err.message : 'Upload avatar failed'
 				)
 			}
 		},
-		async updateProfile() {
-			this.loading = true
+		async uploadCover() {
+			if (!this.coverFile) return
 			try {
-				// update user info
 				const res = await this.$apollo.mutate({
 					mutation: gql`
-						mutation UPDATE_PROFILE(
-							$id: ID!
-							$username: String
-							$first_name: String
-							$last_name: String
-							$biography: String
-							$pronounces: [ID]
-							$website: String
+						mutation uploadCover(
+							$refId: ID!
+							$ref: String
+							$field: String
+							$cover: Upload!
+							$source: String
 						) {
-							updateUser(
-								input: {
-									where: { id: $id }
-									data: {
-										username: $username
-										first_name: $first_name
-										last_name: $last_name
-										biography: $biography
-										website: $website
-										pronounces: $pronounces
-									}
-								}
+							upload(
+								ref: $ref
+								refId: $refId
+								field: $field
+								file: $cover
+								source: $source
 							) {
-								user {
-									id
-									username
-									email
-									first_name
-									last_name
-									biography
-									website
-									pronounces {
-										id
-										title
-										slug
-									}
-								}
+								id
+								width
+								url
+								height
+								size
+								mime
 							}
 						}
 					`,
 					variables: {
-						id: this.$strapi.user.id,
-						username: this.form.username,
-						first_name: this.form.firstName,
-						last_name: this.form.lastName,
-						biography: this.form.biography,
-						website: this.form.website,
-						pronounces: this.form.pronounces.map((pronounce) => pronounce.id)
+						refId: this.$strapi.user.id,
+						ref: 'user',
+						field: 'cover',
+						source: 'users-permissions',
+						cover: this.coverFile
 					}
 				})
+				// set cover to strapi user
 				await this.$strapi.setUser({
 					...this.$strapi.user,
-					...res.data.updateUser.user
+					cover: res.data.upload
 				})
-				this.$toast.success('Update profile successfully')
-				// if avatar is selected, upload avatar
-				await this.uploadAvatar()
+
+				this.$toast.success('Upload cover successfully')
+				// emit uploaded events
+				this.$emit('cover-uploaded')
+			} catch (err) {
+				this.$toast.error(
+					err instanceof Error ? err.message : 'Upload cover failed'
+				)
+			}
+		},
+		async submitProfile() {
+			this.loading = true
+			try {
+				await Promise.all([
+					this.updateProfile(),
+					// if avatar is selected, upload avatar
+					this.uploadAvatar(),
+					// if cover is selected, upload cover
+					this.uploadCover()
+				])
 			} catch (err) {
 				this.$toast.error(
 					err instanceof Error ? err.message : 'Update profile failed'
 				)
 			}
 			this.loading = false
+		},
+		async updateProfile() {
+			// update user info
+			const res = await this.$apollo.mutate({
+				mutation: gql`
+					mutation UPDATE_PROFILE(
+						$id: ID!
+						$username: String
+						$first_name: String
+						$last_name: String
+						$biography: String
+						$pronounces: [ID]
+						$website: String
+					) {
+						updateUser(
+							input: {
+								where: { id: $id }
+								data: {
+									username: $username
+									first_name: $first_name
+									last_name: $last_name
+									biography: $biography
+									website: $website
+									pronounces: $pronounces
+								}
+							}
+						) {
+							user {
+								id
+								username
+								email
+								first_name
+								last_name
+								biography
+								website
+								pronounces {
+									id
+									title
+									slug
+								}
+							}
+						}
+					}
+				`,
+				variables: {
+					id: this.$strapi.user.id,
+					username: this.form.username,
+					first_name: this.form.firstName,
+					last_name: this.form.lastName,
+					biography: this.form.biography,
+					website: this.form.website,
+					pronounces: this.form.pronounces.map((pronounce) => pronounce.id)
+				}
+			})
+			await this.$strapi.setUser({
+				...this.$strapi.user,
+				...res.data.updateUser.user
+			})
+			this.$toast.success('Update profile successfully')
 		},
 		onEnterUsername() {
 			if (this.checkingUsername) return
@@ -237,7 +299,7 @@ export default Vue.extend({
 </script>
 
 <template>
-	<form class="mt-8" @submit.prevent="updateProfile">
+	<form class="mt-8" @submit.prevent="submitProfile">
 		<div class="grid grid-cols-2 gap-4 mb-8">
 			<div>
 				<label for="first-name" class="form-label">First Name</label>
@@ -313,7 +375,7 @@ export default Vue.extend({
 				:multiple="true"
 				:close-on-select="false"
 				:clear-on-select="false"
-				placeholder="Select your pronouces"
+				placeholder="Select your favorite categories"
 				label="title"
 				track-by="id"
 				@update:model="form.pronounces = $event"

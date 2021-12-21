@@ -19,6 +19,7 @@ export declare interface IUser {
   blocked: boolean
   provider: string
   avatar: IFile
+  cover: IFile
   biography: string
   website: string
   pronounces: Array<{ id: string, title: string, slug: string }>
