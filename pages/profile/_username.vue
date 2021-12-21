@@ -113,11 +113,23 @@ export default Vue.extend({
 			<CoreImage
 				:src="user.cover ? user.cover.url : '~/assets/images/bgProfile.png'"
 				alt=""
-				class="banner-guest-view absolute inset-0 z-10 w-full justify-center object-cover object-center"
+				class="
+					banner-guest-view
+					absolute
+					inset-0
+					z-10
+					w-full
+					justify-center
+					object-cover object-center
+				"
 			/>
 			<div class="flex flex-col z-20">
 				<div class="profile__img">
-					<Avatar :src="user.avatar ? user.avatar.url : null" :size="96" class="mx-auto" />
+					<Avatar
+						:src="user.avatar ? user.avatar.url : null"
+						:size="96"
+						class="mx-auto"
+					/>
 				</div>
 
 				<!-- <div class="profile-social">
@@ -157,7 +169,8 @@ export default Vue.extend({
 				<!-- guest action: un/follow -->
 				<div v-else>
 					<button
-						class="btn btn-primary w-full md:w-auto mb-4"
+						class="btn btn-follow"
+						:class="{ 'btn-primary': isFollowing, 'btn-secondary': !isFollowing }"
 						@click="isFollowing ? unFollow() : follow()"
 					>
 						{{ isFollowing ? 'Unfollow' : 'Follow' }}
@@ -229,5 +242,8 @@ export default Vue.extend({
 			@apply text-brand underline;
 		}
 	}
+}
+.btn-follow {
+	@apply w-full md:w-auto mb-4;
 }
 </style>
