@@ -55,12 +55,12 @@ export default Vue.extend({
 		let description =
 			'Hot Asset is where sales and marketing professionals gain inspiration to do their best work through an extensive library of relevant asset examples.'
 		if (this.page) {
-			if (this.page.page.SEO.meta_title) {
+			if (this.page.page.SEO && this.page.page.SEO.meta_title) {
 				title = this.page.page.SEO.meta_title
 			} else if (this.page.page.title) {
 				title = this.page.page.title
 			}
-			if (this.page.page.SEO.meta_description) {
+			if (this.page.page.SEO && this.page.page.SEO.meta_description) {
 				description = this.page.page.SEO.meta_description
 			} else if (this.page.page.description) {
 				description = this.page.page.description
