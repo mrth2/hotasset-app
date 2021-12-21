@@ -1,3 +1,5 @@
+import { IFile } from './file'
+
 /* eslint-disable camelcase */
 export declare interface ICategory {
     id: string
@@ -13,6 +15,21 @@ export declare interface ISocialLinks {
     facebook: string
     linkedin: string
     dribble: string
+}
+
+export interface IFooterMenu {
+    id: string
+    heading: string
+    link: Array<{
+        id: string
+        title: string
+        url: string
+    }>
+}
+export declare interface IFooter {
+    slogan: string
+    logo: IFile
+    menu: IFooterMenu[]
 }
 
 export * from './user'

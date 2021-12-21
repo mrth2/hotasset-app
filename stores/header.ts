@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import gql from 'graphql-tag'
-import { ICategory, ISocialLinks } from '~/types'
+import { ICategory, IFooter, ISocialLinks } from '~/types'
 
 export const APP_REQUIRED_DATA = gql`
   query APP_REQUIRED_DATA {
@@ -26,13 +26,29 @@ export const APP_REQUIRED_DATA = gql`
       linkedin
       facebook
     }
+    footerMenu {
+      slogan
+      logo {
+        url
+      }
+      menu {
+        ... on ComponentSiteFooterColumn {
+          heading
+          link {
+            title
+            url
+          }
+        }
+      }
+    }
   } 
 `
 export const useHeaderStore = defineStore('header', {
   state: () => {
     return {
       categories: [] as ICategory[],
-      socialLinks: {} as ISocialLinks
+      socialLinks: {} as ISocialLinks,
+      footer: {} as IFooter
     }
   },
   getters: {
@@ -55,6 +71,7 @@ export const useHeaderStore = defineStore('header', {
         .then((res) => {
           this.categories = res.data.headerCategories
           this.socialLinks = res.data.socialLink
+          this.footer = res.data.footerMenu
         })
     }
   }
