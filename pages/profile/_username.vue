@@ -45,7 +45,12 @@ export default Vue.extend({
 	},
 	methods: {
 		async fetchUser() {
-			await useUserStore().fetchUser(this.$route.params.username)
+			const data = await useUserStore().fetchUser(this.$route.params.username, true)
+			if (data.user && data.followers && data.followings && data.isFollowing) {
+				this.user = data.user
+				this.followers = data.followers
+				this.followings = data.followings
+			}
 		},
 		async follow() {
 			if (this.requestingFollow || this.isFollowing) {
@@ -57,10 +62,10 @@ export default Vue.extend({
 			}
 			this.requestingFollow = true
 			this.isFollowing = true
+			this.followers++
 			await useUserStore()
 				.followUser(this.user.id)
-				.then(async (data) => {
-					await this.fetchUser()
+				.then((data) => {
 					if (data) {
 						this.$toast.success(
 							`You're now following ${this.$displayName(
@@ -68,6 +73,8 @@ export default Vue.extend({
 							)}.`
 						)
 					}
+					// refetch user to update followers count
+					this.fetchUser()
 				})
 				.catch((err) => {
 					this.isFollowing = false
@@ -87,15 +94,17 @@ export default Vue.extend({
 			}
 			this.requestingFollow = true
 			this.isFollowing = false
+			this.followers--
 			await useUserStore()
 				.unFollowUser(this.user.id)
-				.then(async (data) => {
-					await this.fetchUser()
+				.then((data) => {
 					if (data) {
 						this.$toast.success(
 							`You have unfollowed ${this.$displayName(this.user)}.`
 						)
 					}
+					// refetch user to update followers count
+					this.fetchUser()
 				})
 				.catch((err) => {
 					this.$toast.error(err.message)

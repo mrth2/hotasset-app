@@ -3,34 +3,34 @@ import { defineStore } from "pinia"
 import { IUser, IUserFollower } from "~/types/user"
 
 interface UserResponse {
-  users: IUser[]
+	users: IUser[]
 	isFollowing?: {
 		createdAt: Date
 		updatedAt: Date
 	}
-  followers: {
-    aggregate: {
-      count: number
-      totalCount: number
-    }
-  }
-  followings: {
-    aggregate: {
-      count: number
-      totalCount: number
-    }
-  }
+	followers: {
+		aggregate: {
+			count: number
+			totalCount: number
+		}
+	}
+	followings: {
+		aggregate: {
+			count: number
+			totalCount: number
+		}
+	}
 }
 
 export const useUserStore = defineStore('user', {
-  actions: {
-    async fetchUser(username: string) {
+	actions: {
+		async fetchUser(username: string, force = false) {
 			// if there is user logged in, check for the following
 			const checkFollowing = !!this.$nuxt.app.$strapi.user
 			const me = this.$nuxt.app.$strapi.user
-      const data = await this.$nuxt.app.apolloProvider?.defaultClient
-        .query<UserResponse>({
-          query: gql`
+			const data = await this.$nuxt.app.apolloProvider?.defaultClient
+				.query<UserResponse>({
+					query: gql`
 						query User($username: String!, $me: ID, $checkFollowing: Boolean!) {
 							# user info
 							users(where: { username: $username }, limit: 1) {
@@ -61,7 +61,7 @@ export const useUserStore = defineStore('user', {
 							}
 							# total followings ( who this user follow )
 							followings: userFollowersConnection(
-								where: { user: { username: $username } }
+								where: { follower: { username: $username } }
 							) {
 								aggregate {
 									count
@@ -70,7 +70,7 @@ export const useUserStore = defineStore('user', {
 							}
 							# total followed by ( who follow this user )
 							followers: userFollowersConnection(
-								where: { follower: { username: $username } }
+								where: { user: { username: $username } }
 							) {
 								aggregate {
 									count
@@ -79,19 +79,20 @@ export const useUserStore = defineStore('user', {
 							}
 						}
 					`,
-          variables: { 
-						username, 
-						me: me ? me.id : null,  
+					variables: {
+						username,
+						me: me ? me.id : null,
 						checkFollowing
-					}
-        })
-      return {
-        user: data?.data.users[0],
-        followers: data?.data.followers.aggregate.count,
-        followings: data?.data.followings.aggregate.count,
+					},
+					fetchPolicy: force ? 'no-cache' : undefined
+				})
+			return {
+				user: data?.data.users[0],
+				followers: data?.data.followers.aggregate.count,
+				followings: data?.data.followings.aggregate.count,
 				isFollowing: !!data?.data.isFollowing
-      }
-    },
+			}
+		},
 		async followUser(userId: string) {
 			type FollowResponse = {
 				createUserFollower: {
@@ -136,19 +137,7 @@ export const useUserStore = defineStore('user', {
 					mutation: gql`
 						mutation UN_FOLLOW($user: ID!) {
 							deleteUserFollower(input: { where: { id: $user } }) {
-								userFollower {
-									id
-									user {
-										first_name
-										last_name
-										username
-									}
-									follower {
-										first_name
-										last_name
-										username
-									}
-								}
+								__typename
 							}
 						}
 					`,
@@ -158,5 +147,5 @@ export const useUserStore = defineStore('user', {
 				})
 			return data?.data
 		}
-  }
+	}
 })
