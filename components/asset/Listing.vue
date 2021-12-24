@@ -172,7 +172,7 @@ export default Vue.extend({
 	<div>
 		<div v-if="!hideFilters" class="filter-subnav">
 			<div
-				class="filter-subnav-inner flex flex-row items-center justify-between"
+				class="filter-subnav-inner flex flex-row items-center justify-start"
 			>
 				<!-- sorting  -->
 				<AssetSorting :filters="filters" @update:sort="updateFilters" />
@@ -184,8 +184,8 @@ export default Vue.extend({
 						relative
 						text-center
 						overflow-x-auto overflow-y-hidden
-						mr-4
 						cursor-move
+						mx-auto
 					"
 				>
 					<ul
@@ -226,7 +226,7 @@ export default Vue.extend({
 					</ul>
 				</div>
 				<!-- filter by type, channel, downloads and more -->
-				<div
+				<!-- <div
 					class="
 						filter-settings
 						active:scale-95 active:ring-0 active:ring-transparent
@@ -237,15 +237,15 @@ export default Vue.extend({
 				>
 					<CoreIconFilter />
 					<span class="label" title="Filters">Filters</span>
-				</div>
+				</div> -->
 			</div>
 		</div>
 		<!-- asset filter ( types, channel, etc ) -->
-		<AssetFilter
+		<!-- <AssetFilter
 			:filters="filters"
 			:show="showFilters"
 			@update:filters="updateFilters($event)"
-		/>
+		/> -->
 		<!-- asset listing -->
 		<div class="shots-grid relative min-h-[400px]">
 			<div
