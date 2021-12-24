@@ -77,7 +77,7 @@
         />
       </div>
       <div class="mt-8">
-        <input id="accept-term" type="checkbox" />
+        <input id="accept-term" v-model="termAgreed" type="checkbox" />
         <label for="accept-term" class="text-sm text-gray-600">
           I accept your
           <NuxtLink
@@ -97,8 +97,8 @@
           <button
             type="submit"
             class="px-4 py-3 text-base bg-red-500 font-medium leading-6 text-white whitespace-no-wrap transition duration-150 ease-in-out rounded-md hover:bg-red-700 focus:outline-none focus:shadow-outline-blue active:bg-red-600"
-            :disabled="loading"
-            :class="{ 'opacity-50 cursor-wait': loading }"
+            :disabled="loading || !termAgreed"
+            :class="{ 'opacity-50 cursor-wait': loading, 'opacity-50 cursor-not-allowed': !termAgreed }"
           >Create an account</button>
         </span>
       </div>
@@ -118,7 +118,8 @@ export default Vue.extend({
       username: '',
       password: '',
       error: '',
-      loading: false
+      loading: false,
+      termAgreed: false
     }
   },
   methods: {
