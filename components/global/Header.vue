@@ -290,7 +290,7 @@ export default Vue.extend({
 										About
 									</NuxtLink>
 								</li>
-								<li>
+								<!-- <li>
 									<a class="site-nav-actions__link relative">
 										<CoreImage
 											src="~/assets/images/icons/bell.svg"
@@ -299,7 +299,7 @@ export default Vue.extend({
 										/>
 										<span class="notify-count !-right-6">7</span>
 									</a>
-								</li>
+								</li> -->
 								<li
 									id="header-user-setting"
 									class="header-user-setting"
