@@ -157,7 +157,7 @@ export default Vue.extend({
 							</NuxtLink>
 							<button
 								v-tooltip.left-start="
-									`I ${localLiked ? 'unlike' : 'like'} this`
+									`${localLiked ? 'Unlike' : 'I like this'}`
 								"
 								class="like-shot"
 								:class="{ liked: localLiked }"
