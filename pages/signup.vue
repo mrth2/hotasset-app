@@ -143,10 +143,10 @@ export default Vue.extend({
       return true
     },
     async createUser() {
+      this.error = ''
       if (!this.validateForm()) {
         return
       }
-      this.error = ''
       this.loading = true
       await this.$strapi.$http.$post('/auth/local/register', {
         email: this.email,
@@ -155,6 +155,7 @@ export default Vue.extend({
         first_name: this.firstName,
         last_name: this.lastName
       }).then(() => {
+        this.$toast.success('Welcome to HotAsset. Please check your email to confirm your account.')
         this.$nuxt.$router.push('/login')
       }).catch((error) => {
         this.error = error instanceof Error ? error.message : 'Something went wrong. Please try again!'
