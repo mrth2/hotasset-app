@@ -14,6 +14,17 @@ export default Vue.extend({
 				class: classes.join(' ')
 			}
 		}
+	},
+	mounted() {
+		// parse hash message to toast
+		const hashes = this.$route.hash.split('#').filter(hash => hash)
+		const message = hashes.find(hash => hash.includes('message'))?.split('=')[1]
+		if (message) this.$toast.info(decodeURIComponent(message), {
+			duration: 10000,
+			onComplete() {
+				window.location.hash = ''
+			}
+		})
 	}
 })
 </script>
