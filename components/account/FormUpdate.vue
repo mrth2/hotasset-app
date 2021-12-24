@@ -336,7 +336,7 @@ export default Vue.extend({
 			<label for="username" class="form-label">Username</label>
 			<input
 				id="username"
-				v-model="form.username"
+				v-model.trim="form.username"
 				type="text"
 				required
 				class="form-control"
@@ -344,12 +344,12 @@ export default Vue.extend({
 				@keyup="onEnterUsername"
 			/>
 			<div class="flex justify-between items-center pt-4">
-				<p class="text-gray-500 text-sm">
+				<NuxtLink :to="`/profile/${form.username}`" class="text-gray-500 text-sm">
 					<span>hotasset.com/profile/</span>
 					<strong class="text-red-500 -ml-0.5">{{
 						form.username || 'username'
 					}}</strong>
-				</p>
+				</NuxtLink>
 				<span
 					v-if="error.username.message"
 					class="text-sm"
