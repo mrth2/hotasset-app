@@ -4,10 +4,10 @@ import { IUser, IUserFollower } from "~/types/user"
 
 interface UserResponse {
 	users: IUser[]
-	isFollowing?: {
+	isFollowing?: Array<{
 		createdAt: Date
 		updatedAt: Date
-	}
+	}>
 	followers: {
 		aggregate: {
 			count: number
@@ -90,7 +90,7 @@ export const useUserStore = defineStore('user', {
 				user: data?.data.users[0],
 				followers: data?.data.followers.aggregate.count,
 				followings: data?.data.followings.aggregate.count,
-				isFollowing: !!data?.data.isFollowing
+				isFollowing: data?.data.isFollowing?.length && data.data.isFollowing?.[0].createdAt
 			}
 		},
 		async followUser(userId: string) {
