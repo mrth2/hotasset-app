@@ -36,6 +36,7 @@ export default Vue.extend({
 					error({ statusCode: 404, message: 'Page not found' })
 				}
 				page = data.staticPages[0]
+				page.page.content = page.page.content.replace(/<style>.*?<\/style>/gsm, '')
 			})
 			.catch((_err) => {
 				error({ statusCode: 404, message: 'Page not found' })
