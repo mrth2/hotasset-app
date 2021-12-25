@@ -69,6 +69,7 @@ export default Vue.extend({
 			isLoading: false,
 			isSubmitting: false,
 			MAX_FILES_ALLOWED: 6,
+			MAX_TAGS_ALLOWED: 10,
 			// hide tag dropdown when there are no tags
 			hideTagSelection: true
 		}
@@ -98,13 +99,39 @@ export default Vue.extend({
 	methods: {
 		...mapActions(useAssetStore, ['isIcon']),
 		addTag(name: string) {
-			this.form.tags.push({
-				id: name,
-				name,
-				slug: name
-			})
+			if (
+				!this.form.tags.find((tag) => tag.name === name) &&
+				this.form.tags.length < this.MAX_TAGS_ALLOWED
+			) {
+				this.form.tags.push({
+					id: name,
+					name,
+					slug: name
+				})
+			}
 			this.hideTagSelection = true
 			return true
+		},
+		onSearchTag(query: string) {
+			this.hideTagSelection = true
+			// if query has commas, we add tag
+			if (query.includes(',')) {
+				query
+					.split(',')
+					.map((tag) => tag.trim())
+					.filter((tag) => tag)
+					.forEach((tag) => this.addTag(tag))
+				// clear multiselect search input
+				if (this.$refs.tags instanceof Vue) {
+					const tagRefs = this.$refs.tags as Vue
+					if (tagRefs.$refs.multiselect instanceof Vue) {
+						const multiselectRefs = tagRefs.$refs.multiselect as any
+						if (multiselectRefs.search) {
+							multiselectRefs.search = ''
+						}
+					}
+				}
+			}
 		},
 		async findTags(query: string, limit = 20) {
 			this.isLoading = true
@@ -132,7 +159,8 @@ export default Vue.extend({
 		},
 		openSelectImage() {
 			if (this.$refs.images) {
-				;(this.$refs.images as HTMLInputElement).click()
+				const imageRef = this.$refs.images as HTMLInputElement
+				imageRef.click()
 			}
 		},
 		async uploadFiles(e: Event) {
@@ -308,7 +336,9 @@ export default Vue.extend({
 			await this.$strapi.$http
 				.$post<IAsset>('assets', formData)
 				.then(() => {
-					this.$toast.success('Congrats! Your asset has successfully been posted!')
+					this.$toast.success(
+						'Congrats! Your asset has successfully been posted!'
+					)
 					this.filePreviews = []
 					this.form = cloneDeep(this.initialForm)
 				})
@@ -552,6 +582,7 @@ export default Vue.extend({
 			<div class="mb-8">
 				<label for="tags" class="form-label">Tags</label>
 				<CoreFormMultiSelect
+					ref="tags"
 					:model="form.tags"
 					:hide-content="hideTagSelection"
 					class="form-control"
@@ -560,7 +591,7 @@ export default Vue.extend({
 					:close-on-select="false"
 					:clear-on-select="false"
 					:hide-selected="true"
-					placeholder="Add tags ( up to 10 )"
+					:placeholder="`Add tags ( up to ${MAX_TAGS_ALLOWED} )`"
 					label="name"
 					track-by="id"
 					:searchable="true"
@@ -570,10 +601,11 @@ export default Vue.extend({
 					:show-no-results="false"
 					:taggable="true"
 					:tag-placeholder="'Enter to add this tag'"
-					:max="10"
+					:preserve-search="true"
+					:max="MAX_TAGS_ALLOWED"
 					@update:model="form.tags = $event"
 					@tag="addTag"
-					@search-change="hideTagSelection = false"
+					@search-change="onSearchTag"
 					@input="hideTagSelection = true"
 					@select="hideTagSelection = true"
 					@open="hideTagSelection = true"

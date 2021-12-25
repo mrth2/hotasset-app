@@ -32,6 +32,7 @@ export default Vue.extend({
 </script>
 <template>
 	<Multiselect
+		ref="multiselect"
 		v-model="propModel"
 		class="form-control"
 		:class="{ hideContent }"
